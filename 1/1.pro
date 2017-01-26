@@ -4,8 +4,10 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    harmonicoscillator2d.cpp
+    harmonicoscillator2d.cpp \
+    hermite.cpp
 
 HEADERS += \
-    harmonicoscillator2d.h
+    harmonicoscillator2d.h \
+    hermite.h
 

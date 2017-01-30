@@ -7,9 +7,15 @@ using namespace std;
 Hermite::Hermite(int deg)
 {
     degree = deg;
-    cout<<"making poly of deg:"<<degree<<endl;
+
 }
 
+Hermite::Hermite(){}
+
+void Hermite::set_degree(int deg)
+{
+    degree = deg;
+}
 
 double Hermite::evaluate(double x)
 {

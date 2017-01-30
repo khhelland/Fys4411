@@ -6,6 +6,8 @@ class Hermite
 {
 public:
     Hermite(int);
+    Hermite();
+    void set_degree(int);
     double evaluate(double x);
 private:
     int degree;

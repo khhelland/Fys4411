@@ -6,14 +6,10 @@ using namespace std;
 
 int main()
 {
-    HarmonicOscillator2D HO;
-    int i = HO.getindex(1,2,-1);
+    HarmonicOscillator2D p(1);
+    HarmonicOscillator2D q(37);
 
-    Hermite poly0(0);
-    Hermite poly2(2);
-
-
-    cout <<poly0.evaluate(2)<<" "<< poly2.evaluate(2)<< endl;
+    cout<<p.wavefunction(1,1)<<" "<<q.wavefunction(2,2)<<endl;
     return 0;
 }
 

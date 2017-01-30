@@ -1,18 +1,34 @@
 #include "harmonicoscillator2d.h"
+#include <math.h>
+#include <hermite.h>
+
 /*Things the class must be able to do:
     -translate between single index and 3 nx,ny,sz
     -compute Hermite polynomials
     -compute single particle wave functions
 */
-HarmonicOscillator2D::HarmonicOscillator2D()
+
+
+
+HarmonicOscillator2D::HarmonicOscillator2D(int index)
 {
+
+    getquantumnumbers(index);
+    Hermite_x.set_degree(nx);
+    Hermite_y.set_degree(ny);
 
 }
 
-int HarmonicOscillator2D::getindex(int nx, int ny, int spin)
+HarmonicOscillator2D::HarmonicOscillator2D(int nx, int ny, int spin)
 {
-    int i = (nx+ny)*(nx+ny+1)+2*ny + (1-spin)/2;
-    return i;
+    Hermite_x.set_degree(nx);
+    Hermite_y.set_degree(ny);
+    getindex(nx,ny,spin);
+}
+
+void HarmonicOscillator2D::getindex(int nx, int ny, int spin)
+{
+    index = (nx+ny)*(nx+ny+1)+2*ny + (1-spin)/2;
 }
 
 void HarmonicOscillator2D::getquantumnumbers(int i)
@@ -30,4 +46,9 @@ void HarmonicOscillator2D::getquantumnumbers(int i)
         }
     }
 
+}
+
+double HarmonicOscillator2D::wavefunction(double x,double y)
+{
+    return Hermite_x.evaluate(x)*Hermite_y.evaluate(y)*exp((pow(x,2)+pow(y,2))/2);
 }

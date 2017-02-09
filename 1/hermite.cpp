@@ -1,6 +1,6 @@
 #include "hermite.h"
 #include <math.h>
-#include <iostream>
+//#include <iostream>
 
 using namespace std;
 

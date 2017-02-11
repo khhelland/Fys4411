@@ -1,15 +1,23 @@
 #include <iostream>
 #include "harmonicoscillator2d.h"
 #include <hermite.h>
+#include <integrator.h>
+
 
 using namespace std;
 
-int main2()
+int main()
 {
-    HarmonicOscillator2D p(1,1);
-    HarmonicOscillator2D q(37,1);
+    HarmonicOscillator2D p(5);
+    HarmonicOscillator2D q(1);
+    HarmonicOscillator2D r(4);
+    HarmonicOscillator2D s(1);
 
-    cout<<p.wavefunction(1,1)<<" "<<q.wavefunction(2,2)<<endl;
+    integrator integral(p,q,r,s);
+
+
+
+    cout<<integral.integrate(20)<<endl;
     return 0;
 }
 

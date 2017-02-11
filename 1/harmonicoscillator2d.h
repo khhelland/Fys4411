@@ -5,6 +5,8 @@
 class HarmonicOscillator2D
 {
 public:
+    HarmonicOscillator2D();
+    HarmonicOscillator2D(int);
     HarmonicOscillator2D(int index, double w);
     HarmonicOscillator2D(int, int, int, double w);
 
@@ -18,8 +20,8 @@ private:
     int ny;
     int index;
     double normalization_constant;
-    double omega;
-    const double pi = 3.141592653589793238462643383279502884;
+    double omega = 1;
+    double pi = 3.141592653589793238462643383279502884;
 
     Hermite Hermite_x;
     Hermite Hermite_y;

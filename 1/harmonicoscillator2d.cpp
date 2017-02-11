@@ -8,12 +8,24 @@
     -compute single particle wave functions
 */
 
+HarmonicOscillator2D::HarmonicOscillator2D()
+{
 
+}
 
-HarmonicOscillator2D::HarmonicOscillator2D(int index,double w)
+HarmonicOscillator2D::HarmonicOscillator2D(int index1)
+{
+    index = index1;
+    getquantumnumbers(index);
+    Hermite_x.set_degree(nx);
+    Hermite_y.set_degree(ny);
+    normalize();
+}
+
+HarmonicOscillator2D::HarmonicOscillator2D(int index1,double w)
 {
     omega = w;
-    index = index;
+    index = index1;
     getquantumnumbers(index);
     Hermite_x.set_degree(nx);
     Hermite_y.set_degree(ny);
@@ -51,7 +63,8 @@ void HarmonicOscillator2D::getquantumnumbers(int i)
         if (s<=j)
         {
             ny = j-s;
-            nx = n-ny;
+            nx = n-1-ny;
+            break;
 
         }
     }
@@ -65,7 +78,7 @@ double HarmonicOscillator2D::wavefunction(double x,double y)
 
 double HarmonicOscillator2D::wavefunction_no_exp(double x, double y)
 {
-    return Hermite_x.evaluate(x)*Hermite_y.evaluate(y);
+    return normalization_constant*Hermite_x.evaluate(x)*Hermite_y.evaluate(y);
 }
 
 

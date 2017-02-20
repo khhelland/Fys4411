@@ -18,11 +18,12 @@ public:
 
     int n;
     int m;
+    int spin;
 
 private:
     int levels = 10;
     int level;
-    int spin;
+
     int index;
 
     double omega = 1;

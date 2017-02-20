@@ -8,13 +8,15 @@ SOURCES += main.cpp \
     hermite.cpp \
     integration.cpp \
     integrator.cpp \
-    coulomb_functions.cpp
+    coulomb_functions.cpp \
+    hartreefock.cpp
 
 HEADERS += \
     harmonicoscillator2d.h \
     hermite.h \
     integrator.h \
-    coulomb_functions.h
+    coulomb_functions.h \
+    hartreefock.h
 
 QMAKE_CXXFLAGS+= -fopenmp
 QMAKE_LFLAGS +=  -fopenmp

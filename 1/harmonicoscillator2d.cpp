@@ -40,7 +40,10 @@ HarmonicOscillator2D::HarmonicOscillator2D(int index1,double w)
 //    normalize();
 }
 
-
+double HarmonicOscillator2D::getenergy()
+{
+    return omega*(2*n+abs(m)+1);
+}
 
 //HarmonicOscillator2D::HarmonicOscillator2D(int nx, int ny, int spin, double w)
 //{

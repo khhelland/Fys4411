@@ -15,6 +15,7 @@ public:
 
 //    int getn();
 //    int getm();
+    double getenergy();
 
     int n;
     int m;

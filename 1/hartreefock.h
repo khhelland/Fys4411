@@ -11,9 +11,10 @@ public:
     hartreefock(int particles ,int shells, double w);
 
     void run(int maxcount, double epsilon);
+    double getenergy();
 
 
-private:
+//private:
     int shells;
     int n_orbitals;
     int n_particles;
@@ -25,6 +26,7 @@ private:
 
     arma::vec ref_energies;
     arma::vec hf_energies;
+    arma::vec old_energies;
 
     void updatefockmatrix();
     void updatedensitymatrix();
@@ -33,6 +35,9 @@ private:
 
     double matrixelement_as(int ip,int iq, int ir, int is);
 
+    double finddifference();
+
+private:
 
 };
 

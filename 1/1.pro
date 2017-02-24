@@ -18,5 +18,7 @@ HEADERS += \
     coulomb_functions.h \
     hartreefock.h
 
+LIBS += -llapack -lblas -larmadillo
+
 QMAKE_CXXFLAGS+= -fopenmp
 QMAKE_LFLAGS +=  -fopenmp

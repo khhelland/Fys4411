@@ -17,7 +17,7 @@ hartreefock::hartreefock(int particles , int shells , double w):
     old_energies = zeros<vec>(n_orbitals);
     C = eye<mat>(n_orbitals,n_orbitals);
     densitymatrix = zeros<mat>(n_orbitals,n_orbitals);
-    updatedensitymatrix();
+    //updatedensitymatrix();
     fockmatrix = zeros<mat>(n_orbitals,n_orbitals);
 
 }
@@ -40,15 +40,19 @@ double hartreefock::matrixelement_as(int ip,int iq, int ir, int is)
     HarmonicOscillator2D r(ir);
     HarmonicOscillator2D s(is);
 
-    //spin and m conservation
-    if ((p.spin + q.spin != r.spin + s.spin)&&(p.m+q.m != r.m + s.m))
+    double direct = 0;
+
+    if((p.spin == r.spin)&&(q.spin == s.spin))
     {
-        return 0;
+        direct = Coulomb_HO(frequency,p.n,p.m,q.n,q.m,r.n,r.m,s.n,s.m);
     }
 
+    double exchange = 0;
 
-    double direct = Coulomb_HO(frequency,p.n,p.m,q.n,q.m,r.n,r.m,s.n,s.m);
-    double exchange = Coulomb_HO(frequency,p.n,p.m,q.n,q.m,s.n,s.m,r.n,r.m);
+    if((p.spin == s.spin)&&(q.spin == r.spin))
+    {
+        exchange = Coulomb_HO(frequency,p.n,p.m,q.n,q.m,s.n,s.m,r.n,r.m);
+    }
     return direct-exchange;
 }
 
@@ -56,9 +60,13 @@ double hartreefock::matrixelement_as(int ip,int iq, int ir, int is)
 
 void hartreefock::updatefockmatrix()
 {
+
+    fockmatrix.zeros();
+
     for(int alpha = 0;alpha < n_orbitals;alpha++)
     {
-        for(int beta = 0; beta <= alpha; beta++)
+
+        for(int beta = 0; beta <=alpha ; beta++)
         {
             double s = 0;
             for(int gamma = 0;gamma < n_orbitals;gamma++)
@@ -68,35 +76,42 @@ void hartreefock::updatefockmatrix()
                     s+= densitymatrix(gamma,delta)*matrixelement_as(alpha,gamma,beta,delta);
                 }
              }
-            if (alpha == beta){s+=ref_energies(alpha);}
-            fockmatrix(alpha,beta) = s;
-            fockmatrix(beta,alpha) = s;
+             fockmatrix(alpha,beta) = s;
+             fockmatrix(beta,alpha) = s;
         }
+
+        fockmatrix(alpha,alpha) += ref_energies(alpha);
     }
 }
 
 void hartreefock::updatedensitymatrix()
 {
-    int s;
+    //C.print();
+    double s;
     for(int gamma = 0;gamma < n_orbitals;gamma++)
     {
-        for(int delta = 0; delta <= gamma; delta++)
+        for(int delta = 0; delta <=gamma; delta++)
         {
             s = 0;
+            densitymatrix(delta,gamma) = 0;
             for(int i = 0; i < n_particles; i++)
             {
-                s += C(i,gamma)*C(i,delta);
+                s += C(gamma,i)*C(delta,i);
+
             }
-            densitymatrix(gamma,delta) = s;
             densitymatrix(delta,gamma) = s;
+            densitymatrix(gamma,delta) = s;
         }
     }
+
+
 }
 
 
 void hartreefock::diagonalizefockmatrix()
 {
     eig_sym(hf_energies,C,fockmatrix);
+    //C.print();
 }
 
 
@@ -106,19 +121,60 @@ double hartreefock::finddifference()
 }
 
 
+double hartreefock::getenergy()
+{
+    double s = 0;
+    for(int i=0;i<n_particles; i++)
+    {
+        for(int j=0; j< n_particles; j++)
+        {
+            for(int alpha = 0; alpha < n_orbitals; alpha++)
+            {
+                for(int beta = 0; beta< n_orbitals; beta++)
+                {
+                    for(int gamma = 0; gamma < n_orbitals; gamma++)
+                    {
+                        for(int delta = 0; delta< n_orbitals; delta++)
+                        {
+                            s-= C(i,alpha)*C(i,beta)*C(j,gamma)*C(j,delta)*matrixelement_as(alpha,beta,gamma,delta);
+                         }
+                     }
+                 }
+             }
+         }
+    }
+
+    s/=2;
+    for(int i = 0; i< n_particles; i++)
+    {
+        s += hf_energies(i);
+    }
+    return s;
+}
+
+void hartreefock::print_sp_energy()
+{
+    hf_energies.print();
+}
+
+
+
 void hartreefock::run(int maxcount, double epsilon)
-{   double difference = 1;
-    for(int count = 0;(count<=maxcount)&&(difference>epsilon);count++)
+{
+
+    double difference = 1;
+    int count = 0;
+    while((count<maxcount)&&(difference>epsilon))
     {
         old_energies = hf_energies;
         updatedensitymatrix();
         updatefockmatrix();
         diagonalizefockmatrix();
         difference = finddifference();
+        count++;
     }
-}
-
-double hartreefock::getenergy()
-{
-    return sum(hf_energies);
+    if(count == maxcount)
+    {
+        cout<<"Warning: maximum number of iterations reached"<<endl;
+    }
 }

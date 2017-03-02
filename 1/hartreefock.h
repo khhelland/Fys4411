@@ -11,7 +11,9 @@ public:
     hartreefock(int particles ,int shells, double w);
 
     void run(int maxcount, double epsilon);
+
     double getenergy();
+    void print_sp_energy();
 
 
 //private:

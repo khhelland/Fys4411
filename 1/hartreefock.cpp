@@ -3,9 +3,7 @@
 #include <hartreefock.h>
 #include <armadillo>
 
-
 using namespace arma;
-
 
 
 hartreefock::hartreefock(int particles , int shells , double w):
@@ -17,9 +15,13 @@ hartreefock::hartreefock(int particles , int shells , double w):
     old_energies = zeros<vec>(n_orbitals);
     C = eye<mat>(n_orbitals,n_orbitals);
     densitymatrix = zeros<mat>(n_orbitals,n_orbitals);
-    //updatedensitymatrix();
     fockmatrix = zeros<mat>(n_orbitals,n_orbitals);
 
+    elementarray = new double[(int)pow(n_orbitals,4)];
+}
+hartreefock::~hartreefock()
+{
+    delete [] elementarray;
 }
 
 void hartreefock::find_ref_energies()
@@ -73,7 +75,8 @@ void hartreefock::updatefockmatrix()
             {
                 for(int delta = 0; delta < n_orbitals; delta++)
                 {
-                    s+= densitymatrix(gamma,delta)*matrixelement_as(alpha,gamma,beta,delta);
+                    s+= densitymatrix(gamma,delta)*elementarray[arrayindex(alpha,gamma,beta,delta)];
+                            //matrixelement_as(alpha,gamma,beta,delta);
                 }
              }
              fockmatrix(alpha,beta) = s;
@@ -124,11 +127,11 @@ double hartreefock::finddifference()
 double hartreefock::getenergy()
 {
     double s = 0;
-    for(int i=0;i<n_particles; i++)
-    {
-        for(int j=0; j< n_particles; j++)
-        {
-            for(int alpha = 0; alpha < n_orbitals; alpha++)
+//    for(int i=0;i<n_particles; i++)
+//    {
+//        for(int j=0; j< n_particles; j++)
+//        {
+          for(int alpha = 0; alpha < n_orbitals; alpha++)
             {
                 for(int beta = 0; beta< n_orbitals; beta++)
                 {
@@ -136,13 +139,17 @@ double hartreefock::getenergy()
                     {
                         for(int delta = 0; delta< n_orbitals; delta++)
                         {
-                            s-= C(i,alpha)*C(i,beta)*C(j,gamma)*C(j,delta)*matrixelement_as(alpha,beta,gamma,delta);
-                         }
+                            //s-= C(i,alpha)*C(i,beta)*C(j,gamma)*C(j,delta)*matrixelement_as(alpha,beta,gamma,delta);
+                            s-= densitymatrix(alpha,delta)*densitymatrix(beta,gamma)
+                                    *elementarray[arrayindex(alpha,beta,delta,gamma)];
+                                    //*matrixelement_as(alpha,beta,delta,gamma);
+
+                        }
                      }
                  }
              }
-         }
-    }
+//         }
+//    }
 
     s/=2;
     for(int i = 0; i< n_particles; i++)
@@ -158,10 +165,34 @@ void hartreefock::print_sp_energy()
 }
 
 
+void hartreefock::findelements()
+{
+    for(int p = 0; p < n_orbitals; p++)
+    {
+        for(int q = 0; q < n_orbitals; q++)
+        {
+            for(int r = 0; r < n_orbitals; r++)
+            {
+                for(int s = 0; s < n_orbitals; s++)
+                {
+                    elementarray[arrayindex(p,q,r,s)] = matrixelement_as(p,q,r,s);
+                    //cout<< elementarray[arrayindex(p,q,r,s)]<<" "<<matrixelement_as(p,q,r,s)<<endl;
+                }
+            }
+        }
+    }
+}
+
+int hartreefock::arrayindex(int p, int q , int r, int s)
+{
+    return p + q*n_orbitals + r*pow(n_orbitals,2) + s*pow(n_orbitals,3);
+}
+
+
 
 void hartreefock::run(int maxcount, double epsilon)
 {
-
+    findelements();
     double difference = 1;
     int count = 0;
     while((count<maxcount)&&(difference>epsilon))

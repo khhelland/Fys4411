@@ -9,12 +9,15 @@ class hartreefock
 public:
     hartreefock(){};
     hartreefock(int particles ,int shells, double w);
-
+    ~hartreefock();
     void run(int maxcount, double epsilon);
 
     double getenergy();
     void print_sp_energy();
 
+    double matrixelement_as(int ip,int iq, int ir, int is);
+
+    void findelements();
 
 //private:
     int shells;
@@ -30,13 +33,15 @@ public:
     arma::vec hf_energies;
     arma::vec old_energies;
 
+    double *elementarray;
+
     void updatefockmatrix();
     void updatedensitymatrix();
     void diagonalizefockmatrix();
     void find_ref_energies();
 
-    double matrixelement_as(int ip,int iq, int ir, int is);
 
+    int arrayindex(int,int,int,int);
     double finddifference();
 
 private:

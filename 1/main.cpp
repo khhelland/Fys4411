@@ -21,7 +21,7 @@ int main()
         double oldE = 1;
         double newE = 0;
         int j=0;
-        while((abs(newE-oldE)>1e-4)&&((n+j)<=7))
+        while((abs(newE-oldE)>1e-4)&&((n+j)<=12))
         {
             start_part = clock();
             oldE = newE;

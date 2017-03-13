@@ -140,8 +140,8 @@ double hartreefock::getenergy()
                         for(int delta = 0; delta< n_orbitals; delta++)
                         {
                             //s-= C(i,alpha)*C(i,beta)*C(j,gamma)*C(j,delta)*matrixelement_as(alpha,beta,gamma,delta);
-                            s-= densitymatrix(alpha,delta)*densitymatrix(beta,gamma)
-                                    *elementarray[arrayindex(alpha,beta,delta,gamma)];
+                            s-= densitymatrix(alpha,gamma)*densitymatrix(beta,delta)
+                                    *elementarray[arrayindex(alpha,beta,gamma,delta)];
                                     //*matrixelement_as(alpha,beta,delta,gamma);
 
                         }
@@ -151,7 +151,7 @@ double hartreefock::getenergy()
 //         }
 //    }
 
-    s/=2;
+    s*=0.5;
     for(int i = 0; i< n_particles; i++)
     {
         s += hf_energies(i);

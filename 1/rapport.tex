@@ -1,0 +1,459 @@
+\documentclass[a4paper,english,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{graphicx,mathpple, textcomp, varioref}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{braket}
+\usepackage{enumitem}
+\usepackage{algpseudocode,algorithmicx}
+
+
+\title{Fys4411: Project 1}
+\author{Knut Halvor Helland}
+\pagestyle{fancyplain}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[R]{\thepage/\pageref{LastPage}}
+\tolerance = 5000
+\hbadness = \tolerance
+\pretolerance = 2000
+\setlength{\headheight}{20pt}
+
+\newcommand{\unit}[1]{\; \mathrm{#1}}
+\newcommand{\bb}[1]{\boldsymbol{#1}}
+\newcommand{\p}{\partial}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\ddt}[2]{\frac{\dd #1}{\dd #2}}
+\newcommand{\pddt}[2]{\frac{\p #1}{\p #2}}
+\newcommand{\Rar}{\Rightarrow}
+\newcommand{\rar}{\rightarrow}
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\id}{\bb{1}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\f}{\frac}
+\newcommand{\deldt}[2]{\frac{\delta #1}{\delta #2}}
+
+\renewcommand{\epsilon}{\varepsilon}
+
+\begin{document}
+\maketitle{}
+
+\begin{abstract}
+  In this project I study many particles in an isotropic two dimensional quantum harmonic oscillator with the Hartree-Fock method for aproximating
+  the ground state.
+  I have used subsets of an orthogonal basis \(\Set{\Ket{\phi}}\) of eigenstates of the one particle non-interacting part of the hamiltonean
+  as a starting basis. I then find another basis given by \(\ket{\psi_i} = \sum_\alpha C_{i\alpha}\ket{\phi_\alpha}\). I vary the coeficients $C$
+  numerically
+  to find the Slater determinant $\Ket{\Psi}$ of N $\ket{\psi}$ states that gives the mininal energy for $\Bra{\Psi}H\Ket{\Psi}$. I do this
+  for N=2,6,12,20 particles and frequency of the oscillator $\omega = 1,0.5$. For N = 2 and 6 the Hartree-Fock limit is reached for both frequencies,
+  for N = 12 and 20 I did not find the limit, but figures \ref{figshellsw1} and \ref{figshellsw05} seem to show that the final calculations were not
+  very far from the limit. So it seems that I have found aproximations to the ground state that are at or close to the limit of how well
+  the Hartree-Fock method ca do. Still we do not know how good these aproximations are to the true ground state.
+  
+
+\end{abstract}
+
+\section{Introduction}
+
+In this project I study a system of many interacting electrons in a two dimensional quantum harmonic oscillator with Hartree-Fock theory.
+I will use Hartree-Fock theory to construct a set of single particle states $\ket{\psi}$ from which a Slater determinant $\Ket{\Psi}$
+may be constructed. This Slater determinant is then an approximation of the ground state of the system. I find the $\ket{\psi}$s by considering
+a basis of eigenstates of the one-particle non-interacting case, and then apply a unitary transformation of this basis. The unitary transformation
+is chosen based on varying the coeficients through the Hartree-Fock algorithm, and minimizing the energy.
+
+\section{Physical Problem}
+
+The single particle hamiltonean for an electron in a two dimensional harmonic oscillator is
+\[
+h_0 = -\f{1}{2}\nabla^2 + \f{1}{2}\omega^2 r^2,
+\]
+where we are using atomic units where $\hbar = m_e = e = 1$.
+This hamiltonean has eigenvalues
+\(\ket{\phi_{nm\sigma}}\) with energies \(\epsilon_{nm} = \omega(2n+|m|+1)\), where $n = 0,1,2,\ldots; m = -n,-n+1,\ldots; \sigma = \uparrow,\downarrow$.
+This means that there are energy levels with \(\epsilon_i = \omega i\) with degeneracy \(d(i) = i\), where $i$ is a natural number.
+
+
+The simplest way of adding particles to the potential is to assume that the particles are non-interacting. Then the $N$ particle hamiltonean is simply
+\be
+H_0 = \sum_{i=1}^N -\f{1}{2}\nabla_i^2 + \f{1}{2}\omega^2 r_i^2.
+\ee
+Obviously products of eigenstatets of $h_0$ are eigenstates of $H_0$, but these are electrons so the total wavefunction must be antisymmetric under particle exchange.
+To account for this we can make a Slater determinant, which is the antisymmetrized product of states. The energy of such a Slater determinant is just the sum of energies from the
+individual one particle states. Thus the ground state $\Ket{\Phi}$ of $H_0$ is the Slater determinant of the $N$ lowest energy states $\ket{\phi_{nm\sigma}}$. If $N$ is a magic number, in other words, if $N$ corresponds to $n$ filled shells, then the energy of the $\Ket{\Phi}$ is
+\be\label{eqH0}
+E[\Phi] = \sum_i^n\epsilon_id(i) = \sum_i^n2i^2\omega = \f{n(n+1)(2n+1)}{3}\omega.
+\ee
+In particular the ground state energies for $N = 2,6,12$ and $20$ is found in table \ref{tab0}.
+
+
+\begin{table}
+  \caption{Table of ground state energies for non-interacting fermions in isotropic 2D harmonic oscillator}\label{tab0}
+  \begin{center}
+    \begin{tabular}{*{2}{c}}
+      Particles &  $E[\Phi]$ [$\omega$] \\
+      \hline
+      2&2\\
+      6&10\\
+      12&28\\
+      20&60\\
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+
+Of course we know that electrons interact via the Coulomb interaction, so aproximating electrons as being non-interacting is wrong,
+and depending on the strength of the oscillator may be very wrong.
+The hamiltonean for many electrons with Coulomb interactions is given by
+\be
+H = H_0 + H_I,
+\ee
+where
+\be\label{eqHi}
+H_I = \sum_{i<j}^N\f{1}{r_{ij}},
+\ee
+where the sum is over all pairs of distinct particles and $r_{ij} = |\bb{r}_i-\bb{r_j}|$.
+Now there is no simple way to find the exact ground state, but we will try to find an approximation.
+
+
+
+
+
+\section{Hartree-Fock theory}
+
+
+The variational principle is that for any state $\ket{\psi}$
+\be\label{var}
+E_{ground}\leq \bra{\psi}H\ket{\psi},
+\ee
+in other words the expectation value of the energy is always greater than or equal to the ground state energy.
+Thus if one could examine the whole Hilbert space and find the state with the lowest energy expectation that state would be the ground state.
+This is however easier said than done. Instead we can parameterize a class of functions and minimize the energy with respect to these parameters.
+
+In many cases $H$ can be written as $H = H_0 + H_I$, where $H_0$ is a non-interacting part and
+\[H_I =\sum_{i<j}v(r_{ij})\]
+is an interacting part composed of two-body interactions.
+By analogy to the non-interacting case we may guess that the ground state of $H$ is a Slater determinant. Then the problem is to find out which
+single particle states to put into the determinant. It is not unreasonable to guess that these states should have something in common with
+the states eigenstates of the non-interacting part of the hamiltonean \(\Set{\Ket{\phi}}\). The full set is an orthonormal basis for the whole Hilbert space,
+so any single particle state is a linear combination of $\ket{\phi}$s. We define new states
+\be  \ket{\psi_p} = \sum_\alpha C_{p\alpha}\ket{\phi_\alpha}.\ee
+We choose $C$ to be unitary. In that case we have found a new basis \(\Set{\Ket{\psi}}\) that is also orthonormal:
+\begin{align*}
+  \braket{\psi_p|\psi_q} &= \sum_\alpha\braket{\psi_p|\phi_\alpha}\braket{\phi_\alpha|\psi_q}\\
+  &=\sum_{\alpha}C_{p\alpha}^*C_{q\alpha}\\
+  &=\delta_{pq},
+\end{align*}  
+where the last step depends on $C$ being unitary.
+
+So we want a Slater determinant of $N$ states from \(\Set{\Ket{\psi}}\), we want to find the unitary matrix $C$ and choice of $N$ $\ket{\psi}$s that minimize the
+energy. Since \(\Set{\Ket{\phi}}\) spans the Hilbert space this should in principle give the ideal \(\Set{\Ket{\psi}}\), but since \(\Set{\Ket{\phi}}\)
+is infinite we will in practice only use a subset.
+
+%% The Slater determinant $\Psi$ constructed from $\Set{\Ket{\psi}}$ is the determinant of the matrix that may be written in index notation as
+%% \[  a_{ij} = \psi_i(\bb{r}_j)
+%% =\sum_\alpha C_{i\alpha}\phi_\alpha(\bb{r}_j) = \sum_\alpha C_{i\alpha}b_{\alpha j},
+%% \]
+
+%% but the final expression is the product of $C$ and the matrix in the Slater determinant $\Phi$ constructed from $\Set{\Ket{\psi}}$! Since the determinant of a product
+%% is the product of the determinants
+%% \[\Psi = \det(C)\Phi,\]
+%% where $\det(C)$ is just a phase, since $C$ is unitary.
+
+%% These determinants are constructed from the whole bases, but we are instead interested in determinants constructed from the N lowest energy states
+%% (by the lowest energy states in $\Set{\Ket{\phi}}$ i mean those with lowest eigenvalue for $h_0$,
+%% I will come back to what is meant by lowest energy for the states in $\Set{\Ket{\psi}}$). In this case the
+%% relation between the determinants is more complicated, and in particular they may have different energies.
+
+We order \(\Set{\Ket{\psi}}\) and  \(\Set{\Ket{\phi}}\) so that the lowest energy states come first.
+\footnote{By the lowest energy states in $\Set{\Ket{\phi}}$ I mean those with lowest eigenvalue for $h_0$,
+I will come back to what is meant by lowest energy for the states in $\Set{\Ket{\psi}}$.}
+The energy expectation value of a determinant $\Ket{\Psi}$ constructed from the $n$ first states is
+\be\label{Ei} E[\Psi] = \bra{\Psi}H\ket{\Psi} = \sum_{i\leq N}\bra{i}h_0\ket{i} + \frac{1}{2}\sum_{ij\leq N}\bra{ij}v\ket{ij}_{AS}.\ee
+Rewriting this in terms of $\Set{\Ket{\phi}}$ we obtain
+\be\label{Ea}E[\Psi] = \sum_{i\leq N}\sum_{\alpha\beta}C_{i\alpha}^*C_{i\beta}\bra{\alpha}h_0\ket{\beta} +
+\frac{1}{2}\sum_{ij\leq N}\sum_{\alpha\beta\gamma\delta}C_{i\alpha}^*C_{j\beta}^*C_{i\gamma}C_{j\delta}\bra{\alpha\beta}v\ket{\gamma\delta}_{AS}.\ee
+We want to minimize this energy with respect to $C$ under the constraint $\braket{i|j} = \delta_{ij}$. Introducing the Lagrange multipliers $\lambda_{ij}$
+the functional to be minimized is
+\begin{align*}
+  \lagr &= E[\Psi] - \sum_{ij}^N\lambda_{ij}(\braket{i|j} - \delta_{ij})\\
+  &=  E[\Psi] - \sum_{ij}^N\sum_{\alpha\beta}\lambda_{ij}(C_{i\alpha}^*C_{j\beta}\braket{\alpha|\beta} - \delta_{ij})\\
+  &= E[\Psi] - \sum_{ij}^N\sum_{\alpha}\lambda_{ij}(C_{i\alpha}^*C_{j\alpha} - \delta_{ij})
+\end{align*} 
+Now we demand
+\be\label{lag}  \pddt{\lagr}{C^*_{p\xi}} = \pddt{E[\Psi]}{C^*_{p\xi}} - \sum_j^N\lambda_{pj}C_{p\xi} = 0,\ee
+where
+\begin{align*}
+\pddt{E[\Psi]}{C^*_{p\xi}} &= \pddt{}{C^*_{p\xi}}\left( \sum_{i\leq N}\sum_{\alpha\beta}C_{i\alpha}^*C_{i\beta}\bra{\alpha}h_0\ket{\beta} +
+\frac{1}{2}\sum_{ij\leq N}\sum_{\alpha\beta\gamma\delta}C_{i\alpha}^*C_{j\beta}^*C_{i\gamma}C_{j\delta}\bra{\alpha\beta}v\ket{\gamma\delta}_{AS}\right)\\
+&= \sum_{\beta}C_{p\beta}\bra{\xi}h_0\ket{\beta} +
+\frac{1}{2}\sum_{ij\leq N}\sum_{\alpha\beta\gamma\delta}\left(\delta_{ip}\delta_{\alpha\xi}C_{j\beta}^*+
+C_{i\alpha}^*\delta_{jp}\delta_{\beta\xi}\right)C_{i\gamma}C_{j\delta}\bra{\alpha\beta}v\ket{\gamma\delta}_{AS}\\
+&=\sum_{\gamma}C_{p\gamma}\bra{\xi}h_0\ket{\gamma} +
+\sum_{j\leq N}\sum_{\beta\gamma\delta}C_{j\beta}^*C_{p\gamma}C_{j\delta}\bra{\xi\beta}v\ket{\gamma\delta}_{AS}\\
+&=\sum_\gamma\left(\bra{\xi}h_0\ket{\gamma}+\sum_{j\leq N}\sum_{\beta\delta}C_{j\beta}^*C_{j\delta}\bra{\xi\beta}v\ket{\gamma\delta}_{AS}\right)C_{p\gamma}
+\end{align*}
+We can define \( \epsilon_p^{hf}=\sum_j\lambda_{pj} \) and
+\be\label{hfd}
+ h_{\xi\gamma}^{hf}=\bra{\xi}h_0\ket{\gamma}+\sum_{j\leq N}\sum_{\beta\delta}C_{j\beta}^*C_{j\delta}\bra{\xi\beta}v\ket{\gamma\delta}_{AS},
+\ee
+so that our equations \ref{lag} become
+\be\label{hfi}
+\sum_\gamma h_{\xi\gamma}^{hf}C_{p\xi} = \epsilon^{hf}_{p}C_{p\xi},
+\ee
+or, rewriting as a matrix equation
+\be\label{hfm}
+h^{hf}C = E C,
+\ee
+where $E$ is the diagonal matrix with $\epsilon^{hf}_p$ as elements.
+Now we can see what I meant by the $\Set{\Ket{\psi}}$ states with lowest energy. If we arrange the states as a column vector then
+\(\vec{\psi} = C\vec{\phi}\). So, by equation \ref{hfm} \(h^{hf}\vec{\psi} = h^{hf}C\vec{\phi} = EC\vec{\phi} = E\vec{\psi}\), the column vector with elements
+\(\epsilon^{hf}_i\ket{\psi_i}\). Now the states that go into the new Slater determinant are the N states with the lowest values for $\epsilon^{hf}$ associated in this way.
+The total energy of the new Slater determinant \(\Ket{\Psi}\) is given by equation \ref{Ea} or equivalently
+\be\label{Ep}
+E[\Psi] = \sum_{i\leq N}\epsilon^{hf}_i -
+\frac{1}{2}\sum_{ij\leq N}\sum_{\alpha\beta\gamma\delta}C_{i\alpha}^*C_{j\beta}^*C_{i\gamma}C_{j\delta}\bra{\alpha\beta}v\ket{\gamma\delta}_{AS}
+\ee
+and is minimized by when $\Set{\Ket{\Psi}}$ is sorted in this way.
+
+\section{Matrix Elements}
+In the Hartree-Fock calculations it will be necesary to have the antisymmetrized two-body matrix elements $\bra{\alpha\beta}v\ket{\gamma\delta}_{AS}$.
+In general these elements can be calculated before the Hartree-Fock calculations. In the case of a two-dimensional isotropic harmonic oscillator
+with Coloumb-interactions there exists an analytical expression for the $\bra{\alpha\beta}v\ket{\gamma\delta}$ found in \cite{analytho}. The expression is rather complicated and I won't
+include it here, but we were provided with a c++ function to calculate the elements.
+
+  
+\section{Algorithm}
+Equation \ref{hfm} is a simple eigenvalue equation, but the matrix  $h^{hf}$ depends on $C$, and is thus not known from the beginning. So we will need a more complicated
+method than a simple diagonalisation to solve the problem. One way to solve this is a self consistent field iteration. Here we iterate through
+different values for $C$ until we find one that consistently solves equation \ref{hfm}. This is done by the following scheme:
+\begin{itemize}
+\item
+  Choose an initial guess for $C$, $C_0$
+\item for n = 0,1,2\ldots
+  \begin{itemize}
+  \item Find $h^{hf}(C_n)$ by equation \ref{hfd}
+  \item Diagonalize $h^{hf}(C_n)$ with $C_{n+1}$ as the eigenvactor matrix
+  \item If $C_{n+1}\approx C_n$ break, else continue
+  \end{itemize}
+\item
+  Find $E[\psi]$ from the final $C$ and its eigenvalues by equation \ref{Ep}
+\end{itemize}
+
+As mentioned \(\Set{\Ket{\phi}}\) is an infinite set, and so accordingly ought to be infinite-dimensional.
+In that case our algorithm consists of infinite operations and takes infinite time to finish.
+So, we must choose a subset of \(\Set{\Ket{\phi}}\).
+Since we are looking for low energy states it makes sense to choose a the lowest energy states in \(\Set{\Ket{\phi}}\).
+Let \(\Set{\Ket{\phi}}_n\) be the set of $\ket{\phi}$ states in the $n$ lowest energy shells. Then there are $n(n+1)$ elements in
+\(\Set{\Ket{\phi}}_n\). If we use this subset as our starting basis the matrices have dimension $(n(n+1))^2\sim n^4$. The cost of both constructing
+$h^{hf}$ and diagonalizing it ought to scale aproximately as $n^4$, while finding $E[\Psi]$ should scale as $n^8$, thankfully the latter is only done
+once.
+
+To find out how many shells to use one can start with the minimal amount of shells, and add one and one shell to the calculations. When the energy seems
+to have converged as a function of shells we have reached the so-called Hartree-Fock limit, and found a suitable number of shells.  
+
+
+\section{Implementation}
+
+I have implemented the above algorithm in a class in the file hartreefock.cpp found at https://github.com/khhelland/Fys4411/tree/master/1 along with
+other files relevant to the project. I ran the algorithm to find the energy $E[\Psi]$ for 2,6,12 and 20 particles for up to 10 shells, or
+until the Hartree-Fock limit up to $10^{-4}$ with $\omega$ 1 and 0.5. 
+
+\section{Cost}
+Figures \ref{figtime1} and \ref{figtime05} show graphs of time used to find $\Ket{\Psi}$ by my program for the different numbers of particles
+and frequencies. The cost does not seem fit well with either $n^4$ or $n^8$, which is not very surprising since the algorithm contains different
+parts that scale differently as a function of $n$ and an unpredictable iterative element. We see from the figures that the cost for a given
+number of shells does not seem to be very sensitive to the number of particles, but as we shall see a higher number of particles requires a
+higher number of shells. We see that for nine and ten shells the time used for the calculation is on the order of hours, and it becomes intractable
+to work with more shells unless the code is optimized.
+
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width = 12cm]{time1}
+  \end{center}
+  \caption{Time used to find $\Ket{\Psi}$ by number of shells from \(\Set{\Ket{\Phi}}\) basis used for $\omega=1$.}\label{figtime1}
+\end{figure}
+
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width = 12cm]{time05}
+  \end{center}
+  \caption{Time used to find $\Ket{\Psi}$ by number of shells from \(\Set{\Ket{\Phi}}\) basis used for $\omega=0.5$.}\label{figtime05}
+\end{figure}
+
+
+\section{Benchmarks}
+
+
+In \cite{mortenslides} there is a table of values for $E[\Psi]$ in the isotropic two dimensional harmonic oscillator with our units and $\omega = 1$
+for six particles and different numbers of shells. I have collected the values together with my results for the same calculations in table \ref{tabbench}.
+Comparing the two, we see that they agree up to the precision of my results which indicates that my program is functioning correctly.
+
+
+\begin{table}
+  \caption{Table of $E[\Psi]$ from my calculations (``My $E[\Psi]$ [$\omega$]'') and from \cite{mortenslides} ( ``Benchmark $E[\Psi]$ [$\omega$]'') for $\omega = 1$ with 6 particles.}\label{tabbench}
+  \begin{center}
+    \begin{tabular}{*{3}{c}}
+      Shells &  My $E[\Psi]$ [$\omega$] & Benchmark $E[\Phi]$ [$\omega$]   \\
+      \hline
+      3&21.5932&21.59320\\
+      4&20.7669&20.7669\\
+      5&20.748&20.7484\\
+      6&20.7203&20.72026\\
+      7&20.7201&20.71925\\
+      8&20.7192&20.71925\\
+      9&20.7192&20.71922
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+
+\section{Results}
+
+
+
+Figure \ref{figshellsw1} contains graphs of $E[\Psi]$ as a function of number of shells for $\omega = 1$.
+For 2 particles the Hartree-Fock limit was reached with 7 shells and for 6 particles with 8 shells.
+For 12 and 20 particles my criterion for the Hartree-Fock limit was not reached, but looking at the graphs the energy seems
+quite stable from about 8 shells and on.
+Figure \ref{figshellsw05} shows the same graphs for $\omega = 0.5$.
+For 2 particles $E[\Psi]$ seems to come in pairs so that it is the same for 1 and 2 shells, 3 and 4 shells, and so on.
+The energy for 7 and 8 was the same as for 9 shells up to my criterion so I conclude that the Hartree-Fock limit was reached with 7 shells.
+The pairing is probably due to some symmetry in the $\bra{\alpha\beta}v\ket{\gamma\delta}$, but I am not sure.
+For 6 particles the limit was reached with 8 shells, and for 12 and 20 particles my criterion for the limit was again not reached.
+
+Table \ref{tab} shows the Hartree-Fock limit energies where the limit was reached, or the energies for the final calculations where it was not.
+
+
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width = 12cm]{shellsw1}
+  \end{center}
+  \caption{$E[\Psi]$ by number of shells from \(\Set{\Ket{\Phi}}\) basis used for $\omega=1$.}\label{figshellsw1}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width = 12cm]{shellsw05}
+  \end{center}
+  \caption{$E[\Psi]$ by number of shells from \(\Set{\Ket{\Phi}}\) basis used for $\omega=0.5$.}\label{figshellsw05}
+\end{figure}
+
+
+
+
+\begin{table}
+  \caption{Energies for best results.}
+  \label{tab}
+  \begin{center}
+    \input{Energiestable}
+  \end{center}
+\end{table}
+
+%% \input{6particles3shells}
+
+\section{Discussion}
+Allthough the Hartree-Fock limit was not reached in all cases the graphs seem to be close to converging for all numbers of particles
+and both frequencies. Thus it seems that we have found states that are close to ideal for this method. However, it is not at all clear how close these
+states are to the true ground states, it may well be that only looking at the space of slater determinants of superpositions of non-interacting states
+limits the search space too much, and that the true ground state is very different from anything in our search space.
+
+Comparing values in table \ref{tab} clearly the energies are lower for $\omega = 0.5$ than for $\omega = 1$. Much of this difference is explained by
+the difference in $\Braket{H_0}$ where according to equation \ref{eqH0} the \(\Braket{H_0}_{\omega = 1} = 2\Braket{H_0}_{\omega = 0.5}\).
+I have collected the interaction energy, by which I do not mean $\Braket{H_I}$ for any state, but rather the difference between
+$\Bra{\Phi}H_0\Ket{\Phi}$ and $\Bra{\Psi}H\Ket{\Psi}$, in table \ref{tabI}. There we see that most of the difference in $E[\Psi]$ for different $\omega$
+is due to the difference
+in $\Braket{H_0}$. 
+Still there is a noticable difference in the interaction energy and it is always bigger for $\omega = 0.5$ than it is for
+$\omega = 1$, although I do not see any trend in how big this difference is, and it remains small for many particles.
+
+As for the difference in $E[\Psi]$ for different number of particles we see by comparing tables \ref{tab} and \ref{tabI}
+that the difference due to interaction energy grows much faster than the difference in the non-interacting case.
+Allthough there are only 2 times 4 data-points table \ref{tabI} seems to fit with the interaction energy depending on
+the square of the number of particles. This makes sense, as looking at equation \ref{eqHi} it ought to depend on the number of pairs of particles
+and this goes as the square. At the same time looking at equation \ref{eqH0} we see that $\braket{H_0}$ goes as number of filled shells cubed,
+while number of particles goes as number of filled shells squared. So for $n$ paricles $\braket{H_0}$ ought to go as $n^{\f{3}{2}}$, at least when $n$
+becomes large. Thus for large $n$ the interaction energy should dominate.
+
+
+\begin{table}
+  \caption{Interaction energy: That is the difference between $\Bra{\Phi}H_0\Ket{\Phi}$ and $\Bra{\Psi}H\Ket{\Psi}$ for
+    different numbers of particles. $E_I(\omega)$ is $\Bra{\Psi}H\Ket{\Psi}-\Bra{\Phi}H_0\Ket{\Phi}$ and
+    \(\Delta E_I\) is \(|E_I(1)-E_I(0.5)|\)}\label{tabI}
+  \begin{center}
+    \begin{tabular}{*{4}{c}}
+      Particles &  $E_I(1)$ & $E_I(0.5)$ & $\Delta E_I$ \\
+      \hline
+      2&1.162 & 1.839 & 0.677\\
+      6&10.719&12.835 &2.12\\
+      12&38.912 & 42.623 & 3.71\\
+      20&98.02 & 102.41 & 2.41\\
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+
+
+\section{Conclusion}
+I have found aproximations to the ground state of $H$ for 2,6,12 and 20 particles and $\omega = 1$ and $0.5$. For 2 and 6 particles I reached the
+Hartree-Fock limit. That means that my aproximation is the ideal (up to my criterion for the limit) ground state based on a Slater determinant
+of linear combinations of $\ket{\phi}$ states. For 12 and 20 particles my criterion was not reached, but looking at the figures \ref{figshellsw1}
+and \ref{figshellsw05} it seems that it was not that far from being reached. So my aproximation should be close to ideal with this method for these
+cases as well. However it may well be that the best slater determinant is not a very good aproximation, so the fact that my aproximations are close
+to the best Slater determinants does not necessarily mean that they are good aproximations to the true ground state.
+
+\begin{thebibliography}{1}
+
+
+\bibitem{analytho}
+  E. Anisimovas and A. Matulis, ``Energy spectra of few-electron quantum dots.'', J. Phys.,10:601 615, 1998.
+\bibitem{mortenbok}
+  M. Hjort-Jensen, \emph{Computational Physics: Lecture Notes Fall 2015}, found at
+  https://github.com/CompPhysics/ComputationalPhysics2/blob/gh-pages/doc/Literature/lectures2015.pdf
+  on the 31/01/17
+\bibitem{mortenslides}
+  M. Hjort-Jensen,\emph{Computational Physics: Hartree-Fock methods and introduction to Many-body Theory}
+  found at http://compphysics.github.io/ComputationalPhysics2/doc/pub/basicMB/pdf/basicMB-print.pdf
+  on the 16/03/17
+\bibitem{simen}
+  Simen Kvaal, \emph{Lecture notes for Fys-Kjm4480: Quantum Mechanics for many-particle systems},
+  october 2016, not published.
+\end{thebibliography}
+
+
+
+%% \begin{table}
+%%   \caption{}\label{kal1}
+%%   \begin{center}
+%%     \begin{tabular}{|r|r|}
+      
+%%       \hline
+%%       \textbf{masse/g}& \textbf{Utslag/mm}\\ \hline
+%%     \end{tabular}
+%%   \end{center}
+%% \end{table}
+      
+
+
+
+
+%% \begin{figure}
+%%   \begin{center}
+%%     \fbox{\includegraphics[width = 12cm]{}}
+%%   \end{center}
+%%   \caption{}\label{}
+%% \end{figure}
+
+
+\end{document}

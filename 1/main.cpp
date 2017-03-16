@@ -11,20 +11,20 @@ int main()
 {
     clock_t start_total, start_part, end_total, end_part;
     start_total = clock();
-    ofstream out("w05Energies.dat",ofstream::app);
+    ofstream out("2pw05Energies.dat");
 
     out<<"np,s,w\t"<<"Energy\t"<<"time"<<endl;
     cout<<"np,s,w\t"<<"Energy\t"<<"time"<<endl;
 //    omp_set_num_threads(4);
 //    #pragma omp parallel for
 
-    for(int n = 1; n<5;n++)
+    for(int n = 1; n<2;n++)
     {
         double oldE = 1;
         double newE = 0;
         double w = 0.5;
         int j=0;
-        while(((n+j)<=10)&&(abs(newE-oldE)>1e-4))
+        while(((n+j)<=10))//&&(abs(newE-oldE)>1e-4))
         {
             start_part = clock();
             oldE = newE;

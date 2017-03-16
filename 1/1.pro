@@ -16,8 +16,7 @@ HEADERS += \
     hermite.h \
     integrator.h \
     coulomb_functions.h \
-    hartreefock.h \
-    matrixelements.h
+    hartreefock.h
 
 LIBS += -llapack -lblas -larmadillo
 

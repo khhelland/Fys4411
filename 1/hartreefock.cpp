@@ -5,6 +5,14 @@
 
 using namespace arma;
 
+/*
+ * Class for Hartree-Fock calculation.
+ * Used by contructing instance with a set
+ * number of particles and shells
+ * and a given frequency
+ * and performed by the function run
+ */
+
 
 hartreefock::hartreefock(int particles , int shells , double w):
     shells(shells), n_particles(particles), frequency(w)

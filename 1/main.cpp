@@ -15,10 +15,9 @@ int main()
 
     out<<"np,s,w\t"<<"Energy\t"<<"time"<<endl;
     cout<<"np,s,w\t"<<"Energy\t"<<"time"<<endl;
-//    omp_set_num_threads(4);
-//    #pragma omp parallel for
 
-    for(int n = 1; n<2;n++)
+    //run the HF code for different numbers of shells and particles
+    for(int n = 1; n<5;n++)
     {
         double oldE = 1;
         double newE = 0;

@@ -10,7 +10,7 @@
 \usepackage{amsmath}
 \usepackage{braket}
 \usepackage{enumitem}
-\usepackage{algpseudocode,algorithmicx}
+
 
 
 \title{Fys4411: Project 1}
@@ -61,7 +61,7 @@
 
 \section{Introduction}
 
-In this project I study a system of many interacting electrons in a two dimensional quantum harmonic oscillator with Hartree-Fock theory.
+In this project I study a system of many interacting electrons in an isotropic two dimensional quantum harmonic oscillator with Hartree-Fock theory.
 I will use Hartree-Fock theory to construct a set of single particle states $\ket{\psi}$ from which a Slater determinant $\Ket{\Psi}$
 may be constructed. This Slater determinant is then an approximation of the ground state of the system. I find the $\ket{\psi}$s by considering
 a basis of eigenstates of the one-particle non-interacting case, and then apply a unitary transformation of this basis. The unitary transformation
@@ -74,9 +74,9 @@ The single particle hamiltonean for an electron in a two dimensional harmonic os
 h_0 = -\f{1}{2}\nabla^2 + \f{1}{2}\omega^2 r^2,
 \]
 where we are using atomic units where $\hbar = m_e = e = 1$.
-This hamiltonean has eigenvalues
-\(\ket{\phi_{nm\sigma}}\) with energies \(\epsilon_{nm} = \omega(2n+|m|+1)\), where $n = 0,1,2,\ldots; m = -n,-n+1,\ldots; \sigma = \uparrow,\downarrow$.
-This means that there are energy levels with \(\epsilon_i = \omega i\) with degeneracy \(d(i) = i\), where $i$ is a natural number.
+This hamiltonean has eigenstates
+\(\ket{\phi_{nm\sigma}}\) with energies \(\epsilon_{nm} = \omega(2n+|m|+1)\), where $n = 0,1,2,\ldots; m = -n,-n+1,\ldots; \sigma = \uparrow,\downarrow$.\cite{mortenslides}
+This means that there are energy levels with \(\epsilon_i = \omega i\) with degeneracy \(d(i) = 2 i\), where $i$ is a natural number.
 
 
 The simplest way of adding particles to the potential is to assume that the particles are non-interacting. Then the $N$ particle hamiltonean is simply
@@ -89,7 +89,7 @@ individual one particle states. Thus the ground state $\Ket{\Phi}$ of $H_0$ is t
 \be\label{eqH0}
 E[\Phi] = \sum_i^n\epsilon_id(i) = \sum_i^n2i^2\omega = \f{n(n+1)(2n+1)}{3}\omega.
 \ee
-In particular the ground state energies for $N = 2,6,12$ and $20$ is found in table \ref{tab0}.
+In particular the ground state energies for $N = 2,6,12$ and $20$ are found in table \ref{tab0}.
 
 
 \begin{table}
@@ -132,7 +132,7 @@ The variational principle is that for any state $\ket{\psi}$
 \be\label{var}
 E_{ground}\leq \bra{\psi}H\ket{\psi},
 \ee
-in other words the expectation value of the energy is always greater than or equal to the ground state energy.
+in other words the expectation value of the energy is always greater than or equal to the ground state energy.\cite{simen}
 Thus if one could examine the whole Hilbert space and find the state with the lowest energy expectation that state would be the ground state.
 This is however easier said than done. Instead we can parameterize a class of functions and minimize the energy with respect to these parameters.
 
@@ -156,26 +156,12 @@ So we want a Slater determinant of $N$ states from \(\Set{\Ket{\psi}}\), we want
 energy. Since \(\Set{\Ket{\phi}}\) spans the Hilbert space this should in principle give the ideal \(\Set{\Ket{\psi}}\), but since \(\Set{\Ket{\phi}}\)
 is infinite we will in practice only use a subset.
 
-%% The Slater determinant $\Psi$ constructed from $\Set{\Ket{\psi}}$ is the determinant of the matrix that may be written in index notation as
-%% \[  a_{ij} = \psi_i(\bb{r}_j)
-%% =\sum_\alpha C_{i\alpha}\phi_\alpha(\bb{r}_j) = \sum_\alpha C_{i\alpha}b_{\alpha j},
-%% \]
-
-%% but the final expression is the product of $C$ and the matrix in the Slater determinant $\Phi$ constructed from $\Set{\Ket{\psi}}$! Since the determinant of a product
-%% is the product of the determinants
-%% \[\Psi = \det(C)\Phi,\]
-%% where $\det(C)$ is just a phase, since $C$ is unitary.
-
-%% These determinants are constructed from the whole bases, but we are instead interested in determinants constructed from the N lowest energy states
-%% (by the lowest energy states in $\Set{\Ket{\phi}}$ i mean those with lowest eigenvalue for $h_0$,
-%% I will come back to what is meant by lowest energy for the states in $\Set{\Ket{\psi}}$). In this case the
-%% relation between the determinants is more complicated, and in particular they may have different energies.
 
 We order \(\Set{\Ket{\psi}}\) and  \(\Set{\Ket{\phi}}\) so that the lowest energy states come first.
 \footnote{By the lowest energy states in $\Set{\Ket{\phi}}$ I mean those with lowest eigenvalue for $h_0$,
 I will come back to what is meant by lowest energy for the states in $\Set{\Ket{\psi}}$.}
 The energy expectation value of a determinant $\Ket{\Psi}$ constructed from the $n$ first states is
-\be\label{Ei} E[\Psi] = \bra{\Psi}H\ket{\Psi} = \sum_{i\leq N}\bra{i}h_0\ket{i} + \frac{1}{2}\sum_{ij\leq N}\bra{ij}v\ket{ij}_{AS}.\ee
+\be\label{Ei} E[\Psi] = \bra{\Psi}H\ket{\Psi} = \sum_{i\leq N}\bra{i}h_0\ket{i} + \frac{1}{2}\sum_{ij\leq N}\bra{ij}v\ket{ij}_{AS}.\cite{mortenbok}\ee
 Rewriting this in terms of $\Set{\Ket{\phi}}$ we obtain
 \be\label{Ea}E[\Psi] = \sum_{i\leq N}\sum_{\alpha\beta}C_{i\alpha}^*C_{i\beta}\bra{\alpha}h_0\ket{\beta} +
 \frac{1}{2}\sum_{ij\leq N}\sum_{\alpha\beta\gamma\delta}C_{i\alpha}^*C_{j\beta}^*C_{i\gamma}C_{j\delta}\bra{\alpha\beta}v\ket{\gamma\delta}_{AS}.\ee
@@ -231,7 +217,7 @@ include it here, but we were provided with a c++ function to calculate the eleme
   
 \section{Algorithm}
 Equation \ref{hfm} is a simple eigenvalue equation, but the matrix  $h^{hf}$ depends on $C$, and is thus not known from the beginning. So we will need a more complicated
-method than a simple diagonalisation to solve the problem. One way to solve this is a self consistent field iteration. Here we iterate through
+method than a simple diagonalisation to solve the problem. One way to solve this is a self consistent field iteration.\cite{mortenslides} Here we iterate through
 different values for $C$ until we find one that consistently solves equation \ref{hfm}. This is done by the following scheme:
 \begin{itemize}
 \item
@@ -239,7 +225,7 @@ different values for $C$ until we find one that consistently solves equation \re
 \item for n = 0,1,2\ldots
   \begin{itemize}
   \item Find $h^{hf}(C_n)$ by equation \ref{hfd}
-  \item Diagonalize $h^{hf}(C_n)$ with $C_{n+1}$ as the eigenvactor matrix
+  \item Diagonalize $h^{hf}(C_n)$ with $C_{n+1}$ as the eigenvector matrix
   \item If $C_{n+1}\approx C_n$ break, else continue
   \end{itemize}
 \item
@@ -259,9 +245,25 @@ To find out how many shells to use one can start with the minimal amount of shel
 to have converged as a function of shells we have reached the so-called Hartree-Fock limit, and found a suitable number of shells.  
 
 
+%% The Slater determinant $\Psi$ constructed from $\Set{\Ket{\psi}}$ is the determinant of the matrix that may be written in index notation as
+%% \[  a_{ij} = \psi_i(\bb{r}_j)
+%% =\sum_\alpha C_{i\alpha}\phi_\alpha(\bb{r}_j) = \sum_\alpha C_{i\alpha}b_{\alpha j},
+%% \]
+
+%% but the final expression is the product of $C$ and the matrix in the Slater determinant $\Phi$ constructed from $\Set{\Ket{\psi}}$! Since the determinant of a product
+%% is the product of the determinants
+%% \[\Psi = \det(C)\Phi,\]
+%% where $\det(C)$ is just a phase, since $C$ is unitary.
+
+%% These determinants are constructed from the whole bases, but we are instead interested in determinants constructed from the N lowest energy states
+%% (by the lowest energy states in $\Set{\Ket{\phi}}$ i mean those with lowest eigenvalue for $h_0$,
+%% I will come back to what is meant by lowest energy for the states in $\Set{\Ket{\psi}}$). In this case the
+%% relation between the determinants is more complicated, and in particular they may have different energies.
+
+
 \section{Implementation}
 
-I have implemented the above algorithm in a class in the file hartreefock.cpp found at https://github.com/khhelland/Fys4411/tree/master/1 along with
+I have implemented the above algorithm in a class in the file hartreefock.cpp found at \url{https://github.com/khhelland/Fys4411/tree/master/1} along with
 other files relevant to the project. I ran the algorithm to find the energy $E[\Psi]$ for 2,6,12 and 20 particles for up to 10 shells, or
 until the Hartree-Fock limit up to $10^{-4}$ with $\omega$ 1 and 0.5. 
 
@@ -302,7 +304,7 @@ Comparing the two, we see that they agree up to the precision of my results whic
   \caption{Table of $E[\Psi]$ from my calculations (``My $E[\Psi]$ [$\omega$]'') and from \cite{mortenslides} ( ``Benchmark $E[\Psi]$ [$\omega$]'') for $\omega = 1$ with 6 particles.}\label{tabbench}
   \begin{center}
     \begin{tabular}{*{3}{c}}
-      Shells &  My $E[\Psi]$ [$\omega$] & Benchmark $E[\Phi]$ [$\omega$]   \\
+      Shells &  My $E[\Psi]$ [$\omega$] & Benchmark $E[\Psi]$ [$\omega$]   \\
       \hline
       3&21.5932&21.59320\\
       4&20.7669&20.7669\\
@@ -365,7 +367,7 @@ Table \ref{tab} shows the Hartree-Fock limit energies where the limit was reache
 \section{Discussion}
 Allthough the Hartree-Fock limit was not reached in all cases the graphs seem to be close to converging for all numbers of particles
 and both frequencies. Thus it seems that we have found states that are close to ideal for this method. However, it is not at all clear how close these
-states are to the true ground states, it may well be that only looking at the space of slater determinants of superpositions of non-interacting states
+states are to the true ground states, it may well be that only looking at the space of Slater determinants of superpositions of non-interacting states
 limits the search space too much, and that the true ground state is very different from anything in our search space.
 
 Comparing values in table \ref{tab} clearly the energies are lower for $\omega = 0.5$ than for $\omega = 1$. Much of this difference is explained by
@@ -410,7 +412,7 @@ I have found aproximations to the ground state of $H$ for 2,6,12 and 20 particle
 Hartree-Fock limit. That means that my aproximation is the ideal (up to my criterion for the limit) ground state based on a Slater determinant
 of linear combinations of $\ket{\phi}$ states. For 12 and 20 particles my criterion was not reached, but looking at the figures \ref{figshellsw1}
 and \ref{figshellsw05} it seems that it was not that far from being reached. So my aproximation should be close to ideal with this method for these
-cases as well. However it may well be that the best slater determinant is not a very good aproximation, so the fact that my aproximations are close
+cases as well. However it may well be that the best Slater determinant is not a very good aproximation, so the fact that my aproximations are close
 to the best Slater determinants does not necessarily mean that they are good aproximations to the true ground state.
 
 \begin{thebibliography}{1}
@@ -420,11 +422,11 @@ to the best Slater determinants does not necessarily mean that they are good apr
   E. Anisimovas and A. Matulis, ``Energy spectra of few-electron quantum dots.'', J. Phys.,10:601 615, 1998.
 \bibitem{mortenbok}
   M. Hjort-Jensen, \emph{Computational Physics: Lecture Notes Fall 2015}, found at
-  https://github.com/CompPhysics/ComputationalPhysics2/blob/gh-pages/doc/Literature/lectures2015.pdf
+  \url{https://github.com/CompPhysics/ComputationalPhysics2/blob/gh-pages/doc/Literature/lectures2015.pdf}
   on the 31/01/17
 \bibitem{mortenslides}
   M. Hjort-Jensen,\emph{Computational Physics: Hartree-Fock methods and introduction to Many-body Theory}
-  found at http://compphysics.github.io/ComputationalPhysics2/doc/pub/basicMB/pdf/basicMB-print.pdf
+  found at \url{http://compphysics.github.io/ComputationalPhysics2/doc/pub/basicMB/pdf/basicMB-print.pdf}
   on the 16/03/17
 \bibitem{simen}
   Simen Kvaal, \emph{Lecture notes for Fys-Kjm4480: Quantum Mechanics for many-particle systems},

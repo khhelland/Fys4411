@@ -54,7 +54,7 @@
   for N=2,6,12,20 particles and frequency of the oscillator $\omega = 1,0.5$. For N = 2 and 6 the Hartree-Fock limit is reached for both frequencies,
   for N = 12 and 20 I did not find the limit, but figures \ref{figshellsw1} and \ref{figshellsw05} seem to show that the final calculations were not
   very far from the limit. So it seems that I have found aproximations to the ground state that are at or close to the limit of how well
-  the Hartree-Fock method ca do. Still we do not know how good these aproximations are to the true ground state.
+  the Hartree-Fock method can do. Still we do not know how good these aproximations are to the true ground state.
   
 
 \end{abstract}
@@ -141,7 +141,7 @@ In many cases $H$ can be written as $H = H_0 + H_I$, where $H_0$ is a non-intera
 is an interacting part composed of two-body interactions.
 By analogy to the non-interacting case we may guess that the ground state of $H$ is a Slater determinant. Then the problem is to find out which
 single particle states to put into the determinant. It is not unreasonable to guess that these states should have something in common with
-the states eigenstates of the non-interacting part of the hamiltonean \(\Set{\Ket{\phi}}\). The full set is an orthonormal basis for the whole Hilbert space,
+the eigenstates of the non-interacting part of the hamiltonean \(\Set{\Ket{\phi}}\). The full set is an orthonormal basis for the whole Hilbert space,
 so any single particle state is a linear combination of $\ket{\phi}$s. We define new states
 \be  \ket{\psi_p} = \sum_\alpha C_{p\alpha}\ket{\phi_\alpha}.\ee
 We choose $C$ to be unitary. In that case we have found a new basis \(\Set{\Ket{\psi}}\) that is also orthonormal:
@@ -153,8 +153,8 @@ We choose $C$ to be unitary. In that case we have found a new basis \(\Set{\Ket{
 where the last step depends on $C$ being unitary.
 
 So we want a Slater determinant of $N$ states from \(\Set{\Ket{\psi}}\), we want to find the unitary matrix $C$ and choice of $N$ $\ket{\psi}$s that minimize the
-energy. Since \(\Set{\Ket{\phi}}\) spans the Hilbert space this should in principle give the ideal \(\Set{\Ket{\psi}}\), but since \(\Set{\Ket{\phi}}\)
-is infinite we will in practice only use a subset.
+energy. Since \(\Set{\Ket{\phi}}\) spans the Hilbert space this should in principle give the ideal Slater determinant, but since \(\Set{\Ket{\phi}}\)
+is infinite we will in practice only use a subset, which will limit us to a subset of Slater determinants.
 
 
 We order \(\Set{\Ket{\psi}}\) and  \(\Set{\Ket{\phi}}\) so that the lowest energy states come first.
@@ -206,7 +206,7 @@ The total energy of the new Slater determinant \(\Ket{\Psi}\) is given by equati
 E[\Psi] = \sum_{i\leq N}\epsilon^{hf}_i -
 \frac{1}{2}\sum_{ij\leq N}\sum_{\alpha\beta\gamma\delta}C_{i\alpha}^*C_{j\beta}^*C_{i\gamma}C_{j\delta}\bra{\alpha\beta}v\ket{\gamma\delta}_{AS}
 \ee
-and is minimized by when $\Set{\Ket{\Psi}}$ is sorted in this way.
+and is minimized when $\Set{\Ket{\Psi}}$ is sorted in this way.
 
 \section{Matrix Elements}
 In the Hartree-Fock calculations it will be necesary to have the antisymmetrized two-body matrix elements $\bra{\alpha\beta}v\ket{\gamma\delta}_{AS}$.
@@ -232,7 +232,7 @@ different values for $C$ until we find one that consistently solves equation \re
   Find $E[\psi]$ from the final $C$ and its eigenvalues by equation \ref{Ep}
 \end{itemize}
 
-As mentioned \(\Set{\Ket{\phi}}\) is an infinite set, and so accordingly ought to be infinite-dimensional.
+As mentioned \(\Set{\Ket{\phi}}\) is an infinite set, and so accordingly $C$ ought to be infinite-dimensional.
 In that case our algorithm consists of infinite operations and takes infinite time to finish.
 So, we must choose a subset of \(\Set{\Ket{\phi}}\).
 Since we are looking for low energy states it makes sense to choose a the lowest energy states in \(\Set{\Ket{\phi}}\).

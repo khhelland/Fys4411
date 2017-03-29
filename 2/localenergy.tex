@@ -1,4 +1,4 @@
-\documentclass[a4paper,norsk,12pt]{article}
+\documentclass[a4paper,norsk,10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[norsk]{babel}
@@ -43,7 +43,39 @@
 
 
 \begin{document}
-\maketitle{}
+
+
+Trial wave function is
+\[\psi_T(\bb{r_1},\bb{r_2}) = C\exp\left(-\alpha\omega(r_1^2+r_2^2)/2\right)\exp\left(\f{ar_{12}}{1+\beta r_{12}}\right).\]
+The local energy is defined as
+\[E_L(\bb{r_1},\bb{r_2}) = \f{1}{\psi_T}H\psi_T.\]
+In our case the Hamiltonean is
+\[H = \sum_{i=1}^2-\f{1}{2}\nabla_i^2+\f{1}{2}\omega^2r_i^2 + \f{1}{r_{12}}.\]
+The complicated part will be the laplacian.
+
+\begin{align*}
+  \pddt{^2\psi_T}{x_1^2} &= \psi_T\left[\pddt{^2}{x_1^2}\left(-\alpha\omega(r_1^2+r_2^2)/2 + \f{ar_{12}}{1+\beta r_{12}}\right) +
+    \left(\pddt{}{x_1}\left(-\alpha\omega(r_1^2+r_2^2)/2 + \f{ar_{12}}{1+\beta r_{12}}\right)\right)^2\right]
+\end{align*}
+Note that
+\[\pddt{}{x_1}-\alpha\omega(r_1^2+r_2^2)/2 = -\alpha\omega x_1,\]
+and
+\begin{align*}
+  \pddt{}{x_1}\f{ar_{12}}{1+\beta r_{12}} &= a\left(\f{1}{1+\beta r_{12}} - \f{r_{12}\beta}{(1+\beta r_{12})^2}\right)\pddt{r_{12}}{x_1}\\
+  &=\f{a}{(1+\beta r_{12})^2}\pddt{r_{12}}{x_1}.
+\end{align*}
+Now
+\[\pddt{r_{12}}{x_1} = \pddt{}{x_1}\left((x_1-x_2)^2+(y_1-y_2)^2\right)^\f{1}{2} = \f{x_1-x_2}{r_{12}}.\]
+So
+\[ \left(\pddt{}{x_1}\left(-\alpha\omega(r_1^2+r_2^2)/2 + \f{ar_{12}}{1+\beta r_{12}}\right)\right)^2 = \alpha^2\omega^2x_1^2
+- \f{2\alpha\omega a x_1(x_1-x_2)}{(1+\beta r_{12})^2r_{12}} + \f{a^2(x_1-x_2)^2}{(1+\beta r_{12})^4r_{12}^2}.\]
+And
+\[\pddt{^2}{x_1^2}\left(-\alpha\omega(r_1^2+r_2^2)/2 + \f{ar_{12}}{1+\beta r_{12}}\right) = -\alpha\omega
++  \f{a}{(1+\beta r_{12})^2r_{12}} - \f{2a\beta(x_1-x_2)^2}{(1+\beta r_{12})^3r_{12}^2} - \f{a(x_1-x_2)^2}{(1+\beta r_{12})^2r_{12}^3}\]
+Because the $\psi_T$ is symmetric under $1\leftrightarrow 2$ and $x\leftrightarrow y$:
+
+\[\f{1}{\psi_T}\sum_i\nabla^2_i\psi_T = \alpha\omega(r_1^2 + r_2^2) -4\alpha\omega  + \f{2a^2}{(1+\beta r_{12})^4}+  \f{4a}{(1+\beta r_{12})^2r_{12}} - \f{4a\beta}{(1+\beta r_{12})^3} -
+\f{2a}{(1+\beta r_{12})^2r_{12}} -\f{2\alpha\omega a r_{12}}{(1+\beta r_{12})^2}\]
 
 %% \begin{table}
 %%   \caption{}\label{kal1}

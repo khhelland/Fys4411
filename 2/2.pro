@@ -4,9 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    metropolis.cpp \
-    montecarlointegrator.cpp
+    vmc.cpp
 
 HEADERS += \
-    montecarlointegrator.h
+    vmc.h
 
+LIBS += -llapack -lblas -larmadillo
+
+QMAKE_CXXFLAGS+= -fopenmp
+QMAKE_LFLAGS +=  -fopenmp

@@ -8,16 +8,20 @@ class vmc
 {
 public:
     vmc();
-    vmc(int nParticles, double rSigma);
+    vmc(int nParticles, double rSigma, double a, double w);
 
 
 
 //private:
 
+
     void run(int);
 
     double wavefunctionSquared(arma::mat);
     double localEnergy(arma::mat);
+
+    double laplacian(arma::mat);
+    double wavefunction(arma::mat);
 
     std::default_random_engine generator;
     std::normal_distribution<double> distribution;
@@ -29,6 +33,8 @@ public:
 
     int nParticles;
 
+    double omega;
+    double alpha;
 
 
 

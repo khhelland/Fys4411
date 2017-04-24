@@ -13,9 +13,12 @@ int main()
     start = clock();
 
 
-    //    N   sigma  alpha   omega
-    vmc a(2,  2,     0.6867,   1);
-    a.run(1e8);
+    //    N   steplength  alpha   omega
+    vmc a(2,  0.05,     0.7,   1);
+    a.useImportanceSampling = false;
+    a.useInteraction = false;
+    a.useJastrow = false;
+    a.run(1e6);
 
     stop = clock();
 

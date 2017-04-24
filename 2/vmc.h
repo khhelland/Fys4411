@@ -8,8 +8,12 @@ class vmc
 {
 public:
     vmc();
-    vmc(int nParticles, double rSigma, double a, double w);
+    vmc(int nParticles, double, double alph, double w);
 
+    bool useJastrow = true;
+    bool useInteraction = true;
+    bool useNumDiff = false;
+    bool useImportanceSampling = true;
 
 
 //private:
@@ -20,11 +24,15 @@ public:
     double wavefunctionSquared(arma::mat);
     double localEnergy(arma::mat);
 
-    double laplacian(arma::mat);
-    double wavefunction(arma::mat);
+    double rDifference(int,int);
+//    double laplacian(arma::mat);
+//    double wavefunction(arma::mat);
+
+    double driftterm(arma::mat, int, int dim);
+    double proposalDensity(double,double,double);
 
     std::default_random_engine generator;
-    std::normal_distribution<double> distribution;
+    std::normal_distribution<double> normalDistribution;
     std::uniform_real_distribution<double> uniformDistribution;
 
 
@@ -33,9 +41,13 @@ public:
 
     int nParticles;
 
-    double omega;
-    double alpha;
+    double stepLength;
+    double stepLength2;
 
+    double alpha;
+    double beta = 1;
+    double omega;
+    double a = 1;
 
 
 };

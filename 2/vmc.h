@@ -8,7 +8,9 @@ class vmc
 {
 public:
     vmc();
-    vmc(int nParticles, double, double alph, double w);
+    vmc(int nParticles, double, double alph, double w, double b);
+
+    void run(int);
 
     bool useJastrow = true;
     bool useInteraction = true;
@@ -19,7 +21,9 @@ public:
 //private:
 
 
-    void run(int);
+
+
+    void distributeParticles();
 
     double wavefunctionSquared(arma::mat);
     double localEnergy(arma::mat);
@@ -45,8 +49,8 @@ public:
     double stepLength2;
 
     double alpha;
-    double beta = 1;
     double omega;
+    double beta = 1;
     double a = 1;
 
 

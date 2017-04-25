@@ -14,18 +14,29 @@ vmc::vmc()
 {
 
 }
-vmc::vmc(int nParticles, double step, double alph, double w):
+vmc::vmc(int nParticles, double step, double alph, double w, double b):
     nParticles(nParticles),
     stepLength(step),
     alpha(alph),
-    omega(w)
+    omega(w),
+    beta(b)
 {
     normalDistribution = normal_distribution<double>(0.0,1.0);
     uniformDistribution = uniform_real_distribution<double>(0.0,1.0);
-    positions.randu(2,nParticles);
+    distributeParticles();
     stepLength2 = stepLength*stepLength;
     generator.seed(20);
 
+}
+
+void vmc::distributeParticles()
+{
+    positions = mat(2,nParticles);
+    for(int p = 0;p<nParticles;p++)
+    {
+        positions(0,p) = p;
+        positions(1,p) = p;
+    }
 }
 
 void vmc::run(int nCycles)
@@ -47,7 +58,8 @@ void vmc::run(int nCycles)
     }
 
 
-    double step,newwave,deltaE,draw,ratio, proposalratio,drift;
+    double step,newwave,deltaE,draw,ratio, proposalratio;
+    double drift = 0;
     int particle,dimension;
 
 
@@ -63,11 +75,12 @@ void vmc::run(int nCycles)
 
         if(useImportanceSampling)
         {
-            step = uniformDistribution(generator);
+            //cout<<"Importance Sampling"<<endl;
+            step = normalDistribution(generator);
         }
         else
         {
-            step = uniformDistribution(generator);
+            step = 2*(uniformDistribution(generator)-0.5);
         }
 
         suggestion(dimension,particle) += step*stepLength;
@@ -76,6 +89,7 @@ void vmc::run(int nCycles)
         ratio = 1;
         if (useImportanceSampling)
         {
+            //cout<<"drifting all over you"<<endl;
             drift = driftterm(positions,particle,dimension);
             suggestion(dimension,particle) += stepLength2*drift;
             proposalratio = proposalDensity(positions(dimension,particle),  suggestion(dimension,particle), olddrift(dimension,particle)) /
@@ -102,6 +116,8 @@ void vmc::run(int nCycles)
         }
 
         deltaE = localEnergy(positions);
+
+        //cout<<deltaE<<endl;
 
         //save deltaE
 
@@ -163,7 +179,7 @@ double vmc::localEnergy(mat pos)
         double b;
         for(int i = 0; i < nParticles; i++)
         {
-            for(int j = 0; j < nParticles; j++)
+            for(int j = 0; j < i; j++)
             {
                 r = rDifference(i,j);
                 b = 1/(1+beta*r);
@@ -179,8 +195,9 @@ double vmc::localEnergy(mat pos)
         //cout<<"int"<<endl;
         for(int i = 0; i < nParticles; i++)
         {
-            for(int j = 0; j < nParticles; j++)
+            for(int j = 0; j < i; j++)
             {
+                //cout<<"particles"<<i<<","<<j<<endl;
                 sum += 1/rDifference(i,j);
 
             }
@@ -194,7 +211,7 @@ double vmc::localEnergy(mat pos)
         double b;
         for(int i = 0; i < nParticles; i++)
         {
-            for(int j = 0; j < nParticles; j++)
+            for(int j = 0; j < i; j++)
             {
                 r = rDifference(i,j);
                 b = 1/(1+beta*r);

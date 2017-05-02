@@ -28,7 +28,7 @@ public:
     double wavefunctionSquared(arma::mat);
     double localEnergy(arma::mat);
 
-    double rDifference(int,int);
+    double rDifference(arma::mat,int,int);
 //    double laplacian(arma::mat);
 //    double wavefunction(arma::mat);
 

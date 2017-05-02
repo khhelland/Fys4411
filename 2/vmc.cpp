@@ -129,17 +129,18 @@ void vmc::run(int nCycles)
     Esum /=nCycles;
     Esum2/=nCycles;
 
-    cout<< acceptcount/(double)nCycles <<endl;
+    cout<< "Acceptanceratio: "<<acceptcount/(double)nCycles <<endl;
 
     //save Esum, Esum2
-    cout<<Esum<<","<<Esum2<<","<< Esum2 - Esum*Esum <<endl;
+    cout<<"E, E^2, sigma" <<endl;
+    cout<<Esum<<","<<Esum2<<","<< sqrt(Esum2 - Esum*Esum) <<endl;
 
 }
 
-double vmc::rDifference(int p, int q)
+double vmc::rDifference(mat pos, int p, int q)
 {
-    double xdiff = positions(0,p) - positions(0,q);
-    double ydiff = positions(1,p) - positions(1,q);
+    double xdiff = pos(0,p) - pos(0,q);
+    double ydiff = pos(1,p) - pos(1,q);
     return sqrt(xdiff*xdiff + ydiff*ydiff);
 }
 
@@ -154,7 +155,7 @@ double vmc::wavefunctionSquared(mat pos)
         {
             for(int j=0; j<i;j++)
             {
-                r = rDifference(i,j);
+                r = rDifference(pos,i,j);
                 w *=exp(2*a*r/(1+beta*r));
             }
         }
@@ -168,6 +169,16 @@ double vmc::localEnergy(mat pos)
     double sum = 0;
     sum  += 0.5*(1-alpha*alpha)*omega*omega*accu(pos%pos) + 2.0*alpha*omega;
     //cout << sum << endl;
+//    if(useInteraction)
+//    {
+//        sum += 1/rDifference(pos,0,1);
+//    }
+//    if(useJastrow)
+//    {
+//        double r = rDifference(pos,0,1);
+//        double b = 1/(1+beta*r);
+//        sum += -a*b*b*(a*b*b + 1.0/r - 2*beta*b - alpha*omega*r) ;
+//    }
     if(useInteraction&&useJastrow)
     {
         //cout <<"both"<<", "<<beta<<endl;
@@ -177,7 +188,7 @@ double vmc::localEnergy(mat pos)
         {
             for(int j = i+1; j < nParticles; j++)
             {
-                r = rDifference(i,j);
+                r = rDifference(pos,i,j);
                 b = 1.0/(1+beta*r);
                 sum += 1.0/r;
                 sum += a*b*b*(-a*b*b - 1.0/r + 2*beta*b + alpha*omega*r);
@@ -194,7 +205,7 @@ double vmc::localEnergy(mat pos)
             for(int j = 0; j < i; j++)
             {
                 //cout<<"particles"<<i<<","<<j<<", " << 1.0/rDifference(i,j)<<endl;
-                sum += 1.0/rDifference(i,j);
+                sum += 1.0/rDifference(pos,i,j);
 
 
             }
@@ -210,7 +221,7 @@ double vmc::localEnergy(mat pos)
         {
             for(int j = 0; j < i; j++)
             {
-                r = rDifference(i,j);
+                r = rDifference(pos,i,j);
                 b = 1.0/(1+beta*r);
                 sum += a*b*b*(-a*b*b - 1.0/r + 2*beta*b + alpha*omega*r);
 
@@ -220,12 +231,23 @@ double vmc::localEnergy(mat pos)
     return sum;
 }
 
-double vmc::driftterm(mat pos, int p, int dim)
+double vmc::driftterm(mat pos, int p, int dim)  //(nabla psi)/2*psi
 {
-// vec diff = pos.col(0) - pos.col(1);
-// int  sgn = 2*(p == 0) - 1;
-//ikke klar for jastrow
- return -alpha*omega*pos(dim,p);//+ sgn*a*normalise(diff)/(1+beta*norm(diff))
+    double d = -2*alpha*omega*pos(dim,p); //slater
+    if(useJastrow)
+    {
+        double r;
+        for(int q = 0; q < nParticles; q++)
+        {
+            if(p != q)
+            {
+                r = rDifference(pos,p,q);
+                d += a*(pos(dim,p)-pos(dim,q))/((1+beta*r)*(1+beta*r)*r);
+            }
+        }
+    }
+
+    return 0.5*d;
 }
 
 double vmc::proposalDensity(double rn, double ro, double drift)

@@ -14,19 +14,19 @@ int main()
 
 
     vmc a(2,     // N
-          1.7,     // steplength
-          1.0,   // alpha
+          0.01,     // steplength
+          1,   // alpha
           1,     // omega
           0.3 ); // beta
-    a.useImportanceSampling = false;
-    a.useInteraction = true;
+    a.useImportanceSampling = 1;
+    a.useInteraction = 1;
     a.useJastrow = 1;
     a.run(1e6);
 
     stop = clock();
 
     double time = (float)(stop-start)/CLOCKS_PER_SEC;
-    cout<<time<<endl;
+    cout<<"time [s]: "<<time<<endl;
     return 0;
 }
 

@@ -18,21 +18,34 @@ public:
     bool useImportanceSampling = true;
 
 
-//private:
-
-
-
+private:
 
     void distributeParticles();
+
+    void findSuggestionUniform(int,int);
+    void findSuggestionImportanceSamplingwithJastrow(int,int);
+    void findSuggestionImportanceSamplingnoJastrow(int,int);
+
+
+    double findRatio(int,int);
+    double findRatioJastrow(int,int);
+    double findRatioImportance(int,int);
+    double findRatioImportanceJastrow(int,int);
 
     double wavefunctionSquared(arma::mat);
     double localEnergy(arma::mat);
 
     double rDifference(arma::mat,int,int);
+
     double laplacian(arma::mat);
     double wavefunction(arma::mat);
 
-    double driftterm(arma::mat, int, int dim);
+
+
+
+    double drifttermwithJastrow(arma::mat,int,int);
+    double drifttermnoJastrow(arma::mat,int,int);
+
     double proposalDensity(double,double,double);
 
     std::default_random_engine generator;
@@ -52,6 +65,10 @@ public:
     double omega;
     double beta = 1;
     double a = 1;
+
+    double drift = 0;
+    arma::mat olddrift;
+
 
 
 };

@@ -13,7 +13,8 @@ using namespace arma;
 /*
  * Tenk paa aa legge inn burn in
  * member function pointers
- * eller boost::function
+ * for localenergy!
+ * Think about saving oldwave again.
  *
  */
 
@@ -32,8 +33,9 @@ vmc::vmc(int nParticles, double step, double alph, double w, double b):
     normalDistribution = normal_distribution<double>(0.0,1.0);
     uniformDistribution = uniform_real_distribution<double>(0.0,1.0);
     distributeParticles();
+    olddrift = mat(2,nParticles);
     stepLength2 = stepLength*stepLength;
-    generator.seed(20);
+    generator.seed(1);
 
 }
 
@@ -49,26 +51,71 @@ void vmc::distributeParticles()
 
 void vmc::run(int nCycles, int blocksize)
 {
+    // First set up function pointers
+    /*--------------------------------------------------------*/
+    void (vmc::*findSuggestionPointer)(int,int);
+    if (useImportanceSampling)
+    {
+        if(useJastrow)
+            findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
+
+        else
+            findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
+    }
+
+    else
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+
+
+    double(vmc::*findRatioPointer)(int,int);
+    if(useImportanceSampling)
+    {
+        if(useJastrow)
+        {
+            findRatioPointer = &vmc::findRatioImportanceJastrow;
+        }
+        else
+        {
+            findRatioPointer =&vmc::findRatioImportance;
+        }
+    }
+    else
+    {
+        if(useJastrow)
+        {
+            findRatioPointer = &vmc::findRatioJastrow;
+        }
+
+        else
+        {
+            findRatioPointer = &vmc::findRatio;
+        }
+    }
+    /*------------------------------------------------------------------------*/
+
+
     double Esum = 0;
     double Esum2 = 0;
     double Eblock = 0;
 
-    double oldwave = wavefunctionSquared(positions);
+
     mat olddrift(2,nParticles);
     if(useImportanceSampling)
     {
-        for(int i = 0;i<nParticles;i++)
+        for(int p = 0; p<nParticles; p++)
         {
-            for(int j=0;j<2;j++)
+            for(int d=0;d<2;d++)
             {
-                olddrift(j,i) = driftterm(positions,i,j);
+                if(useJastrow)
+                    olddrift(d,p) = drifttermwithJastrow(positions,d,p);
+                else
+                    olddrift(d,p) = drifttermnoJastrow(positions,d,p);
             }
         }
     }
 
 
-    double step,newwave,deltaE,draw,ratio, proposalratio;
-    double drift = 0;
+    double deltaE,draw,ratio;
     int particle,dimension;
 
 
@@ -81,50 +128,30 @@ void vmc::run(int nCycles, int blocksize)
         dimension = 2*uniformDistribution(generator);
 
         suggestion = positions;
+        // cout<<"entered loop"<<endl;
 
-        if(useImportanceSampling)
-        {
-            //cout<<"Importance Sampling"<<endl;
-            step = normalDistribution(generator);
-        }
-        else
-        {
-            step = 2*(uniformDistribution(generator)-0.5);
-        }
+        (this->*findSuggestionPointer)(dimension,particle);
 
-        suggestion(dimension,particle) += step*stepLength;
+        // cout<<"found suggestion"<<endl;
 
+        ratio = (this->*findRatioPointer)(dimension,particle);
 
-        ratio = 1;
-        if (useImportanceSampling)
-        {
-            drift = driftterm(positions,particle,dimension);
-            suggestion(dimension,particle) += stepLength2*drift;
-            proposalratio = proposalDensity(positions(dimension,particle),  suggestion(dimension,particle), olddrift(dimension,particle)) /
-                            proposalDensity(suggestion(dimension,particle), positions(dimension,particle),  drift) ;
-            ratio = proposalratio;
-        }
+        // cout<<"found ratio"<<endl;
 
-        //Metropolis algorithm:
-        newwave = wavefunctionSquared(suggestion);
-
-        ratio  *= newwave/oldwave;
 
         draw = uniformDistribution(generator);
 
         if(ratio>draw)
         {
+            // (this->*updateSystem)();
             acceptcount++;
-            positions = suggestion;
-            oldwave = newwave;       
+            positions = suggestion;                 
             olddrift(dimension,particle) = drift;
         }
 
         deltaE = localEnergy(positions);
 
         //cout<<deltaE<<endl;
-
-        //save deltaE
 
 
         Eblock += deltaE;
@@ -150,6 +177,89 @@ void vmc::run(int nCycles, int blocksize)
     cout<<Esum<<","<<Esum2<<","<< sqrt(Esum2 - Esum*Esum) <<endl;
 
 }
+
+/*------------------------------------------------------------------------------*/
+void vmc::findSuggestionUniform(int d,int p)
+{
+    double step = 2*(uniformDistribution(generator) - 0.5);
+    suggestion(d,p) += step*stepLength;
+}
+
+void vmc::findSuggestionImportanceSamplingwithJastrow(int d, int p)
+{
+    double step = normalDistribution(generator);
+    drift = drifttermwithJastrow(positions,d,p);
+    suggestion(d,p) += step*stepLength + drift*stepLength2;
+}
+
+void vmc::findSuggestionImportanceSamplingnoJastrow(int d, int p)
+{
+    double step = normalDistribution(generator);
+    drift = drifttermnoJastrow(positions,d,p);
+    suggestion(d,p) += step*stepLength + drift*stepLength2;
+}
+/*-------------------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------------------*/
+double vmc::findRatioJastrow(int d ,int p)
+{
+    double exponent = 0;
+    double rnew;
+    double rold;
+    for(int i = 1; i < nParticles; i++)
+    {
+        for(int j = 0; j < i; j++)
+        {
+            rnew = rDifference(suggestion,i,j);
+            rold = rDifference(positions,i,j);
+            exponent += (rnew/(1+beta*rnew) - rold/(1+beta*rold));
+        }
+    }
+    exponent *= 2*a;
+    exponent += alpha*omega*(-accu(suggestion%suggestion) + accu(positions%positions));
+    return exp(exponent);
+}
+
+double vmc::findRatio(int d, int p)
+{
+    return exp(alpha*omega*(-accu(suggestion%suggestion) + accu(positions%positions)));
+}
+
+double vmc::findRatioImportance(int d, int p)
+{
+    double propexponent = 0.5*(drift*drift - olddrift(d,p)*olddrift(d,p))*stepLength2
+                          + positions(d,p)*(drift + olddrift(d,p))
+                          - suggestion(d,p)*(drift + olddrift(d,p));
+    double waveexponent = alpha*omega*(-accu(suggestion%suggestion) + accu(positions%positions));
+    return exp(propexponent + waveexponent);
+}
+
+double vmc::findRatioImportanceJastrow(int d, int p)
+{
+    double propexponent = 0.5*(drift*drift - olddrift(d,p)*olddrift(d,p))*stepLength2
+                          + positions(d,p)*(drift + olddrift(d,p))
+                          - suggestion(d,p)*(drift + olddrift(d,p));
+    double waveexponent = 0;
+    double rnew;
+    double rold;
+    for(int k = 1; k < nParticles; k++)
+    {
+        for(int q = 0; q < k; q++)
+        {
+            rnew = rDifference(suggestion,k,q);
+            rold = rDifference(positions,k,q);
+            waveexponent += (rnew/(1+beta*rnew) - rold/(1+beta*rold));
+        }
+    }
+    waveexponent *= 2*a;
+    waveexponent += alpha*omega*(-accu(suggestion%suggestion) + accu(positions%positions));
+
+    return exp(propexponent + waveexponent);
+
+}
+
+/*-----------------------------------------------------------------------------------*/
 
 double vmc::rDifference(mat pos, int p, int q)
 {
@@ -245,24 +355,29 @@ double vmc::localEnergy(mat pos)
     return sum;
 }
 
-double vmc::driftterm(mat pos, int p, int dim)  //(nabla psi)/2*psi
+
+
+/*----------------------------------------------------------------------------*/
+double vmc::drifttermnoJastrow(mat pos, int d , int p)
 {
-    double d = -2*alpha*omega*pos(dim,p); //slater
-    if(useJastrow)
+    return -alpha*omega*pos(d,p);
+}
+double vmc::drifttermwithJastrow(mat pos,int d, int p)
+{
+    double sum = 0;
+    double r;
+    for(int q = 0; q < nParticles; q++)
     {
-        double r;
-        for(int q = 0; q < nParticles; q++)
+        if(p != q)
         {
-            if(p != q)
-            {
-                r = rDifference(pos,p,q);
-                d += a*(pos(dim,p)-pos(dim,q))/((1+beta*r)*(1+beta*r)*r);
-            }
+            r = rDifference(pos,p,q);
+            sum += (pos(d,p)-pos(d,q))/((1+beta*r)*(1+beta*r)*r);
         }
     }
-
-    return 0.5*d;
+    return 0.5*(a*sum - alpha*omega*pos(d,p));
 }
+/*-------------------------------------------------------------------------*/
+
 
 double vmc::proposalDensity(double rn, double ro, double drift)
 {

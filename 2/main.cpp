@@ -9,6 +9,7 @@ using namespace std;
 int main()
 {
 
+
     clock_t start,stop;
 
     start = clock();
@@ -22,6 +23,8 @@ int main()
     a.useImportanceSampling = 1;
     a.useInteraction = 1;
     a.useJastrow = 1;
+
+    // cout<<"set up complete"<<endl;
     a.run(1e6,50);
 
     stop = clock();

@@ -10,6 +10,14 @@
 using namespace std;
 using namespace arma;
 
+/*
+ * Tenk paa aa legge inn burn in
+ * member function pointers
+ * eller boost::function
+ *
+ */
+
+
 vmc::vmc()
 {
 
@@ -39,10 +47,11 @@ void vmc::distributeParticles()
     }
 }
 
-void vmc::run(int nCycles)
+void vmc::run(int nCycles, int blocksize)
 {
     double Esum = 0;
     double Esum2 = 0;
+    double Eblock = 0;
 
     double oldwave = wavefunctionSquared(positions);
     mat olddrift(2,nParticles);
@@ -117,10 +126,15 @@ void vmc::run(int nCycles)
 
         //save deltaE
 
-        Esum  += deltaE;
-        //cout << Esum << endl;
-        Esum2 += deltaE*deltaE;
-        //}
+
+        Eblock += deltaE;
+
+        if(i % blocksize == 0)
+        {
+            Esum += Eblock;
+            Esum2 += Eblock*Eblock;
+            Eblock = 0;
+        }
     }
 
     //    cout << setprecision(15) << Esum << endl;
@@ -256,25 +270,26 @@ double vmc::proposalDensity(double rn, double ro, double drift)
 }
 
 
-//double vmc::laplacian(mat pos)
-//{
-//    double sum = 0;
-//    double h = 1e-3;
-//    double h2 = 1e6;
-//    mat change = zeros<mat>(nParticles,2);
-//    for(int n = 0;n<nParticles;n++)
-//    {
-//        for(int d =0;d<2;d++)
-//        {
-//            change(n,0) = h;
-//            sum += wavefunction(pos + change) + wavefunction(pos-change) - 2*wavefunction(pos);
-//            change(n,0) = 0;
-//        }
-//    }
-//    return sum*h2;
-//}
+double vmc::laplacian(mat pos)
+{
+    double sum = 0;
+    double h = 1e-3;
+    double h2 = 1e6;
+    mat change = zeros<mat>(nParticles,2);
+    for(int n = 0;n<nParticles;n++)
+    {
+        for(int d =0;d<2;d++)
+        {
+            change(n,d) = h;
+            sum += wavefunction(pos + change) + wavefunction(pos-change);
+            change(n,d) = 0;
+        }
+    }
+    sum -= 4*nParticles*wavefunction(pos);
+    return sum*h2;
+}
 
-//double vmc::wavefunction(mat pos)
-//{
-//    return exp(-accu(pos%pos)/2);
-//}
+double vmc::wavefunction(mat pos)
+{
+    return exp(-accu(pos%pos)/2);
+}

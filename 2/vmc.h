@@ -10,7 +10,7 @@ public:
     vmc();
     vmc(int nParticles, double, double alph, double w, double b);
 
-    void run(int);
+    void run(int,int);
 
     bool useJastrow = true;
     bool useInteraction = true;
@@ -29,8 +29,8 @@ public:
     double localEnergy(arma::mat);
 
     double rDifference(arma::mat,int,int);
-//    double laplacian(arma::mat);
-//    double wavefunction(arma::mat);
+    double laplacian(arma::mat);
+    double wavefunction(arma::mat);
 
     double driftterm(arma::mat, int, int dim);
     double proposalDensity(double,double,double);

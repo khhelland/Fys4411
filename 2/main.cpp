@@ -8,6 +8,7 @@ using namespace std;
 
 int main()
 {
+
     clock_t start,stop;
 
     start = clock();
@@ -17,11 +18,11 @@ int main()
           0.01,     // steplength
           1,   // alpha
           1,     // omega
-          0.3 ); // beta
+          0.36 ); // beta
     a.useImportanceSampling = 1;
     a.useInteraction = 1;
     a.useJastrow = 1;
-    a.run(1e6);
+    a.run(1e6,50);
 
     stop = clock();
 

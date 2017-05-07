@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-blocks = np.random.randn(2**20)   #read
+blocks = np.exp(-np.random.randn(2**20))   #read
 
 nBlocks = len(blocks)
 nSteps = int(np.log2(len(blocks)))
@@ -21,6 +21,6 @@ for s in xrange(nSteps):
 
 
 plt.figure()
-plt.plot(xrange(nSteps),varlist)
+plt.plot(range(nSteps),varlist)
 plt.show()
     

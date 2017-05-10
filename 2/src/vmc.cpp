@@ -507,11 +507,12 @@ int vmc::blocksize(int nCycles)
 
     // gives 341 for step 10
     // but 3401 for step 100
-    // weirdS
+    //maybe it shouldn't stop at the first time
+    // weird
     int block = 1;
-    int step = 100;
+    int step = 10;
     run(nCycles,block);
-    double var =  energySquared - energy*energy;
+    double var = energySquared - energy*energy;
     double oldvar = 0;
     //course grain
     while(var>oldvar)
@@ -520,15 +521,134 @@ int vmc::blocksize(int nCycles)
         block += step;
         run(nCycles,block);
         var = energySquared - energy*energy;
+        cout<<block<<" "<<var<<endl;
     }
     //needs finer graining.
-
+    block -= step;
 
     return block;
-
-
 }
 
+
+void vmc::steepestDescent(int nCycles, double gamma)
+{
+    if((!useJastrow)||(useNumDiff)||(!useInteraction))
+    {
+        cout<<"Not implemented for this configuration"<<endl;
+    }
+
+    else
+    {
+        double oldalpha = 0;
+        double oldbeta = 0;
+        while((abs(oldalpha - alpha) > 1e-5)&&(abs(oldbeta - beta) > 1e-5))
+        {
+            oldalpha = alpha;
+            oldbeta = beta;
+
+            void (vmc::*findSuggestionPointer)(int,int);
+            double (vmc::*findRatioPointer)(int,int);
+
+
+            if(useImportanceSampling)
+            {
+                findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
+                findRatioPointer = &vmc::findRatioImportanceJastrow;
+                for(int p = 0; p<nParticles; p++)
+                {
+                    for(int d=0;d<2;d++)
+                    {
+                        olddrift(d,p) = drifttermwithJastrow(positions,d,p);
+                    }
+                }
+            }
+            else
+            {
+                findSuggestionPointer = &vmc::findSuggestionUniform;
+                findRatioPointer = &vmc::findRatioJastrow;
+            }
+
+
+            double Esum = 0;
+            double Asum = 0;
+            double Bsum = 0;
+            double EAsum = 0;
+            double EBsum = 0;
+
+
+            double deltaE,dEda,dEdb,draw,ratio;
+            int particle,dimension;
+
+
+
+            int acceptcount = 0;
+            for(int i = 0;i<nCycles;i++)
+            {
+                particle = nParticles*(uniformDistribution(generator));
+                dimension = 2*uniformDistribution(generator);
+                suggestion = positions;
+                (this->*findSuggestionPointer)(dimension,particle);
+                ratio = (this->*findRatioPointer)(dimension,particle);
+                draw = uniformDistribution(generator);
+                if(ratio>draw)
+                {
+                    acceptcount++;
+                    positions = suggestion;
+                    olddrift(dimension,particle) = drift;
+                }
+                deltaE = localEnergyJastrowInteraction();
+                dEda = alphaDeriv();
+                dEdb = betaDeriv();
+
+                Esum += deltaE;
+                Asum += dEda;
+                Bsum += dEdb;
+                EAsum += deltaE*dEda;
+                EBsum += deltaE*dEdb;
+
+            }
+
+
+            Esum /= nCycles;
+            Asum /= nCycles;
+            Bsum /= nCycles;
+            EAsum /= nCycles;
+            EBsum /= nCycles;
+
+
+            energy = Esum;
+            alpha -= gamma*2*(EAsum -Esum*Asum);
+            beta -= gamma*2*(EBsum -Esum*Bsum);
+            cout<<alpha<<", "<<beta<<endl;
+
+
+        }
+    }
+}
+
+double vmc::alphaDeriv()
+{
+    return -0.5*accu(positions%positions);
+}
+
+double vmc::betaDeriv()
+{
+    double sum = 0;
+    double r;
+    double s;
+    for(int i = 1; i<nParticles; i++)
+    {
+        for(int j = 0; j<i; j++)
+        {
+            r = rDifference(positions,i,j);
+            s = r/(1+beta*r);
+            sum -= s*s;
+        }
+    }
+    sum *= a;
+    return sum;
+
+}
 
 void vmc::printResults()
 {

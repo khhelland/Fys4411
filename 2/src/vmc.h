@@ -14,6 +14,8 @@ public:
 
     int blocksize(int);
 
+    void steepestDescent(int,double);
+
     void printResults();
 
 
@@ -54,6 +56,8 @@ private:
     double drifttermwithJastrow(arma::mat,int,int);
     double drifttermnoJastrow(arma::mat,int,int);
 
+    double alphaDeriv();
+    double betaDeriv();
 
     std::default_random_engine generator;
     std::normal_distribution<double> normalDistribution;

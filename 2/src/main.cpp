@@ -26,11 +26,13 @@ int main()
     a.useNumDiff = 0;
 
     // cout<<"set up complete"<<endl;
-    int block = a.blocksize(1e5);
-    cout<<"Blocksize: "<<block<<endl;
-    a.run(1e6, //nCycles
-          block);  //Blocksize
-    a.printResults();
+//    int block = a.blocksize(1e6);
+//    cout<<"Blocksize: "<<block<<endl;
+//    a.run(1e6, //nCycles
+//          block);  //Blocksize
+//    a.printResults();
+    a.steepestDescent(1e5,0.4);
+
     stop = clock();
 
     double time = (float)(stop-start)/CLOCKS_PER_SEC;

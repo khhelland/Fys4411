@@ -1,5 +1,6 @@
 #include <iostream>
 #include <mc.h>
+#include <time.h>
 
 using namespace std;
 
@@ -7,8 +8,10 @@ using namespace std;
 
 int main()
 {
-    mc m;
-    m.val(2);
-    m.val(5);
+    int t = time(0);
+//    mc m;
+//    m.val(2);
+//    m.val(5);
+    cout<<t<<endl;
     return 0;
 }

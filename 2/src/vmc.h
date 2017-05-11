@@ -29,6 +29,10 @@ private:
 
     void distributeParticles();
 
+    void updatePointers();
+
+    int metropolisMove();
+
     void findSuggestionUniform(int,int);
     void findSuggestionImportanceSamplingwithJastrow(int,int);
     void findSuggestionImportanceSamplingnoJastrow(int,int);
@@ -38,6 +42,11 @@ private:
     double findRatioJastrow(int,int);
     double findRatioImportance(int,int);
     double findRatioImportanceJastrow(int,int);
+
+    double wavefunctionSquared(arma::mat pos);
+    double wavefunctionSquaredJastrow(arma::mat pos);
+    double proposalratio(int,int);
+
 
     double localEnergy();
     double localEnergyJastrow();
@@ -50,6 +59,7 @@ private:
 
     double wavefunction(arma::mat);
     double wavefunctionJastrow(arma::mat);
+
 
     double rDifference(arma::mat,int,int);
 
@@ -79,13 +89,18 @@ private:
 
     double drift = 0;
     arma::mat olddrift;
+    double oldwavesquared;
+    double newwavesquared;
 
     //results
     double energy;
     double energySquared;
     double AcceptanceRatio;
 
-
+    //(void*)(int,int) function;
+    double (vmc::*localEnergyPointer)() = nullptr;
+    void (vmc::*findSuggestionPointer)(int,int) = nullptr;
+    double (vmc::*findRatioPointer)(int,int) = nullptr;
 
 };
 

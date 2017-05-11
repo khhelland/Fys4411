@@ -25,13 +25,13 @@ int main()
     a.useJastrow = 1;
     a.useNumDiff = 0;
 
-    // cout<<"set up complete"<<endl;
+//    cout<<"set up complete"<<endl;
 //    int block = a.blocksize(1e6);
 //    cout<<"Blocksize: "<<block<<endl;
-//    a.run(1e6, //nCycles
-//          block);  //Blocksize
-//    a.printResults();
-    a.steepestDescent(1e5,0.4);
+    a.run(1e6, //nCycles
+          1e3);  //Blocksize
+    a.printResults();
+//    a.steepestDescent(1e5,0.4);
 
     stop = clock();
 

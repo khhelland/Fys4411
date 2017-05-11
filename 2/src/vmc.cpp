@@ -12,8 +12,9 @@ using namespace arma;
 
 /*
  * Tenk paa aa legge inn burn in
- * Think about saving oldwave again.
- *Egen run for steepest descent?
+ * Egen run for steepest descent?
+ * do sd and blocking better!!!!!
+ * make some funcs inline for opt
  */
 
 
@@ -49,135 +50,8 @@ void vmc::distributeParticles()
 
 void vmc::run(int nCycles, int blocksize)
 {
-    // First set up function pointers
-    // 16 cases
-    /*------------------------------------------------------------------------------*/
-    void (vmc::*findSuggestionPointer)(int,int);
-    double (vmc::*findRatioPointer)(int,int);
-    double (vmc::*localEnergyPointer)();
+    updatePointers();
 
-    if ((useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
-        findRatioPointer = &vmc::findRatioImportanceJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowInteractionNumdiff;
-    }
-
-    else if ((useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(!useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
-        findRatioPointer = &vmc::findRatioImportanceJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowInteraction;
-    }
-
-    else if ((useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
-        findRatioPointer = &vmc::findRatioImportance;
-        localEnergyPointer = &vmc::localEnergyInteractionNumdiff;
-    }
-
-    else if ((useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
-        findRatioPointer = &vmc::findRatioImportanceJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowNumdiff;
-    }
-
-    else if ((!useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionUniform;
-        findRatioPointer = &vmc::findRatioJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowInteractionNumdiff;
-    }
-
-    else if ((useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(!useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
-        findRatioPointer = &vmc::findRatioImportance;
-        localEnergyPointer = &vmc::localEnergyInteraction;
-    }
-
-    else if ((useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(!useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
-        findRatioPointer = &vmc::findRatioImportanceJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrow;
-    }
-
-    else if ((!useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(!useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionUniform;
-        findRatioPointer = &vmc::findRatioJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowInteraction;
-    }
-
-    else if ((useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
-        findRatioPointer = &vmc::findRatioImportance;
-        localEnergyPointer = &vmc::localEnergyNumdiff;
-    }
-
-
-    else if ((!useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionUniform;
-        findRatioPointer = &vmc::findRatio;
-        localEnergyPointer = &vmc::localEnergyInteractionNumdiff;
-    }
-
-    else if ((!useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionUniform;
-        findRatioPointer = &vmc::findRatioJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowNumdiff;
-    }
-
-    else if ((!useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionUniform;
-        findRatioPointer = &vmc::findRatio;
-        localEnergyPointer = &vmc::localEnergyNumdiff;
-    }
-
-    else if ((!useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(!useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionUniform;
-        findRatioPointer = &vmc::findRatioJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrow;
-    }
-
-    else if ((!useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(!useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionUniform;
-        findRatioPointer = &vmc::findRatio;
-        localEnergyPointer = &vmc::localEnergyInteraction;
-    }
-
-    else if ((useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(!useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
-        findRatioPointer = &vmc::findRatioImportance;
-        localEnergyPointer = &vmc::localEnergy;
-    }
-
-    else if ((!useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(!useNumDiff))
-    {
-        findSuggestionPointer = &vmc::findSuggestionUniform;
-        findRatioPointer = &vmc::findRatio;
-        localEnergyPointer = &vmc::localEnergy;
-    }
-
-    /*-------------------------------------------------------------------------------*/
-
-
-    double Esum = 0;
-    double Esum2 = 0;
-    double Eblock = 0;
-
-
-    mat olddrift(2,nParticles);
     if(useImportanceSampling)
     {
         for(int p = 0; p<nParticles; p++)
@@ -192,45 +66,23 @@ void vmc::run(int nCycles, int blocksize)
         }
     }
 
+    if(useJastrow) oldwavesquared = wavefunctionSquaredJastrow(positions);
+    else oldwavesquared = wavefunctionSquared(positions);
 
-    double deltaE,draw,ratio;
-    int particle,dimension;
+    // burn-in
+    for(int i = 0; i<1e5 ; i++) metropolisMove();
 
-
+    double Esum = 0;
+    double Esum2 = 0;
+    double Eblock = 0;
+    double deltaE;
 
     int acceptcount = 0;
-    for(int i = 0;i<nCycles;i++)
+    for(int i = 1;i<=nCycles;i++)
     {
-        //randomly choose particle to move along random dimension
-        particle = nParticles*(uniformDistribution(generator));
-        dimension = 2*uniformDistribution(generator);
-
-        suggestion = positions;
-        // cout<<"entered loop"<<endl;
-
-        (this->*findSuggestionPointer)(dimension,particle);
-
-        // cout<<"found suggestion"<<endl;
-
-        ratio = (this->*findRatioPointer)(dimension,particle);
-
-        // cout<<"found ratio"<<endl;
-
-
-        draw = uniformDistribution(generator);
-
-        if(ratio>draw)
-        {
-            // (this->*updateSystem)();
-            acceptcount++;
-            positions = suggestion;                 
-            olddrift(dimension,particle) = drift;
-        }
+        acceptcount += metropolisMove();
 
         deltaE = (this->*localEnergyPointer)();
-
-        //cout<<deltaE<<endl;
-
 
         Eblock += deltaE;
 
@@ -242,17 +94,44 @@ void vmc::run(int nCycles, int blocksize)
         }
     }
 
-    //    cout << setprecision(15) << Esum << endl;
-    //    cout << setprecision(15) << Esum2 << endl;
-
-    Esum /=nCycles;
-    Esum2/=nCycles;
+    Esum /= nCycles;
+    Esum2 /= nCycles*blocksize;
 
     energy = Esum;
     energySquared = Esum2;
     AcceptanceRatio = acceptcount/(double)nCycles;
 
 
+}
+
+int vmc::metropolisMove()
+{
+    //randomly choose particle to move along random dimension
+    int particle = nParticles*(uniformDistribution(generator));
+    int dimension = 2*uniformDistribution(generator);
+
+    suggestion = positions;
+    // cout<<"entered loop"<<endl;
+
+    (this->*findSuggestionPointer)(dimension,particle);
+
+    // cout<<"found suggestion"<<endl;
+
+    double ratio = (this->*findRatioPointer)(dimension,particle);
+
+    // cout<<"found ratio"<<endl;
+
+
+    double draw = uniformDistribution(generator);
+
+    if(ratio>draw)
+    {
+        positions = suggestion;
+        olddrift(dimension,particle) = drift;
+        oldwavesquared = newwavesquared;
+        return 1;
+    }
+    else return 0;
 }
 
 /*------------------------------------------------------------------------------*/
@@ -281,59 +160,56 @@ void vmc::findSuggestionImportanceSamplingnoJastrow(int d, int p)
 /*-------------------------------------------------------------------------------*/
 double vmc::findRatioJastrow(int d ,int p)
 {
-    double exponent = 0;
-    double rnew;
-    double rold;
-    for(int i = 1; i < nParticles; i++)
-    {
-        for(int j = 0; j < i; j++)
-        {
-            rnew = rDifference(suggestion,i,j);
-            rold = rDifference(positions,i,j);
-            exponent += (rnew/(1+beta*rnew) - rold/(1+beta*rold));
-        }
-    }
-    exponent *= 2*a;
-    exponent += alpha*omega*(-accu(suggestion%suggestion) + accu(positions%positions));
-    return exp(exponent);
+    newwavesquared = wavefunctionSquaredJastrow(suggestion);
+    return newwavesquared/oldwavesquared;
 }
 
 double vmc::findRatio(int d, int p)
 {
-    return exp(alpha*omega*(-accu(suggestion%suggestion) + accu(positions%positions)));
+    newwavesquared = wavefunctionSquared(suggestion);
+    return newwavesquared/oldwavesquared;
 }
 
 double vmc::findRatioImportance(int d, int p)
 {
-    double propexponent = 0.5*(drift*drift - olddrift(d,p)*olddrift(d,p))*stepLength2
-                          + positions(d,p)*(drift + olddrift(d,p))
-                          - suggestion(d,p)*(drift + olddrift(d,p));
-    double waveexponent = alpha*omega*(-accu(suggestion%suggestion) + accu(positions%positions));
-    return exp(propexponent + waveexponent);
+    double proprat = proposalratio(d,p);
+    double waverat = findRatio(d,p);
+    return proprat*waverat;
 }
 
 double vmc::findRatioImportanceJastrow(int d, int p)
 {
-    double propexponent = 0.5*(drift*drift - olddrift(d,p)*olddrift(d,p))*stepLength2
-                          + positions(d,p)*(drift + olddrift(d,p))
-                          - suggestion(d,p)*(drift + olddrift(d,p));
-    double waveexponent = 0;
-    double rnew;
-    double rold;
-    for(int k = 1; k < nParticles; k++)
+    double proprat = proposalratio(d,p);
+    double waverat = findRatioJastrow(d,p);
+    return proprat*waverat;
+}
+
+double vmc::wavefunctionSquared(mat pos)
+{
+    return exp(-alpha*omega*accu(pos%pos));
+}
+double vmc::wavefunctionSquaredJastrow(mat pos)
+{
+    double exponent = 0;
+    double r;
+    for(int i = 1; i < nParticles; i++)
     {
-        for(int q = 0; q < k; q++)
+        for(int j = 0; j < i; j++)
         {
-            rnew = rDifference(suggestion,k,q);
-            rold = rDifference(positions,k,q);
-            waveexponent += (rnew/(1+beta*rnew) - rold/(1+beta*rold));
+            r = rDifference(pos,i,j);
+            exponent += r/(1+beta*r);
         }
     }
-    waveexponent *= 2*a;
-    waveexponent += alpha*omega*(-accu(suggestion%suggestion) + accu(positions%positions));
+    exponent *= 2*a;
+    return exp(exponent)*wavefunctionSquared(pos);
 
-    return exp(propexponent + waveexponent);
+}
 
+double vmc::proposalratio(int d, int p)
+{
+    return exp(0.5*(drift*drift - olddrift(d,p)*olddrift(d,p))*stepLength2
+               + positions(d,p)*(drift + olddrift(d,p))
+               - suggestion(d,p)*(drift + olddrift(d,p)));
 }
 
 /*-----------------------------------------------------------------------------------*/
@@ -346,7 +222,7 @@ double vmc::rDifference(mat pos, int p, int q)
 }
 
 
-/*----------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
 double vmc::localEnergy()
 {
     return 0.5*(1-alpha*alpha)*omega*omega*accu(positions%positions) + 2.0*alpha*omega;
@@ -546,9 +422,6 @@ void vmc::steepestDescent(int nCycles, double gamma)
             oldalpha = alpha;
             oldbeta = beta;
 
-            void (vmc::*findSuggestionPointer)(int,int);
-            double (vmc::*findRatioPointer)(int,int);
-
 
             if(useImportanceSampling)
             {
@@ -576,26 +449,15 @@ void vmc::steepestDescent(int nCycles, double gamma)
             double EBsum = 0;
 
 
-            double deltaE,dEda,dEdb,draw,ratio;
-            int particle,dimension;
+            double deltaE,dEda,dEdb;
 
 
 
-            int acceptcount = 0;
+
+
             for(int i = 0;i<nCycles;i++)
             {
-                particle = nParticles*(uniformDistribution(generator));
-                dimension = 2*uniformDistribution(generator);
-                suggestion = positions;
-                (this->*findSuggestionPointer)(dimension,particle);
-                ratio = (this->*findRatioPointer)(dimension,particle);
-                draw = uniformDistribution(generator);
-                if(ratio>draw)
-                {
-                    acceptcount++;
-                    positions = suggestion;
-                    olddrift(dimension,particle) = drift;
-                }
+                metropolisMove();
                 deltaE = localEnergyJastrowInteraction();
                 dEda = alphaDeriv();
                 dEdb = betaDeriv();
@@ -657,4 +519,127 @@ void vmc::printResults()
     //save Esum, Esum2
     cout<<"E, E^2, sigma" <<endl;
     cout<<energy<<","<<energySquared<<","<< sqrt(abs(energySquared - energy*energy)) <<endl;
+}
+
+void vmc::updatePointers()
+{
+    // Make sure function pointers match current booleans
+    // 16 cases
+    /*------------------------------------------------------------------------------*/
+
+    if ((useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
+        findRatioPointer = &vmc::findRatioImportanceJastrow;
+        localEnergyPointer = &vmc::localEnergyJastrowInteractionNumdiff;
+    }
+
+    else if ((useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(!useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
+        findRatioPointer = &vmc::findRatioImportanceJastrow;
+        localEnergyPointer = &vmc::localEnergyJastrowInteraction;
+    }
+
+    else if ((useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
+        findRatioPointer = &vmc::findRatioImportance;
+        localEnergyPointer = &vmc::localEnergyInteractionNumdiff;
+    }
+
+    else if ((useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
+        findRatioPointer = &vmc::findRatioImportanceJastrow;
+        localEnergyPointer = &vmc::localEnergyJastrowNumdiff;
+    }
+
+    else if ((!useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+        findRatioPointer = &vmc::findRatioJastrow;
+        localEnergyPointer = &vmc::localEnergyJastrowInteractionNumdiff;
+    }
+
+    else if ((useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(!useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
+        findRatioPointer = &vmc::findRatioImportance;
+        localEnergyPointer = &vmc::localEnergyInteraction;
+    }
+
+    else if ((useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(!useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
+        findRatioPointer = &vmc::findRatioImportanceJastrow;
+        localEnergyPointer = &vmc::localEnergyJastrow;
+    }
+
+    else if ((!useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(!useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+        findRatioPointer = &vmc::findRatioJastrow;
+        localEnergyPointer = &vmc::localEnergyJastrowInteraction;
+    }
+
+    else if ((useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
+        findRatioPointer = &vmc::findRatioImportance;
+        localEnergyPointer = &vmc::localEnergyNumdiff;
+    }
+
+
+    else if ((!useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+        findRatioPointer = &vmc::findRatio;
+        localEnergyPointer = &vmc::localEnergyInteractionNumdiff;
+    }
+
+    else if ((!useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+        findRatioPointer = &vmc::findRatioJastrow;
+        localEnergyPointer = &vmc::localEnergyJastrowNumdiff;
+    }
+
+    else if ((!useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+        findRatioPointer = &vmc::findRatio;
+        localEnergyPointer = &vmc::localEnergyNumdiff;
+    }
+
+    else if ((!useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(!useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+        findRatioPointer = &vmc::findRatioJastrow;
+        localEnergyPointer = &vmc::localEnergyJastrow;
+    }
+
+    else if ((!useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(!useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+        findRatioPointer = &vmc::findRatio;
+        localEnergyPointer = &vmc::localEnergyInteraction;
+    }
+
+    else if ((useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(!useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
+        findRatioPointer = &vmc::findRatioImportance;
+        localEnergyPointer = &vmc::localEnergy;
+    }
+
+    else if ((!useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(!useNumDiff))
+    {
+        findSuggestionPointer = &vmc::findSuggestionUniform;
+        findRatioPointer = &vmc::findRatio;
+        localEnergyPointer = &vmc::localEnergy;
+    }
+
+    /*-------------------------------------------------------------------------------*/
+
 }

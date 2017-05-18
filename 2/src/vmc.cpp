@@ -3,6 +3,7 @@
 #include <armadillo>
 #include <random>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <math.h>
 
@@ -51,23 +52,7 @@ void vmc::distributeParticles()
 void vmc::run(int nCycles, int blocksize)
 {
     updatePointers();
-
-    if(useImportanceSampling)
-    {
-        for(int p = 0; p<nParticles; p++)
-        {
-            for(int d=0;d<2;d++)
-            {
-                if(useJastrow)
-                    olddrift(d,p) = drifttermwithJastrow(positions,d,p);
-                else
-                    olddrift(d,p) = drifttermnoJastrow(positions,d,p);
-            }
-        }
-    }
-
-    if(useJastrow) oldwavesquared = wavefunctionSquaredJastrow(positions);
-    else oldwavesquared = wavefunctionSquared(positions);
+    updateOld();
 
     // burn-in
     for(int i = 0; i<1e5 ; i++) metropolisMove();
@@ -244,7 +229,7 @@ double vmc::localEnergyJastrow()
         }
     }
     sum *= a;
-    sum += 0.5*(1-alpha*alpha)*omega*omega*accu(positions%positions) + 2.0*alpha*omega;
+    sum += localEnergy();
     return sum;
 }
 
@@ -260,7 +245,7 @@ double vmc::localEnergyInteraction()
         }
     }
 
-    sum += 0.5*(1-alpha*alpha)*omega*omega*accu(positions%positions) + 2.0*alpha*omega;
+    sum += localEnergy();
     return sum;
 }
 
@@ -281,7 +266,7 @@ double vmc::localEnergyJastrowInteraction()
         }
     }
 
-    sum += 0.5*(1-alpha*alpha)*omega*omega*accu(positions%positions) + 2.0*alpha*omega;
+    sum += localEnergy();
     return sum;
 }
 
@@ -378,31 +363,19 @@ double vmc::drifttermwithJastrow(mat pos,int d, int p)
 /*-------------------------------------------------------------------------*/
 
 
-int vmc::blocksize(int nCycles)
+void vmc::write(int nCycles, const char* filename)
 {
-
-    // gives 341 for step 10
-    // but 3401 for step 100
-    //maybe it shouldn't stop at the first time
-    // weird
-    int block = 1;
-    int step = 10;
-    run(nCycles,block);
-    double var = energySquared - energy*energy;
-    double oldvar = 0;
-    //course grain
-    while(var>oldvar)
+    ofstream out(filename);
+    updatePointers();
+    updateOld();
+    double e;
+    for(int i = 0;i<nCycles;i++)
     {
-        oldvar = var;
-        block += step;
-        run(nCycles,block);
-        var = energySquared - energy*energy;
-        cout<<block<<" "<<var<<endl;
+        metropolisMove();
+        e = (this->*localEnergyPointer)();
+        out<<e<<endl;
     }
-    //needs finer graining.
-    block -= step;
-
-    return block;
+    out.close();
 }
 
 
@@ -423,23 +396,7 @@ void vmc::steepestDescent(int nCycles, double gamma)
             oldbeta = beta;
 
 
-            if(useImportanceSampling)
-            {
-                findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
-                findRatioPointer = &vmc::findRatioImportanceJastrow;
-                for(int p = 0; p<nParticles; p++)
-                {
-                    for(int d=0;d<2;d++)
-                    {
-                        olddrift(d,p) = drifttermwithJastrow(positions,d,p);
-                    }
-                }
-            }
-            else
-            {
-                findSuggestionPointer = &vmc::findSuggestionUniform;
-                findRatioPointer = &vmc::findRatioJastrow;
-            }
+            updateOld();
 
 
             double Esum = 0;
@@ -519,6 +476,26 @@ void vmc::printResults()
     //save Esum, Esum2
     cout<<"E, E^2, sigma" <<endl;
     cout<<energy<<","<<energySquared<<","<< sqrt(abs(energySquared - energy*energy)) <<endl;
+}
+
+void vmc::updateOld()
+{
+    if(useImportanceSampling)
+    {
+        for(int p = 0; p<nParticles; p++)
+        {
+            for(int d=0;d<2;d++)
+            {
+                if(useJastrow)
+                    olddrift(d,p) = drifttermwithJastrow(positions,d,p);
+                else
+                    olddrift(d,p) = drifttermnoJastrow(positions,d,p);
+            }
+        }
+    }
+
+    if(useJastrow) oldwavesquared = wavefunctionSquaredJastrow(positions);
+    else oldwavesquared = wavefunctionSquared(positions);
 }
 
 void vmc::updatePointers()

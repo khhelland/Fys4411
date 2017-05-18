@@ -12,7 +12,7 @@ public:
 
     void run(int,int);
 
-    int blocksize(int);
+    void write(int,const char*);
 
     void steepestDescent(int,double);
 
@@ -30,6 +30,7 @@ private:
     void distributeParticles();
 
     void updatePointers();
+    void updateOld();
 
     int metropolisMove();
 

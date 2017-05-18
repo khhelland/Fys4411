@@ -1,0 +1,291 @@
+\documentclass[a4paper,norsk,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[norsk]{babel}
+\usepackage{graphicx,mathpple, textcomp, varioref}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{braket}
+\usepackage{enumitem}
+
+\title{Fys4110: Project 2}
+\author{Knut Halvor Helland}
+\pagestyle{fancyplain}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[R]{\thepage/\pageref{LastPage}}
+\tolerance = 5000
+\hbadness = \tolerance
+\pretolerance = 2000
+\setlength{\headheight}{20pt}
+
+\newcommand{\unit}[1]{\; \mathrm{#1}}
+\newcommand{\bb}[1]{\boldsymbol{#1}}
+\newcommand{\p}{\partial}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\ddt}[2]{\frac{\dd #1}{\dd #2}}
+\newcommand{\dndt}[3]{\frac{\dd^{#3} #1}{\dd #2^{#3}}}
+\newcommand{\pddt}[2]{\frac{\p #1}{\p #2}}
+\newcommand{\pndt}[3]{\frac{\p^{#3} #1}{\p #2^{#3}}}
+\newcommand{\Rar}{\Rightarrow}
+\newcommand{\rar}{\rightarrow}
+\newcommand{\lagr}{\mathscr{L}}
+\newcommand{\ham}{\mathcal{H}}
+\newcommand{\id}{\bb{1}}
+\newcommand{\deldt}[2]{\frac{\delta #1}{\delta #2}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\f}{\frac}
+
+
+\renewcommand{\bar}{\overline}
+
+
+\begin{document}
+\maketitle{}
+\begin{abstract}
+$\ldots$
+\end{abstract}
+
+
+\section{Introduction}
+In this project I continue the study of many interacting particles in an isotropic two dimensional harmonic oscillator.
+In project 1 \cite{proj1} I used Hartree-Fock methods to construct the Slater determinant of linear combinations of single
+particle non-interacting states that minimized the energy. In this project I would like to improve this estimate of the ground state
+by adding a Jastrow factor. Then the energy cannot be found with Hartree-Fock methods, but rather from direct integration of the Hamiltonean.
+I will do this using the Metropolis algorithm to pick out integration points.
+I will add a Jastrow factor with a free parameter, minimize the energy with respect to this parameter, and
+then calculate the energy of this new approximation of the ground state.
+In addition I will study the 2 particle case with a singly parametrized symmetric wavefunction instead of the Slater determinant.
+
+
+\section{Physical Problem}
+The full Hamiltonean of the problem with $N$ particles and using atomic units is
+\be
+H = \sum_i^N -\f{1}{2}\nabla^2_i + \f{1}{2}\omega^2r^2_i + \sum_{i<j}^N\f{1}{r_{ij}}, \label{ham}
+\ee
+where $r_{ij} = |\bb{r}_i-\bb{r}_j|$.
+
+\subsection{2 Particle Case}
+For the two particle case I will aproximate the ground state with the parametrized trial wavefunction
+\be
+\psi_T = A\exp\left(-\alpha\omega(r_1^2 + r_2^2) -\f{r_{12}}{1+\beta r_{12}}\right),\label{2pw}
+\ee
+with $\alpha$ and $\beta$ as free parameters.
+
+\subsection{Slater case}
+For the many particle case we will use a Slater determinant constructed with Hartree-Fock methods as described in \cite{proj1}.
+We will multiply this with a Jastrow factor with one free parameter.
+
+\be
+\psi_T = A S\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right),\label{npw}
+\ee
+where $S$ is the Slater determinant, and $a_{ij}$ is 1 when the particles have anti-paralell spins and $1/3$ when paralell.
+
+\section{Variational Monte-Carlo}
+
+
+% wavefunction, slater, jastrow
+
+
+
+\section{The Metropolis Algorithm}
+
+The Metropolis algorithm is an algorithm for computing expectation values for functions of many variables efficiently.
+It is based on semi-randomly walking through the integration space and finding the value of the function at each point.
+Let \(F(x_1,\ldots,x_N)\) be the function we wish to find the expectation value of. Then
+\be
+\braket{F} = \f{\int F(x_1,\ldots,x_N)p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k}{\int p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k}, \label{exp}
+\ee
+where \(p(x_1,\ldots,x_N)\) is the (generally) non-normalized probability density function. In our case \(p\) is \(|\psi|^2\).
+One advantage with this method is that it does not require explicit normalization of the probalility density.
+
+
+
+\subsection{Detailed Balance}
+The Metropolis algorithm may be derived by demanding that the Markov chain exhibits detailed balance.
+The criterion for detailed balance is
+\be
+P(a)P(b|a) = P(b)P(a|b),
+\ee
+or rewritten
+\be
+\f{P(a)}{P(b)} = \f{P(a|b)}{P(b|a)}.
+\ee
+We may split \(P(a|b) = G(a|b)A(a|b)\), where \(G(a|b)\) is the probability of proposing a move from $b$ to $a$, while
+$A(a|b)$ is the probability of accepting a proposed move from $b$ to $a$. The the detailed balance requirement may be rewritten as
+\be
+\f{A(a|b)}{A(b|a)} = \f{P(a)G(b|a)}{P(b)G(a|b)}.
+\ee
+Now we choose an acceptance ratio that satisfies this requirement. The Metropolis choice is to use
+\be
+A(a|b) = \mathrm{min}\left(1,\f{P(a)G(b|a)}{P(b)G(a|b)}\right).\label{arat}
+\ee
+
+So the Metropolis algorithm for drawing points from a probability distrobution is
+\begin{enumerate}
+\item
+  Draw a proposed move from the proposal distribution.
+\item
+  Evaluate the acceptance ratio $a$ from equation \ref{arat}.
+\item
+  Draw a random number $0 \leq r < 1$ from a uniform distribution.
+\item
+  If $a>r$ accept the move. Else reject the move.
+\item
+  Save position
+\item
+  return to point 1.
+\end{enumerate}
+  
+  
+
+\subsection{Symmetric Proposal Density}
+
+If the proposal probality $G(a|b) = G(b|a)$ the proposal distribution is called symmetric and drops out of the acceptance ratio.
+Thus there is less to calculate for each loop in the algortihm. However symmetric proposal densities lead to many proposed steps being rejected,
+and thus to higher corelations between the points.
+
+
+\subsection{Importance Sampling}
+
+If we instead choose a non-symmetric proposal distribution we may choose one to maximise the acceptancerate.
+If we choose a proposaldistribution so that the probability of proposing a move into an area with a higher probability is higher than
+the probability of proposing a move into an area with a lower probability. In other words
+if $P(a)>P(b)$ then $G(a|b)>G(b|a)$.
+
+\subsection{Local Energy}
+In quantum mechanics the probability distribution is given by $|\psi|^2$ and the expectation value for an operator $O$ is given by
+\be
+\braket{O} = \f{\int\psi^*O\psi\prod_i\dd x_i}{\int|\psi|^2\prod_i\dd x_i},
+\ee
+This is not exactly on the form of equation \ref{exp}, but it can be rewritten in terms of local variables given by
+\be
+O_L = \f{1}{\psi}O\psi, \label{localdef}
+\ee
+so that the expectation value is
+\be
+\braket{O} =  \f{\int|\psi|^2O_L\prod_i\dd x_i}{\int|\psi|^2\prod_i\dd x_i}.
+\ee
+So the expectation value of the energy is given by
+\be
+\braket{E} =  \f{\int|\psi|^2E_L\prod_i\dd x_i}{\int|\psi|^2\prod_i\dd x_i},
+\ee
+with
+\be
+E_L = \f{1}{\psi}H\psi, \label{localEdef}.
+\ee
+In the two particle case with hamiltonean given by equation \ref{ham} and trial wavefunction by equation \ref{2pw} the local energy is given by
+\be
+E_L(\bb{r_1},\bb{r_2}) = \left[\f{1}{2}(1- \alpha)\omega(r_1^2 + r_2^2) + 2\alpha\omega\right]  - \f{a}{(1+\beta r_{12})^2}\left[\f{a}{(1+\beta r_{12})^2}+  \f{1}{r_{12}} - \f{2\beta}{(1+\beta r_{12})} -\alpha\omega r_{12}\right] + \f{1}{r_{12}},
+\ee
+as shown in appendix \ref{applap}.
+\section{Implementation}
+
+\subsection{Structure}
+\subsection{Paralellization}
+
+\section{Cost}
+
+\section{Accuracy}
+
+\subsection{Blocking}
+
+\section{Benchmarks}
+
+\subsection{2 Particle Case}
+A first test of the code is to check that when the interaction and jastrow factor are turned off and $\alpha = 1$ the energy is 2 with variance 0.
+
+\section{Results}
+
+\section{Discussion}
+
+\section{Conclusion}
+
+
+
+\appendix
+\section{Derivatives of the 2 particle trial wavefunction}
+In the course of the project we needed analytical expressions for different derivatives of the 2 particle trial wavefunction. I have collected
+the differentiations here.
+Trial wave function is
+\[\psi_T(\bb{r_1},\bb{r_2}) = C\exp\left(-\alpha\omega(r_1^2+r_2^2)/2\right)\exp\left(\f{ar_{12}}{1+\beta r_{12}}\right).\]
+
+\subsection{Gradient}
+In order to compute the driftforce for importance sampling we needed
+\[\f{1}{\psi_T}\ddt{\psi_T}{z},\]
+where \(z_i = x_1,x_2,y_1,y_2\).
+As \(\psi_T\) is an exponential
+\begin{align*}
+  \f{1}{\psi_T}\ddt{\psi_T}{z_i} &= \ddt{}{z_i}\left(-\f{1}{2}\alpha\omega(r_1^2+r_2^2) + \f{ar_{12}}{1+\beta r_{12}}\right)\\
+  &= -\alpha\omega z_i + a\left(\f{1}{1+\beta r_{12}} - \f{r_{12}\beta}{(1+\beta r_{12})^2}\right)\pddt{r_{12}}{z_i}\\
+  &= -\alpha\omega z_i + \f{a}{(1+\beta r_{12})^2}\pddt{r_{12}}{z_i}\\
+  &= -\alpha\omega z_i + \f{a}{(1+\beta r_{12})^2}\f{(z_i-z_j)}{r_{12}},\\
+\end{align*}
+where \(z_j\) is the coordinate of the other particle along the same dimension as \(z_i\), so for example when
+\(z_i=x_2\), \(z_j = x_1\).
+
+\subsection{Laplacian}\label{applap}
+
+The local energy is defined as
+\[E_L(\bb{r_1},\bb{r_2}) = \f{1}{\psi_T}H\psi_T.\]
+In our case the Hamiltonean is
+\[H = \sum_{i=1}^2-\f{1}{2}\nabla_i^2+\f{1}{2}\omega^2r_i^2 + \f{1}{r_{12}}.\]
+The laplacian is
+\[\sum_i\nabla^2 = \sum_i\pndt{}{z_i}{2},\]
+where \(z_i\) is the same as above.
+
+Again since \(\psi_T\) is an exponential we have
+\begin{align*}
+  \f{1}{\psi_T}\pndt{\psi_T}{z_i}{2} &= \pndt{}{z_i}{2}\left(-\alpha\omega(r_1^2+r_2^2)/2 + \f{ar_{12}}{1+\beta r_{12}}\right) +
+    \left(\pddt{}{z_i}\left(-\alpha\omega(r_1^2+r_2^2)/2 + \f{ar_{12}}{1+\beta r_{12}}\right)\right)^2\\
+    &= \pddt{}{z_i}\left(-\alpha\omega z_i + \f{a}{(1+\beta r_{12})^2}\f{(z_i-z_j)}{r_{12}}\right) +
+    \left(-\alpha\omega z_i + \f{a}{(1+\beta r_{12})^2}\f{(z_i-z_j)}{r_{12}}\right)^2\\
+    &= -\alpha\omega + \f{a}{(1+\beta r_{12})^2r_{12}} - \f{2a\beta(z_i-z_j)^2}{(1+\beta r_{12})^3r_{12}^2}
+    - \f{a(z_i-z_j)^2}{(1+\beta r_{12})^2r_{12}^3} + \alpha^2\omega^2z_i^2 -
+    \f{2\alpha\omega a z_i(z_i-z_j)}{(1+\beta r_{12})^2r_{12}} + \f{a^2(z_i-z_j)^2}{(1+\beta r_{12})^4r_{12}^2}.
+\end{align*}
+So, because the $\psi_T$ is symmetric under $1\leftrightarrow 2$ and $x\leftrightarrow y$:
+
+\[\f{1}{\psi_T}\sum_i\nabla^2_i\psi_T = \alpha\omega(r_1^2 + r_2^2) -4\alpha\omega  + \f{2a^2}{(1+\beta r_{12})^4}+  \f{4a}{(1+\beta r_{12})^2r_{12}} - \f{4a\beta}{(1+\beta r_{12})^3} -
+\f{2a}{(1+\beta r_{12})^2r_{12}} -\f{2\alpha\omega a r_{12}}{(1+\beta r_{12})^2}\]
+and finally:
+\[\f{1}{\psi_T}\sum_i\nabla^2_i\psi_T = \alpha\omega(r_1^2 + r_2^2) -4\alpha\omega  + \f{2a}{(1+\beta r_{12})^2}\left[\f{a}{(1+\beta r_{12})^2}+  \f{1}{r_{12}} - \f{2\beta}{(1+\beta r_{12})} -\alpha\omega r_{12}\right]\]
+
+Using this expression we have the local energy as
+\[E_L(\bb{r_1},\bb{r_2}) = \left[\f{1}{2}(1- \alpha)\omega(r_1^2 + r_2^2) + 2\alpha\omega\right]  - \f{a}{(1+\beta r_{12})^2}\left[\f{a}{(1+\beta r_{12})^2}+  \f{1}{r_{12}} - \f{2\beta}{(1+\beta r_{12})} -\alpha\omega r_{12}\right] + \f{1}{r_{12}},\]
+where the second term contains the  terms from the  Jastrow-factor and the cross term and the third is the interaction term.
+
+\subsection{Derivatives w.r.t \(\alpha\) and \(\beta\)}
+In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the derivatives of \(\psi_T\) with respect to these.
+\[  \f{1}{\psi_T}\pddt{\psi_T}{\alpha} = -\f{1}{2}\omega(r_1^2 + r_2^2).\]
+\[  \f{1}{\psi_T}\pddt{\psi_T}{\beta} = -\f{ar_{12}^2}{(1+\beta r_{12})^2}.\]
+
+  
+%% \begin{table}
+%%   \caption{}\label{kal1}
+%%   \begin{center}
+%%     \begin{tabular}{|r|r|}
+      
+%%       \hline
+%%       \textbf{masse/g}& \textbf{Utslag/mm}\\ \hline
+%%     \end{tabular}
+%%   \end{center}
+%% \end{table}
+      
+
+
+
+
+%% \begin{figure}
+%%   \begin{center}
+%%     \fbox{\includegraphics[width = 12cm]{}}
+%%   \end{center}
+%%   \caption{}\label{}
+%% \end{figure}
+
+
+\end{document}

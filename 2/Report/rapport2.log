@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.1.27)  16 MAY 2017 18:57
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.1.27)  19 MAY 2017 19:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -756,27 +756,27 @@ Package: enumitem 2011/09/28 v3.5.2 Customized lists
 ) (./rapport2.aux)
 \openout1 = `rapport2.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 47.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 47.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 52.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 52.
  (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Try loading font information for T1+ppl on input line 47.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Try loading font information for T1+ppl on input line 52.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ppl.fd
 File: t1ppl.fd 2001/06/04 font definitions for T1/ppl.
@@ -811,9 +811,9 @@ e
 ))
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 47.
+(lastpage)             ! on input line 52.
 \AtBeginShipoutBox=\box30
-Package hyperref Info: Link coloring OFF on input line 47.
+Package hyperref Info: Link coloring OFF on input line 52.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -824,70 +824,61 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 \c@section@level=\count119
 LaTeX Info: Redefining \Ref on input line 513.
 )
-LaTeX Info: Redefining \ref on input line 47.
-LaTeX Info: Redefining \pageref on input line 47.
-LaTeX Info: Redefining \nameref on input line 47.
+LaTeX Info: Redefining \ref on input line 52.
+LaTeX Info: Redefining \pageref on input line 52.
+LaTeX Info: Redefining \nameref on input line 52.
 
 (./rapport2.out) (./rapport2.out)
 \@outlinefile=\write3
 \openout3 = `rapport2.out'.
 
-LaTeX Info: Redefining \Ref on input line 47.
-LaTeX Font Info:    Try loading font information for OT1+zpple on input line 48
+LaTeX Info: Redefining \Ref on input line 52.
+LaTeX Font Info:    Try loading font information for OT1+zpple on input line 53
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1zpple.fd
 File: ot1zpple.fd 1999/12/20 Fontinst v1.801 font definitions for OT1/zpple.
 )
-LaTeX Font Info:    Try loading font information for OML+zpple on input line 48
+LaTeX Font Info:    Try loading font information for OML+zpple on input line 53
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlzpple.fd
 File: omlzpple.fd 1999/12/20 Fontinst v1.801 font definitions for OML/zpple.
 )
-LaTeX Font Info:    Try loading font information for OMS+zpple on input line 48
+LaTeX Font Info:    Try loading font information for OMS+zpple on input line 53
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omszpple.fd
 File: omszpple.fd 1999/12/20 Fontinst v1.801 font definitions for OMS/zpple.
 )
-LaTeX Font Info:    Try loading font information for OMX+zpple on input line 48
+LaTeX Font Info:    Try loading font information for OMX+zpple on input line 53
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxzpple.fd
 File: omxzpple.fd 1999/12/20 Fontinst v1.801 font definitions for OMX/zpple.
 )
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <9> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 49.
-LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/ppl/b/n' tried instead on input line 54.
-LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <10> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 56.
-
-
-LaTeX Warning: Citation `proj1' on page 1 undefined on input line 56.
-
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 59.
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 72.
-
-LaTeX Warning: Citation `proj1' on page 1 undefined on input line 80.
-
-[1
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 77.
+ [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
-Overfull \hbox (14.21971pt too wide) detected at line 184
+Overfull \hbox (14.21971pt too wide) detected at line 202
 \OML/zpple/m/it/10 E[]\OT1/zpple/m/n/10 ([]\OML/zpple/m/it/10 ; []\OT1/zpple/m/
 n/10 ) = [] \OMS/zpple/m/n/10 ^^@ [] [] \OT1/zpple/m/n/10 + []\OML/zpple/m/it/1
 0 ;
  []
 
-[3]
-Overfull \hbox (62.67766pt too wide) in paragraph at lines 250--250
+[3] [4]
+Overfull \hbox (62.67766pt too wide) in paragraph at lines 275--275
 [] 
  []
 
-[4]
-Overfull \hbox (39.02135pt too wide) detected at line 254
+
+Overfull \hbox (39.02135pt too wide) detected at line 279
 [] [] \OMS/zpple/m/n/10 r[]\OML/zpple/m/it/10  [] \OT1/zpple/m/n/10 = \OML/zppl
 e/m/it/10 !\OT1/zpple/m/n/10 (\OML/zpple/m/it/10 r[] \OT1/zpple/m/n/10 + \OML/
 zpple/m/it/10 r[]\OT1/zpple/m/n/10 ) \OMS/zpple/m/n/10 ^^@ \OT1/zpple/m/n/10 4\
@@ -896,7 +887,7 @@ OML/zpple/m/it/10 ! \OT1/zpple/m/n/10 + [] + [] \OMS/zpple/m/n/10 ^^@ [] ^^@ [
  []
 
 
-Overfull \hbox (14.21971pt too wide) detected at line 259
+Overfull \hbox (14.21971pt too wide) detected at line 284
 \OML/zpple/m/it/10 E[]\OT1/zpple/m/n/10 ([]\OML/zpple/m/it/10 ; []\OT1/zpple/m/
 n/10 ) = [] \OMS/zpple/m/n/10 ^^@ [] [] \OT1/zpple/m/n/10 + []\OML/zpple/m/it/1
 0 ;
@@ -904,58 +895,89 @@ n/10 ) = [] \OMS/zpple/m/n/10 ^^@ [] [] \OT1/zpple/m/n/10 + []\OML/zpple/m/it/1
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 262.
+(hyperref)                removing `math shift' on input line 287.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `\alpha' on input line 262.
+(hyperref)                removing `\alpha' on input line 287.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 262.
+(hyperref)                removing `math shift' on input line 287.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `\beta' on input line 262.
+(hyperref)                removing `\beta' on input line 287.
+
+[5]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 311.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\alpha' on input line 311.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 311.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\beta' on input line 311.
+
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 323.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+Underfull \hbox (badness 10000) in paragraph at lines 327--330
+\T1/cmtt/m/n/10 CompPhysics / ComputationalPhysics2 / blob / gh-[]pages / doc /
+ Literature / lectures2015 . pdf$[] \T1/ppl/m/n/10 on
+ []
+
+
+Underfull \hbox (badness 5741) in paragraph at lines 331--334
+[]\T1/ppl/m/n/10 M. Hjort-Jensen,\T1/ppl/m/it/10 Computational Phy-sics: Hartre
+e-Fock met-hods and in-tro-duc-tion to Many-body
+ []
 
 
 AED: lastpage setting LastPage
-[5]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 291.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 291.
+[6]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 363.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 363.
  (./rapport2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 291.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 291.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 363.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 363.
 Package rerunfilecheck Info: File `rapport2.out' has not changed.
-(rerunfilecheck)             Checksum: 444C84E4A96516F314ECF90012330C5B;1454.
-
-
-LaTeX Warning: There were undefined references.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 291.
+(rerunfilecheck)             Checksum: 8654A5E4CFE6B46EA1E27F86CC950989;1861.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 363.
  ) 
 Here is how much of TeX's memory you used:
- 7902 strings out of 493029
- 110490 string characters out of 6136234
- 209555 words of memory out of 5000000
- 11229 multiletter control sequences out of 15000+600000
- 44245 words of font info for 104 fonts, out of 8000000 for 9000
+ 7965 strings out of 493029
+ 111525 string characters out of 6136234
+ 209811 words of memory out of 5000000
+ 11260 multiletter control sequences out of 15000+600000
+ 48730 words of font info for 115 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 29i,11n,43p,284b,379s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
-public/amsfonts/euler/eurm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw
-/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/up
-lbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></
-usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/urw/symbol/usyr.pfb>
-Output written on rapport2.pdf (5 pages, 114364 bytes).
+ 29i,11n,43p,289b,379s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texliv
+e/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/eule
+r/eurm10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive
+/texmf-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/urw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/urw/palatino/uplri8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/symbol
+/usyr.pfb>
+Output written on rapport2.pdf (6 pages, 155848 bytes).
 PDF statistics:
- 213 PDF objects out of 1000 (max. 8388607)
- 194 compressed objects within 2 object streams
- 51 named destinations out of 1000 (max. 500000)
- 201 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 276 PDF objects out of 1000 (max. 8388607)
+ 254 compressed objects within 3 object streams
+ 68 named destinations out of 1000 (max. 500000)
+ 249 words of extra memory for PDF output out of 10000 (max. 10000000)
 

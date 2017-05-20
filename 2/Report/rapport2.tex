@@ -32,6 +32,9 @@
 \newcommand{\pndt}[3]{\frac{\p^{#3} #1}{\p #2^{#3}}}
 \newcommand{\Rar}{\Rightarrow}
 \newcommand{\rar}{\rightarrow}
+\newcommand{\uar}{\uparrow}
+\newcommand{\lar}{\leftarrow}
+\newcommand{\dar}{\downarrow}
 \newcommand{\lagr}{\mathscr{L}}
 \newcommand{\ham}{\mathcal{H}}
 \newcommand{\id}{\bb{1}}
@@ -39,6 +42,8 @@
 \newcommand{\be}{\begin{equation}}
 \newcommand{\ee}{\end{equation}}
 \newcommand{\f}{\frac}
+\newcommand{\Det}{\mathrm{Det}}
+\newcommand{\sgn}[1]{(-1)^{|#1|}}
 
 
 \renewcommand{\bar}{\overline}
@@ -77,13 +82,23 @@ For the two particle case I will aproximate the ground state with the parametriz
 with $\alpha$ and $\beta$ as free parameters.
 
 \subsection{Slater case}
-For the many particle case we will use a Slater determinant constructed with Hartree-Fock methods as described in \cite{proj1}.
-We will multiply this with a Jastrow factor with one free parameter.
+
+For the many particle case we will use the non-interacting ground state Slater determinant multiplied with a Jastrow factor with one free parameter.
+We could used Slater determinants from linear combinations of different non-interacting single particle states as found in \cite{proj1} by Hartree-Fock methods,
+however this turned out to be to complicated. Instead we will compare the Hartree-Fock approach to adding a Jastrow factor to the ground state.
 
 \be
-\psi_T = A S\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right),\label{npw}
+\psi_T = A \mathrm{Det}\left(\psi_1\ldots\psi_N;\bb{r}_1\ldots\bb{r}_N\right)\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right),
 \ee
-where $S$ is the Slater determinant, and $a_{ij}$ is 1 when the particles have anti-paralell spins and $1/3$ when paralell.
+where  $\psi_i$ is the non-interacting single particle state with the $i$th lowest energy,
+and $a_{ij}$ is $1$ when the particles have anti-paralell spins and $1/3$ when paralell.
+Since we are talking about spin $1/2$ electrons there are two spin configurations for each spatial configuration for the single particle states that go into the Slater determinant.
+However the hamiltonean \ref{ham} is independent of spin. Wen can exploit this to simplify the wavefunction we use. If we let
+the $N/2$ first particles be in one spin state and the next $N/2$ in the other we may use a product of Slater determinants with only the particles in the same spin state in each:
+\be
+\psi_T = A\mathrm{Det}\left(\psi_{1\dar}\ldots\psi_{N/2\dar};\bb{r}_1\ldots\bb{r}_{N/2}\right)\mathrm{Det}\left(\psi_{1\uar}\ldots\psi_{N/2\uar};\bb{r}_{N/2+1}\ldots\bb{r}_N\right)\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right).\label{npw}
+\ee
+In the 2 particle case this reduces to equation \ref{2pw} with $\alpha = 1$.
 
 \section{Variational Monte-Carlo}
 
@@ -178,11 +193,23 @@ with
 \be
 E_L = \f{1}{\psi}H\psi, \label{localEdef}.
 \ee
+
+\subsection{2 Particle Case}
+
 In the two particle case with hamiltonean given by equation \ref{ham} and trial wavefunction by equation \ref{2pw} the local energy is given by
 \be
 E_L(\bb{r_1},\bb{r_2}) = \left[\f{1}{2}(1- \alpha)\omega(r_1^2 + r_2^2) + 2\alpha\omega\right]  - \f{a}{(1+\beta r_{12})^2}\left[\f{a}{(1+\beta r_{12})^2}+  \f{1}{r_{12}} - \f{2\beta}{(1+\beta r_{12})} -\alpha\omega r_{12}\right] + \f{1}{r_{12}},
 \ee
 as shown in appendix \ref{applap}.
+
+\subsection{Slater Case}
+In the $N$ particle case with hamiltonean given by equation \ref{ham} and trial wavefunction by equation \ref{npw} the local energy is given by
+
+
+
+
+
+
 \section{Implementation}
 
 \subsection{Structure}
@@ -209,18 +236,16 @@ A first test of the code is to check that when the interaction and jastrow facto
 
 \appendix
 \section{Derivatives of the 2 particle trial wavefunction}
-In the course of the project we needed analytical expressions for different derivatives of the 2 particle trial wavefunction. I have collected
+In the course of the project we needed analytical expressions for different derivatives of the 2 particle trial wavefunction \ref{2pw}. I have collected
 the differentiations here.
-Trial wave function is
-\[\psi_T(\bb{r_1},\bb{r_2}) = C\exp\left(-\alpha\omega(r_1^2+r_2^2)/2\right)\exp\left(\f{ar_{12}}{1+\beta r_{12}}\right).\]
 
-\subsection{Gradient}
+\subsection{Gradient}\label{app2pg}
 In order to compute the driftforce for importance sampling we needed
-\[\f{1}{\psi_T}\ddt{\psi_T}{z},\]
+\[\f{1}{\psi_T}\pddt{\psi_T}{z},\]
 where \(z_i = x_1,x_2,y_1,y_2\).
 As \(\psi_T\) is an exponential
 \begin{align*}
-  \f{1}{\psi_T}\ddt{\psi_T}{z_i} &= \ddt{}{z_i}\left(-\f{1}{2}\alpha\omega(r_1^2+r_2^2) + \f{ar_{12}}{1+\beta r_{12}}\right)\\
+  \f{1}{\psi_T}\pddt{\psi_T}{z_i} &= \pddt{}{z_i}\left(-\f{1}{2}\alpha\omega(r_1^2+r_2^2) + \f{ar_{12}}{1+\beta r_{12}}\right)\\
   &= -\alpha\omega z_i + a\left(\f{1}{1+\beta r_{12}} - \f{r_{12}\beta}{(1+\beta r_{12})^2}\right)\pddt{r_{12}}{z_i}\\
   &= -\alpha\omega z_i + \f{a}{(1+\beta r_{12})^2}\pddt{r_{12}}{z_i}\\
   &= -\alpha\omega z_i + \f{a}{(1+\beta r_{12})^2}\f{(z_i-z_j)}{r_{12}},\\
@@ -264,7 +289,54 @@ In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the d
 \[  \f{1}{\psi_T}\pddt{\psi_T}{\alpha} = -\f{1}{2}\omega(r_1^2 + r_2^2).\]
 \[  \f{1}{\psi_T}\pddt{\psi_T}{\beta} = -\f{ar_{12}^2}{(1+\beta r_{12})^2}.\]
 
-  
+\section{Derivatives of the N particle trial wavefunction}
+In the course of the project we needed analytical expressions for different derivatives of the N particle trial wavefunction \ref{npw}. I have collected
+the differentiations here.
+
+\subsection{Gradient}
+We note that for any coordinate $z_i$ only one of the determinants depends on it. So
+\be
+\pddt{\psi_T}{z_i} = \pddt{\Det}{z_i}J + \Det\pddt{J}{z_i}.
+\ee
+From section \ref{app2pg} it is clear that
+\be
+\pddt{J}{z_i} = \left(\sum_{j\neq i}\f{a_{ij}}{(1+\beta r_{ij})^2}\f{(z_i-z_j)}{r_{ij}}\right),
+\ee
+while
+\be
+\pddt{\Det}{z_i} = \sum_{\sigma\in S_{N/2}} \sgn{\sigma}\f{1}{\psi_{\sigma(i)}(\bb{r_i})}\pddt{\psi_{\sigma(i)}(\bb{r_i})}{z_i}\psi_{\sigma(1)}(\bb{r}_1)\ldots\psi_{\sigma(N/2)}(\bb{r}_{N/2})
+\ee
+\subsection{Laplacian}\label{applapn}
+
+\subsection{Derivatives w.r.t \(\alpha\) and \(\beta\)}
+In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the derivatives of \(\psi_T\) with respect to these.
+\[  \f{1}{\psi_T}\pddt{\psi_T}{\alpha} = -\f{1}{2}\omega(r_1^2 + r_2^2).\]
+\[  \f{1}{\psi_T}\pddt{\psi_T}{\beta} = -\f{ar_{12}^2}{(1+\beta r_{12})^2}.\]
+
+
+
+
+
+\begin{thebibliography}{1}
+
+\bibitem{proj1}
+  K. Helland ``Fys4411: Project 1'' available at \url{https://github.com/khhelland/Fys4411/blob/master/1/rapport.pdf}
+\bibitem{analytho}
+  E. Anisimovas and A. Matulis, ``Energy spectra of few-electron quantum dots.'', J. Phys.,10:601 615, 1998.
+\bibitem{mortenbok}
+  M. Hjort-Jensen, \emph{Computational Physics: Lecture Notes Fall 2015}, found at
+  \url{https://github.com/CompPhysics/ComputationalPhysics2/blob/gh-pages/doc/Literature/lectures2015.pdf}
+  on the 31/01/17
+\bibitem{mortenslides}
+  M. Hjort-Jensen,\emph{Computational Physics: Hartree-Fock methods and introduction to Many-body Theory}
+  found at \url{http://compphysics.github.io/ComputationalPhysics2/doc/pub/basicMB/pdf/basicMB-print.pdf}
+  on the 16/03/17
+\bibitem{simen}
+  Simen Kvaal, \emph{Lecture notes for Fys-Kjm4480: Quantum Mechanics for many-particle systems},
+  october 2016, not published.
+\end{thebibliography}
+
+
 %% \begin{table}
 %%   \caption{}\label{kal1}
 %%   \begin{center}

@@ -1,12 +1,12 @@
 #include <iostream>
-#include <vmc.h>
+#include <slatervmc.h>
 #include <time.h>
 
 
 
 using namespace std;
 
-int main()
+int main2()
 {
 
 
@@ -15,16 +15,15 @@ int main()
     start = clock();
 
 
-    vmc a(2,     // N
+    slatervmc a(2,     // N
           1,     // steplength
-          1,   // alpha
           1,     // omega
           0.4 ); // beta
     a.useImportanceSampling = 0;
     a.useInteraction = 1;
     a.useJastrow = 0;
-    a.useNumDiff = 0;
 
+//     cout<<"set up complete"<<endl;
 
 
 //     a.writeEnergies(1e4,"blocking.dat");

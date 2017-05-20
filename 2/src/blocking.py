@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-    
 
-blocks = np.loadtxt("blocking.dat")   #read
+# samples = np.loadtxt("blocking.dat")   #read
 
-# blocks = np.arange(1e6)
+samples = np.random.normal(3,0.001,int(1e6))
+
 nBlocks = len(blocks)
 nSteps = int(np.log10(nBlocks))
 
@@ -14,21 +14,18 @@ nSteps = int(np.log10(nBlocks))
 # mean2 = mean*mean
 step = 2
 
-print nBlocks
+print nBlocks, blocks.mean(), (blocks*blocks).mean(), np.sqrt(blocks.var())
 
-sizes = sorted([(2**i)*(5**j) for j in range(nSteps+1) for i in range(nSteps+1)])
-
+sizes = sorted([(2**i)*(5**j) for j in range(nSteps) for i in range(nSteps)])
+print sizes
 varlist = []
 
 for size in sizes:
     newblocks = np.zeros((nBlocks/size))
-    for i in range(size):
-        newblocks += blocks[i::size]
+    newblocks = blocks((
     newblocks /= size
     varlist.append(newblocks.var())
-    print newblocks.var()
-
-
+#    print newblocks.var()
 
 # print blocks.var()             
 

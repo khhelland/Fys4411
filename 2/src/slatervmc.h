@@ -1,14 +1,13 @@
-#ifndef VMC_H
-#define VMC_H
+#ifndef SLATERVMC_H
+#define SLATERVMC_H
+
 #include <armadillo>
-#include <random>
 
-
-class vmc
+class slatervmc
 {
 public:
-    vmc();
-    vmc(int nParticles, double, double alph, double w, double b);
+    slatervmc();
+    slatervmc(int nParticles, double, double w, double b);
 
     void run(int,int);
 
@@ -28,9 +27,11 @@ public:
 private:
 
     void distributeParticles();
+    void setupMatrices();
 
     void updatePointers();
     void updateOld();
+    void updateSlaters(int);
 
     int metropolisMove();
 
@@ -52,11 +53,7 @@ private:
     double localEnergy();
     double localEnergyJastrow();
     double localEnergyInteraction();
-    double localEnergyNumdiff();
     double localEnergyJastrowInteraction();
-    double localEnergyJastrowNumdiff();
-    double localEnergyInteractionNumdiff();
-    double localEnergyJastrowInteractionNumdiff();
 
     double wavefunction(arma::mat);
     double wavefunctionJastrow(arma::mat);
@@ -67,7 +64,6 @@ private:
     double drifttermwithJastrow(arma::mat,int,int);
     double drifttermnoJastrow(arma::mat,int,int);
 
-    double alphaDeriv();
     double betaDeriv();
 
     std::default_random_engine generator;
@@ -78,12 +74,19 @@ private:
     arma::mat positions;
     arma::mat suggestion;
 
+    arma::mat slaterUp;
+    arma::mat slaterDown;
+    arma::mat inverseUp;
+    arma::mat inverseDown;
+
+
     int nParticles;
+    int nOrbitals;
 
     double stepLength;
     double stepLength2;
 
-    double alpha;
+
     double omega;
     double beta = 1;
 
@@ -100,10 +103,9 @@ private:
     double AcceptanceRatio;
 
     //(void*)(int,int) function;
-    double (vmc::*localEnergyPointer)() = nullptr;
-    void (vmc::*findSuggestionPointer)(int,int) = nullptr;
-    double (vmc::*findRatioPointer)(int,int) = nullptr;
-
+    double (slatervmc::*localEnergyPointer)() = nullptr;
+    void (slatervmc::*findSuggestionPointer)(int,int) = nullptr;
+    double (slatervmc::*findRatioPointer)(int,int) = nullptr;
 };
 
-#endif // VMC_H
+#endif // SLATERVMC_H

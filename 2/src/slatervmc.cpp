@@ -25,7 +25,7 @@ using namespace arma;
  * dirstribute
  * a func -
  * steepest
- *
+ *think about storing rdifference in sp_mat
  */
 
 
@@ -192,7 +192,7 @@ double slatervmc::findRatio(int d, int p)
 
 double slatervmc::findRatioJastrow(int d ,int p)
 {
-
+    //funker for 2
     double exponent = 0;
     double rn,ro,av;
     for(int i = 0; i < nParticles; i++)
@@ -221,26 +221,6 @@ double slatervmc::findRatioImportanceJastrow(int d, int p)
     return proposalratio(d,p)*findRatioJastrow(d,p);
 }
 
-double slatervmc::wavefunctionSquared(mat pos)
-{
-    return exp(-omega*accu(pos%pos));
-}
-double slatervmc::wavefunctionSquaredJastrow(mat pos)
-{
-    double exponent = 0;
-    double r;
-    for(int i = 1; i < nParticles; i++)
-    {
-        for(int j = 0; j < i; j++)
-        {
-            r = rDifference(pos,i,j);
-            exponent += a(i,j)*r/(1+beta*r);
-        }
-    }
-    exponent *= 2;
-    return exp(exponent)*wavefunctionSquared(pos);
-
-}
 
 double slatervmc::proposalratio(int d, int p)
 {
@@ -262,89 +242,134 @@ double slatervmc::rDifference(mat pos, int p, int q)
 /*------------------------------------------------------------------------------------*/
 double slatervmc::localEnergy()
 {
-    return 2.0*omega;
+    return kinetic() + potential();
 }
 
 double slatervmc::localEnergyJastrow()
 {
-    double sum = 0;
-    double r;
-    double b;
-    double av;
-    for(int i = 1; i < nParticles; i++)
-    {
-        for(int j = 0; j < i; j++)
-        {
-            r = rDifference(positions,i,j);
-            b = 1.0/(1+beta*r);
-            av = a(i,j);
-            sum += av*b*b*(-av*b*b - 1.0/r + 2*beta*b + omega*r);
-
-        }
-    }
-    sum += localEnergy();
-    return sum;
+    return kineticJastrow() + potential();
 }
 
 double slatervmc::localEnergyInteraction()
 {
+    return kinetic() + potentialInteraction();
+}
+
+double slatervmc::localEnergyJastrowInteraction()
+{
+    return kineticJastrow() + potentialInteraction();
+}
+
+
+
+
+double slatervmc::kinetic()
+{
+    return -0.5*slaterlaplace();
+}
+double slatervmc::kineticJastrow()
+{
+    return -0.5*(slaterlaplace() + jastrowlaplace() + crosslaplace());
+}
+double slatervmc::potential()
+{
+    return 0.5*omega*omega*accu(positions%positions);
+}
+double slatervmc::potentialInteraction()
+{
     double sum = 0;
     for(int i = 1; i < nParticles; i++)
     {
         for(int j = 0; j < i; j++)
         {
-            sum += 1.0/rDifference(positions,i,j);
+            sum += 1/rDifference(positions,i,j);
         }
     }
-
-    sum += localEnergy();
-    return sum;
+    return sum + potential();
 }
 
-double slatervmc::localEnergyJastrowInteraction()
+double slatervmc::slaterlaplace()
+{
+    return omega*omega*accu(positions%positions) - 4*omega*ho2denergy(nOrbitals);
+}
+
+double slatervmc::jastrowlaplace()
 {
     double sum = 0;
-    double r;
-    double b;
-    double av;
-    for(int i = 0; i < nParticles; i++)
+    double av,b,r,dx,dy;
+    for(int i = 1; i < nParticles ; i++)
     {
-        for(int j = i+1; j < nParticles; j++)
+        for(int j = 0; j<i; j++)
         {
             r = rDifference(positions,i,j);
-            b = 1.0/(1+beta*r);
+            b = 1/( 1 + beta*r);
             av = a(i,j);
-            sum += 1.0/r;
-            sum += av*b*b*(-av*b*b - 1.0/r + 2*beta*b + omega*r);
-
+            sum += av*b*b*(1/r - 2*beta*b);
         }
-    }
+        sum *= 2;
+        dx = jastrowdiff(0,i);
+        dy = jastrowdiff(1,i);
+        sum += dx*dx + dy*dy;
 
-    sum += localEnergy();
+    }
     return sum;
 }
 
-
-
-double slatervmc::wavefunction(mat pos)
+double slatervmc::crosslaplace()
 {
-    return exp(-accu(pos%pos)/2);
+    double sum = 0;
+    for(int i = 0; i < nParticles; i++)
+    {
+        sum += jastrowdiff(0,i)*slaterdiff(0,i) + jastrowdiff(1,i)*slaterdiff(1,i);
+    }
+
+    return 2*sum;
+}
+double slatervmc::slaterdiff(int d, int p)
+{
+    double sum = 0;
+    if(p<nOrbitals)
+    {
+        for(int i = 0; i< nOrbitals; i++)
+        {
+            sum += ho2dDiff(i,omega,positions(d,p),d)*inverseDown(i,p);
+        }
+    }
+    else
+    {
+        for(int i = 0; i< nOrbitals; i++)
+        {
+            sum += ho2dDiff(i,omega,positions(d,p),d)*inverseDown(i,p-nOrbitals);
+        }
+    }
+    return  sum;
 }
 
-double slatervmc::wavefunctionJastrow(mat pos)
+
+double slatervmc::jastrowdiff(int d, int p)
 {
-    double r = rDifference(pos,1,0);
-    return exp( -accu(pos%pos) + a(1,0)*r/(1+beta*r) );
+    //(1/J) dJ/dz(d)_p
+    double sum = 0;
+    double r,b;
+    for(int j = 0; j < nParticles; j++)
+    {
+        if(j != p)
+        {
+            r = rDifference(positions,j,p);
+            b = 1/(1 + beta*r);
+            sum += a(p,j)*b*b*(positions(d,p) - positions(d,j))/r;
+        }
+    }
+    return sum;
 }
 
 /*---------------------------------------------------------------*/
 
-
-
 /*----------------------------------------------------------------------------*/
 double slatervmc::drifttermnoJastrow(mat pos, int d , int p)
 {
-    return -omega*pos(d,p);
+    //this is 0.5*deriv
+    return -0.5*omega*pos(d,p);
 }
 
 double slatervmc::drifttermwithJastrow(mat pos,int d, int p)
@@ -517,8 +542,7 @@ void slatervmc::updateOld()
         }
     }
 
-    if(useJastrow) oldwavesquared = wavefunctionSquaredJastrow(positions);
-    else oldwavesquared = wavefunctionSquared(positions);
+
 }
 
 void slatervmc::updatePointers()

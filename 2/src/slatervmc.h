@@ -55,8 +55,18 @@ private:
     double localEnergyInteraction();
     double localEnergyJastrowInteraction();
 
-    double wavefunction(arma::mat);
-    double wavefunctionJastrow(arma::mat);
+    double kinetic();
+    double kineticJastrow();
+
+    double potential();
+    double potentialInteraction();
+
+    double slaterlaplace();
+    double jastrowlaplace();
+    double crosslaplace();
+
+    double jastrowdiff(int,int);
+    double slaterdiff(int,int);
 
 
     double rDifference(arma::mat,int,int);

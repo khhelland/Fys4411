@@ -74,6 +74,8 @@ H = \sum_i^N -\f{1}{2}\nabla^2_i + \f{1}{2}\omega^2r^2_i + \sum_{i<j}^N\f{1}{r_{
 \ee
 where $r_{ij} = |\bb{r}_i-\bb{r}_j|$.
 
+
+\section{Trial wave functions}
 \subsection{2 Particle Case}
 For the two particle case I will aproximate the ground state with the parametrized trial wavefunction
 \be
@@ -99,7 +101,6 @@ the $N/2$ first particles be in one spin state and the next $N/2$ in the other w
 \psi_T = A\mathrm{Det}\left(\psi_{1\dar}\ldots\psi_{N/2\dar};\bb{r}_1\ldots\bb{r}_{N/2}\right)\mathrm{Det}\left(\psi_{1\uar}\ldots\psi_{N/2\uar};\bb{r}_{N/2+1}\ldots\bb{r}_N\right)\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right).\label{npw}
 \ee
 In the 2 particle case this reduces to equation \ref{2pw} with $\alpha = 1$.
-
 \section{Variational Monte-Carlo}
 
 
@@ -235,6 +236,23 @@ A first test of the code is to check that when the interaction and jastrow facto
 
 
 \appendix
+\section{A Note About Cofactors and Determinants}\label{cofac}
+Determinants can be somewhat hard to work with, following \cite{mortenbok} we may use cofactors to do some trickery.
+For a matrix $A$ with elements $A_{ij}$ the cofactors $C_{ij}$ are given by $(-1)^{i+j} M_{ij}$, with $M_{ij}$ being the determinant of the matrix formed by deliting the $i$th
+row and $j$th collumn from $A$. There two properties of cofactors that will be important here are
+\be
+|A|\id = A C^T \Leftrightarrow |A| = \sum_jA_{ij}C_{ij},
+\ee
+and thus
+\be
+A^{-1} = \f{1}{|A|}C^T \Leftrightarrow A^{-1}_{ij} = \f{1}{|A|}C_{ji},
+\ee
+and the fact that $C_{ij}$ is independent of row $i$ and collumn $j$ of A.
+
+
+
+
+
 \section{Derivatives of the 2 particle trial wavefunction}
 In the course of the project we needed analytical expressions for different derivatives of the 2 particle trial wavefunction \ref{2pw}. I have collected
 the differentiations here.
@@ -293,24 +311,80 @@ In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the d
 In the course of the project we needed analytical expressions for different derivatives of the N particle trial wavefunction \ref{npw}. I have collected
 the differentiations here.
 
-\subsection{Gradient}
+\subsection{Gradient}\label{appgradn}
 We note that for any coordinate $z_i$ only one of the determinants depends on it. So
-\be
-\pddt{\psi_T}{z_i} = \pddt{\Det}{z_i}J + \Det\pddt{J}{z_i}.
-\ee
+\[
+\frac{1}{\psi_T}\pddt{\psi_T}{z_i} = \f{1}{|s|}\pddt{|s|}{z_i} + \f{1}{J}\pddt{J}{z_i}.
+\]
+For the derivative of the determinant we exploit the properties noted in section \ref{cofac} to see that
+\[
+\f{1}{|s|}\pddt{|s|}{z_i} = \f{1}{|s|}\sum_j\pddt{s_{ij}}{z_i}C_{ij},
+\]
+since $C_{ij}$ is independent of $z_i$. Rewriting $C_{ij} = |s|s^{-1}_{ji}$ we find
+\[
+\f{1}{|s|}\pddt{|s|}{z_i} = \sum_j\pddt{s_{ij}}{z_i}s^{-1}_{ji}.
+\]
 From section \ref{app2pg} it is clear that
-\be
-\pddt{J}{z_i} = \left(\sum_{j\neq i}\f{a_{ij}}{(1+\beta r_{ij})^2}\f{(z_i-z_j)}{r_{ij}}\right),
-\ee
-while
-\be
-\pddt{\Det}{z_i} = \sum_{\sigma\in S_{N/2}} \sgn{\sigma}\f{1}{\psi_{\sigma(i)}(\bb{r_i})}\pddt{\psi_{\sigma(i)}(\bb{r_i})}{z_i}\psi_{\sigma(1)}(\bb{r}_1)\ldots\psi_{\sigma(N/2)}(\bb{r}_{N/2})
-\ee
+\[
+\f{1}{J}\pddt{J}{z_i} = \sum_{j\neq i}\f{a_{ij}}{(1+\beta r_{ij})^2}\f{(z_i-z_j)}{r_{ij}},
+\]
+so
+\[
+\frac{1}{\psi_T}\pddt{\psi_T}{z_i} = \sum_j\pddt{s_{ij}}{z_i}s^{-1}_{ji} + \sum_{j\neq i}\f{a_{ij}}{(1+\beta r_{ij})^2}\f{(z_i-z_j)}{r_{ij}} .
+\]
+
+
 \subsection{Laplacian}\label{applapn}
 
-\subsection{Derivatives w.r.t \(\alpha\) and \(\beta\)}
+Writing $\psi_T = \psi_SJ$ we can write the Laplacian as
+\[
+\f{\nabla^2\psi_T}{\psi_T} = \f{\nabla^2\psi_S}{\psi_S} + \f{\nabla^2J}{J} + 2\f{\nabla\psi_S}{\psi_S}\cdot\f{\nabla J}{J},
+\]
+expanding the Slater part $\psi_S =|S|_{\dar}|S|_{\uar}$ we find
+\[
+\f{\nabla^2\psi_T}{\psi_T} = \f{\nabla^2|S|_{\dar}}{|S|_{\dar}} + \f{\nabla^2|S|_{\uar}}{|S|_{\uar}} + \f{\nabla^2J}{J}
++ 2\left(\f{\nabla |S|_{\dar}}{|S|_{\dar}} + \f{\nabla |S|_{\uar}}{|S|_{\uar}}\right)\cdot\f{\nabla J}{J},
+\]
+noting that there is no cross-term between the determinants as they depend on different coordinates.
+By the same arguments as above we find
+\[
+\f{1}{|S|}\pndt{|S|}{z_i}{2} = \sum_j \pndt{s_{ij}}{z_i}{2}s^{-1}_{ji},
+\]
+which means that
+\begin{align*}
+  \f{\nabla^2\psi_s}{\psi_s} &= \sum_{ij}(\nabla^2s^\dar_{ij})s^{\dar,-1}_{ji} + (\nabla^2s^\uar_{ij})s^{\uar,-1}_{ji}\\
+  &= \sum_{ij}^{N/2}(\nabla^2\psi_{\dar,j}(\bb{r}_i))s^{\dar,-1}_{ji} + (\nabla^2\psi_{\uar,j}(\bb{r}_i))s^{\uar,-1}_{ji} \\
+  &= \sum_{ij}^{N/2}(\omega^2r^2_i-2\epsilon_{j})\psi_j(\bb{r_i})s^{\dar,-1}_{ji} + (\omega^2r^2_{i + N/2}-2\epsilon_{j})\psi_j(\bb{r_{i+N/2}})s^{\uar,-1}_{ji}\\
+  &= \sum_{ij}^{N/2}(\omega^2r^2_i-2\epsilon_j)s^{\dar}_{ij}s^{\dar,-1}_{ji} + (\omega^2r^2_{i +N/2}-2\epsilon_j)s^{\uar}_{ij}s^{\uar,-1}_{ji}\\
+  &= \sum_{ij}^{N/2}(\omega^2r^2_i-2\epsilon_j)\delta_{ij} + (\omega^2r^2_{i + N/2}-2\epsilon_j)\delta_{ij}\\
+  &= \sum_{i}^{N}\omega^2r^2_i -4\sum_j^{N/2}\epsilon_j. 
+\end{align*}
+For the jastrow part
+\[
+\f{1}{J}\pndt{J}{z_i}{2} = \sum_{j\neq i}\pndt{f_{ij}}{z_i}{2} + \left(\sum_{j\neq i}\pddt{f_{ij}}{z_i}\right)^2,
+\]
+with $f_{ij} = a_{ij}r_{ij}/(1+\beta r_{ij})$, so
+\[
+\f{1}{J}\pndt{J}{z_i}{2} = \sum_{j \neq i}\f{a_{ij}}{(1+\beta r_{ij})^2}\left[\f{1}{r_{ij}}\left(1 -\left(\f{(z_i-z_j)}{r_{ij}}\right)^2\right) -\f{2\beta}{(1+\beta r_{ij})}\left(\f{(z_i-z_j)}{r_{ij}}\right)^2\right] + \left(\sum_{j\neq i}\pddt{f_{ij}}{z_i}\right)^2,
+\]
+and
+\[
+\f{\nabla^2_iJ}{J} = \sum_{j \neq i}\f{a_{ij}}{(1+\beta r_{ij})^2}\left[\f{1}{r_{ij}} -\f{2\beta}{(1+\beta r_{ij})}\right]
++ \left(\sum_{j\neq i}\pddt{f_{ij}}{x_i}\right)^2 + \left(\sum_{j\neq i}\pddt{f_{ij}}{y_i}\right)^2,
+\]
+and finally
+\[
+\f{\nabla^2J}{J} =2 \sum_{j < i}\f{a_{ij}}{(1+\beta r_{ij})^2}\left[\f{1}{r_{ij}} -\f{2\beta}{(1+\beta r_{ij})}\right]
++ \sum_i \left[\left(\sum_{j\neq i}\pddt{f_{ij}}{x_i}\right)^2 + \left(\sum_{j\neq i}\pddt{f_{ij}}{y_i}\right)^2\right],
+\]
+The cross terms become
+\[
+ 2\left(\f{\nabla |S|_{\dar}}{|S|_{\dar}} + \f{\nabla |S|_{\uar}}{|S|_{\uar}}\right)\cdot\f{\nabla J}{J} = 2\sum_i\left(\f{1}{|s|}\pddt{|s|}{x_i}\f{1}{J}\pddt{J}{x_i} + \f{1}{|s|}\pddt{|s|}{y_i}\f{1}{J}\pddt{J}{y_i}\right). 
+\]
+
+\subsection{Derivative w.r.t \(\beta\)}
 In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the derivatives of \(\psi_T\) with respect to these.
-\[  \f{1}{\psi_T}\pddt{\psi_T}{\alpha} = -\f{1}{2}\omega(r_1^2 + r_2^2).\]
+
 \[  \f{1}{\psi_T}\pddt{\psi_T}{\beta} = -\f{ar_{12}^2}{(1+\beta r_{12})^2}.\]
 
 

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main()
+int main2()
 {
 
 
@@ -22,7 +22,7 @@ int main()
           0.4 ); // beta
     a.useImportanceSampling = 0;
     a.useInteraction = 1;
-    a.useJastrow = 0;
+    a.useJastrow = 1;
     a.useNumDiff = 0;
 
 

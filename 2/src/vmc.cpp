@@ -223,17 +223,12 @@ double vmc::localEnergyJastrow()
     double r;
     double b;
     double av;
-    for(int i = 1; i < nParticles; i++)
-    {
-        for(int j = 0; j < i; j++)
-        {
-            r = rDifference(positions,i,j);
-            b = 1.0/(1+beta*r);
-            av = a(i,j);
-            sum += av*b*b*(-av*b*b - 1.0/r + 2*beta*b + alpha*omega*r);
 
-        }
-    }
+    r = rDifference(positions,0,1);
+    b = 1.0/(1+beta*r);
+    av = a(0,1);
+    sum += av*b*b*(-av*b*b - 1.0/r + 2*beta*b + alpha*omega*r);
+
     sum += localEnergy();
     return sum;
 }
@@ -241,13 +236,10 @@ double vmc::localEnergyJastrow()
 double vmc::localEnergyInteraction()
 {
     double sum = 0;
-    for(int i = 1; i < nParticles; i++)
-    {
-        for(int j = 0; j < i; j++)
-        {
-            sum += 1.0/rDifference(positions,i,j);
-        }
-    }
+
+    sum += 1.0/rDifference(positions,0,1);
+
+
 
     sum += localEnergy();
     return sum;
@@ -259,18 +251,12 @@ double vmc::localEnergyJastrowInteraction()
     double r;
     double b;
     double av;
-    for(int i = 0; i < nParticles; i++)
-    {
-        for(int j = i+1; j < nParticles; j++)
-        {
-            r = rDifference(positions,i,j);
-            b = 1.0/(1+beta*r);
-            av = a(i,j);
-            sum += 1.0/r;
-            sum += av*b*b*(-av*b*b - 1.0/r + 2*beta*b + alpha*omega*r);
 
-        }
-    }
+    r = rDifference(positions,0,1);
+    b = 1.0/(1+beta*r);
+    av = a(0,1);
+    sum += 1.0/r;
+    sum += av*b*b*(-av*b*b - 1.0/r + 2*beta*b + alpha*omega*r);
 
     sum += localEnergy();
     return sum;
@@ -364,7 +350,7 @@ double vmc::drifttermwithJastrow(mat pos,int d, int p)
             sum += a(p,q)*(pos(d,p)-pos(d,q))/((1+beta*r)*(1+beta*r)*r);
         }
     }
-    return 0.5*(sum - alpha*omega*pos(d,p));
+    return sum - alpha*omega*pos(d,p);
 }
 /*-------------------------------------------------------------------------*/
 

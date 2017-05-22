@@ -1,8 +1,8 @@
 #ifndef HO2D_H
 #define HO2D_H
-
+#include <armadillo>
 double ho2d(int,double,double,double);
-double ho2dDiff(int deg, double w, double x, int dim);
+arma::vec ho2dgrad(int deg, double w, double x, double y);
 double hermite(int,double);
 double hermitederiv(int d, double x);
 int ho2denergy(int nOrbitals);

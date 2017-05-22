@@ -20,7 +20,6 @@ public:
 
     bool useJastrow = true;
     bool useInteraction = true;
-    bool useNumDiff = false;
     bool useImportanceSampling = true;
 
 
@@ -45,8 +44,7 @@ private:
     double findRatioImportance(int,int);
     double findRatioImportanceJastrow(int,int);
 
-    double wavefunctionSquared(arma::mat pos);
-    double wavefunctionSquaredJastrow(arma::mat pos);
+
     double proposalratio(int,int);
 
 
@@ -63,10 +61,9 @@ private:
 
     double slaterlaplace();
     double jastrowlaplace();
-    double crosslaplace();
 
-    double jastrowdiff(int,int);
-    double slaterdiff(int,int);
+    arma::vec jastrowgrad(int);
+    arma::vec slatergrad(int);
 
 
     double rDifference(arma::mat,int,int);
@@ -112,7 +109,7 @@ private:
     double energySquared;
     double AcceptanceRatio;
 
-    //(void*)(int,int) function;
+    //function pointers;
     double (slatervmc::*localEnergyPointer)() = nullptr;
     void (slatervmc::*findSuggestionPointer)(int,int) = nullptr;
     double (slatervmc::*findRatioPointer)(int,int) = nullptr;

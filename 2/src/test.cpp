@@ -16,10 +16,10 @@ int main()
 
 
     slatervmc a(2,     // N
-          1,     // steplength
+          0.01,     // steplength
           1,     // omega
           0.4 ); // beta
-    a.useImportanceSampling = 0;
+    a.useImportanceSampling = 1;
     a.useInteraction = 1;
     a.useJastrow = 1;
 

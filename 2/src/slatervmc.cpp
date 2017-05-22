@@ -19,9 +19,6 @@ using namespace arma;
  *
  * to extend nParticles
  * need new
- * local energy
- * wavefunction and square
- * drift, maybe propratio
  * dirstribute
  * a func -
  * steepest
@@ -269,7 +266,7 @@ double slatervmc::kinetic()
 }
 double slatervmc::kineticJastrow()
 {
-    return -0.5*(slaterlaplace() + jastrowlaplace() + crosslaplace());
+    return -0.5*(slaterlaplace() + jastrowlaplace());
 }
 double slatervmc::potential()
 {
@@ -296,95 +293,87 @@ double slatervmc::slaterlaplace()
 double slatervmc::jastrowlaplace()
 {
     double sum = 0;
-    double av,b,r,dx,dy;
+
+    double av,b,r;
     for(int i = 1; i < nParticles ; i++)
     {
-        for(int j = 0; j<i; j++)
+        for(int j = 0; j< i; j++)
         {
             r = rDifference(positions,i,j);
             b = 1/( 1 + beta*r);
             av = a(i,j);
             sum += av*b*b*(1/r - 2*beta*b);
         }
-        sum *= 2;
-        dx = jastrowdiff(0,i);
-        dy = jastrowdiff(1,i);
-        sum += dx*dx + dy*dy;
+    }
+
+    sum *= 2;
+
+    for(int i = 0; i < nParticles; i++)
+    {
+        vec sgrad,jgrad;
+        jgrad = jastrowgrad(i);
+        sgrad = slatergrad(i);
+        sum += dot(jgrad,jgrad) + 2*dot(jgrad,sgrad);
 
     }
+
     return sum;
 }
 
-double slatervmc::crosslaplace()
+vec slatervmc::slatergrad(int p)
 {
-    double sum = 0;
-    for(int i = 0; i < nParticles; i++)
-    {
-        sum += jastrowdiff(0,i)*slaterdiff(0,i) + jastrowdiff(1,i)*slaterdiff(1,i);
-    }
-
-    return 2*sum;
-}
-double slatervmc::slaterdiff(int d, int p)
-{
-    double sum = 0;
+    vec sum = zeros<vec>(2);
     if(p<nOrbitals)
     {
         for(int i = 0; i< nOrbitals; i++)
         {
-            sum += ho2dDiff(i,omega,positions(d,p),d)*inverseDown(i,p);
+            sum += ho2dgrad(i,omega,positions(0,p),positions(1,p))*inverseDown(i,p);
         }
     }
     else
     {
         for(int i = 0; i< nOrbitals; i++)
         {
-            sum += ho2dDiff(i,omega,positions(d,p),d)*inverseDown(i,p-nOrbitals);
+            sum += ho2dgrad(i,omega,positions(0,p),positions(1,p))*inverseUp(i,p-nOrbitals);
         }
     }
     return  sum;
 }
 
 
-double slatervmc::jastrowdiff(int d, int p)
+vec slatervmc::jastrowgrad( int p)
 {
     //(1/J) dJ/dz(d)_p
-    double sum = 0;
-    double r,b;
+    double sumx = 0;
+    double sumy = 0;
+    double av,r,b;
     for(int j = 0; j < nParticles; j++)
     {
         if(j != p)
         {
+            av = a(p,j);
             r = rDifference(positions,j,p);
             b = 1/(1 + beta*r);
-            sum += a(p,j)*b*b*(positions(d,p) - positions(d,j))/r;
+            av = av*b*b/r;
+            sumx += av*(positions(0,p) - positions(0,j));
+            sumy += av*(positions(1,p) - positions(1,j));
         }
     }
-    return sum;
+    vec res = {sumx,sumy};
+    return res;
 }
 
-/*---------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------*/
 double slatervmc::drifttermnoJastrow(mat pos, int d , int p)
 {
-    //this is 0.5*deriv
-    return -0.5*omega*pos(d,p);
+    return slatergrad(p)(d);
 }
 
 double slatervmc::drifttermwithJastrow(mat pos,int d, int p)
 {
-    double sum = 0;
-    double r;
-    for(int q = 0; q < nParticles; q++)
-    {
-        if(p != q)
-        {
-            r = rDifference(pos,p,q);
-            sum += a(p,q)*(pos(d,p)-pos(d,q))/((1+beta*r)*(1+beta*r)*r);
-        }
-    }
-    return 0.5*(sum -omega*pos(d,p));
+    return slatergrad(p)(d) + jastrowgrad(p)(d);
 }
 /*-------------------------------------------------------------------------*/
 

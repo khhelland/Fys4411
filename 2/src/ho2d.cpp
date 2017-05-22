@@ -63,7 +63,7 @@ double ho2d(int d, double w, double x, double y)
     return hermite(nx,sq*x)*hermite(ny,sq*y)*exp(-w*(x*x + y*y)/2);
 }
 
-double ho2dDiff(int deg,double w, double x, int dim)
+arma::vec ho2dgrad(int deg, double w, double x, double y)
 {
     int nx = 0;
     int ny = 0;
@@ -112,8 +112,14 @@ double ho2dDiff(int deg,double w, double x, int dim)
         cout<<"Warning: single particle wavefunction not implemented"<<endl;
         }
     double sq = sqrt(w);
-    int n = (dim==0)? nx : ny;
-    return (sq*hermitederiv(n,sq*x)-x*hermite(n,sq*x))*exp(-x*x/2);
+
+    arma::vec grad(2);
+
+    grad(0) = (sq*hermitederiv(nx,sq*x)-x*w*hermite(nx,sq*x))*hermite(ny,sq*y);
+    grad(1) = (sq*hermitederiv(ny,sq*y)-y*w*hermite(ny,sq*y))*hermite(nx,sq*x);
+    grad *= exp(-w*(x*x + y*y)/2);
+    return grad;
+
 }
 
 

@@ -7,7 +7,7 @@ class slatervmc
 {
 public:
     slatervmc();
-    slatervmc(int nParticles, double, double w, double b);
+    slatervmc(int nParticles, double, double w, double alpha, double b);
 
     void run(int,int);
 
@@ -94,8 +94,11 @@ private:
     double stepLength2;
 
 
-    double omega;
+    double omega = 1;
+    double alpha = 1;
     double beta = 1;
+    double alphaomega = 1;
+
 
     double a(int i,int j){return ((i<(nParticles/2))==(j<(nParticles/2))) ? 1.0/3.0 : 1.0;}
 

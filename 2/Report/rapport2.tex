@@ -47,7 +47,7 @@
 
 
 \renewcommand{\bar}{\overline}
-
+\renewcommand{\braket}{\Braket}
 
 \begin{document}
 \maketitle{}
@@ -101,14 +101,39 @@ the $N/2$ first particles be in one spin state and the next $N/2$ in the other w
 \psi_T = A\mathrm{Det}\left(\psi_{1\dar}\ldots\psi_{N/2\dar};\bb{r}_1\ldots\bb{r}_{N/2}\right)\mathrm{Det}\left(\psi_{1\uar}\ldots\psi_{N/2\uar};\bb{r}_{N/2+1}\ldots\bb{r}_N\right)\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right).\label{npw}
 \ee
 In the 2 particle case this reduces to equation \ref{2pw} with $\alpha = 1$.
-\section{Variational Monte-Carlo}
 
+
+\section{Monte-Carlo Integration}
 
 % wavefunction, slater, jastrow
+In this project I will estimate the energy of the trial wavefunctions with Monte-Carlo (MC) integration.
+MC integration is a method of estimating the value of integrals on the form
+\be
+\braket{F} = \int F(x_1,\ldots,x_N)p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k, \label{MCI}
+\ee
+where \(p(x_1,\ldots,x_N)\) is a probability density function.
+MC integration is then based on drawing points $\bb{r}_i$ according to $p$ and evaluating $F$ in these points
+\be
+F_i \equiv F(\bb{r}_i).
+\ee
+Then defining
+\be
+\bar{F} \equiv \f{1}{N}\sum_{i=1}^N F_i
+\ee
+we have that
+\be
+\braket{F} = \lim_{N\rar\infty}\bar{F}.
+\ee
+Since we cannot draw infinite points we use $\bar{F}$ as an estimate of $\braket{F}$.
+
+In order to estimate an integral in this way we thus need a method to draw positions according to $p$,
+a way to compute $F_i$ and a way to estimate the error in the integration.
 
 
 
-\section{The Metropolis Algorithm}
+
+
+\subsection{The Metropolis Algorithm}
 
 The Metropolis algorithm is an algorithm for computing expectation values for functions of many variables efficiently.
 It is based on semi-randomly walking through the integration space and finding the value of the function at each point.
@@ -121,7 +146,7 @@ One advantage with this method is that it does not require explicit normalizatio
 
 
 
-\subsection{Detailed Balance}
+\subsubsection{Detailed Balance}
 The Metropolis algorithm may be derived by demanding that the Markov chain exhibits detailed balance.
 The criterion for detailed balance is
 \be
@@ -159,14 +184,14 @@ So the Metropolis algorithm for drawing points from a probability distrobution i
   
   
 
-\subsection{Symmetric Proposal Density}
+\subsubsection{Symmetric Proposal Density}
 
 If the proposal probality $G(a|b) = G(b|a)$ the proposal distribution is called symmetric and drops out of the acceptance ratio.
 Thus there is less to calculate for each loop in the algortihm. However symmetric proposal densities lead to many proposed steps being rejected,
 and thus to higher corelations between the points.
 
 
-\subsection{Importance Sampling}
+\subsubsection{Importance Sampling}
 
 If we instead choose a non-symmetric proposal distribution we may choose one to maximise the acceptancerate.
 If we choose a proposaldistribution so that the probability of proposing a move into an area with a higher probability is higher than
@@ -195,7 +220,9 @@ with
 E_L = \f{1}{\psi}H\psi, \label{localEdef}.
 \ee
 
-\subsection{2 Particle Case}
+
+
+\subsubsection{2 Particle Case}
 
 In the two particle case with hamiltonean given by equation \ref{ham} and trial wavefunction by equation \ref{2pw} the local energy is given by
 \be
@@ -203,13 +230,59 @@ E_L(\bb{r_1},\bb{r_2}) = \left[\f{1}{2}(1- \alpha)\omega(r_1^2 + r_2^2) + 2\alph
 \ee
 as shown in appendix \ref{applap}.
 
-\subsection{Slater Case}
+\subsubsection{Slater Case}
 In the $N$ particle case with hamiltonean given by equation \ref{ham} and trial wavefunction by equation \ref{npw} the local energy is given by
 
 
+\subsection{Error Estimation and Blocking}
+In this section I follow \cite{block} and \cite{mortenbok} in explaining the blocking method.
+Let $\Set{F_i}$ be a finite set of consecutive measurements of the quantity $F$ on a system in equilibrium, in other words the probability distribution for the measurements is
+independent of time. Then as above the average of $\Set{F_i}$ $\bar{F}$ is an estimate of the true average of $F$ $\braket{F}$. An estimate of the error in this aproximation
+is given by the standard deviation of $\bar{F}$ $\sigma_{\bar{F}}$. The variance in $\bar{F}$ is given by
+\be
+\sigma_{\bar{F}}^2 = \Braket{\bar{F}^2} - \braket{\bar{F}}^2,
+\ee
+expanding this we find
+\begin{align*}
+  \sigma_{\bar{F}}^2 &= \braket{\left(\f{1}{N}\sum_{i=1}^NF_i\right)^2} - \braket{\f{1}{N}\sum_{i=1}^NF_i}^2\\
+  &=\f{1}{N^2}\sum_{i=1}^N\sum_{j=1}^N\left(\braket{F_iF_j} - \braket{F_i}\braket{F_j}\right)\\
+  &= \f{1}{N^2}\sum_{i=1}^N\sum_{j=1}^N\mathrm{cov}(F_i,F_j).
+\end{align*}
+The time independence of the pdf means that the covariance should only depend on the relative distance between $i$ and $j$
+$t \equiv |i-j|$. So we can define $C(t) = \mathrm{cov}(F_i,F_j)$. Now we can split $\sigma_{\bar{F}}^2$ into
+\be
+\sigma_{\bar{F}}^2 = \f{1}{N^2}\sum_{i=1}^N\sum_{j=1}^NC(t(i,j)) = \f{1}{N}\left[C(0) + 2\sum_{t = 0}^{N-1}\left(1-\f{t}{N}\right)C(t)\right] \label{errvar}
+\ee
 
 
-
+Now the problem is that we don't know the true covariance, but we can estimate it with the sample covariance so that for example
+\be
+C(0) = \sigma_F^2 \approx \bar{F^2}-\bar{F}^2.
+\ee
+For uncorrelated data $C(t>0) = 0$ so the error is $\sigma_F/\sqrt{N}$, which is easy to estimate.
+With corelations things are more complicated, however the blocking method allows us to incorperate correlations into a similar calculation.
+If we transform the data set $\Set{F_i}$ into another set $\Set{\tilde{F}_i}$, where
+\be
+\tilde{F}_i = \f{1}{B}\sum_{j=1}^{B}F_{(i-1)B+j},\label{block}
+\ee
+where $B$ is a whole number called the block size. Call $\tilde{F}_i$ a block.
+Now it is easy to estimate the block variance $\tilde{C}(0) = \sigma^2_{\tilde{F}}$ by $\bar{\tilde{F}^2}-\bar{\tilde{F}}^2$, but expanding it we see that
+\begin{align*}
+  \tilde{C}(0) &= \braket{\tilde{F}_i^2}-\braket{\tilde{F}_i}^2\\
+  &= \f{1}{B^2}\sum_{a,b}^B\braket{\tilde{F}_{i+a}\tilde{F}_{i+b}}-\braket{\tilde{F}_{i+a}}\braket{\tilde{F}_{i+b}}\\
+  &= \f{1}{B^2}\sum_{a,b}^BC(|a-b|)\\
+  &= \f{1}{B}\sum_{t=0}^{B-1}C(t),
+\end{align*}
+and so
+\be
+\f{\tilde{C}(0)}{N/B} = \f{1}{N}\left[C(0) +\sum_{t = 1}^{B-1}C(t)\right],\label{blockvar}
+\ee
+comparing with equation \ref{errvar} we see that blocking has incorporated part of the error from correlations into $\tilde{C}(0)$, which is just as easy to estimate
+as $C(0)$. So, for an appropriate block size an improved estimate of the error is approximated by
+\be
+\sigma_{\bar{F}}^2 \approx \f{B}{N}\left(\bar{\tilde{F}^2}-\bar{\tilde{F}}^2\right).\label{errest}
+\ee
+To find the approriate block size we may plot this estimate as a function of block size, and choose a value where this seems to flatten. 
 
 \section{Implementation}
 
@@ -395,6 +468,8 @@ In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the d
 
 \bibitem{proj1}
   K. Helland ``Fys4411: Project 1'' available at \url{https://github.com/khhelland/Fys4411/blob/master/1/rapport.pdf}
+\bibitem{block}
+  H. Flyvbjerg and H.G. Petersen ``Error estimates on averages of correlated data''. The Journal of Chemical Physics 91, 461, 1989
 \bibitem{analytho}
   E. Anisimovas and A. Matulis, ``Energy spectra of few-electron quantum dots.'', J. Phys.,10:601 615, 1998.
 \bibitem{mortenbok}

@@ -15,19 +15,18 @@ int main2()
     start = clock();
 
 
-    vmc a(2,     // N
-          0.01,     // steplength
-          1,   // alpha
+    vmc a(1.5,     // steplength
+          0.5,   // alpha
           1,     // omega
           0.4 ); // beta
-    a.useImportanceSampling = 1;
-    a.useInteraction = 1;
-    a.useJastrow = 1;
+    a.useImportanceSampling = 0;
+    a.useInteraction = 0;
+    a.useJastrow = 0;
     a.useNumDiff = 0;
 
 
 
-//     a.writeEnergies(1e4,"blocking.dat");
+//     a.writeEnergies(1e5,"blocking.dat");
      a.run(1e6, //nCycles
            1);  //Blocksize
      a.printResults();

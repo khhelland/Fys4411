@@ -8,7 +8,7 @@ class vmc
 {
 public:
     vmc();
-    vmc(int nParticles, double, double alph, double w, double b);
+    vmc( double, double alph, double w, double b);
 
     void run(int,int);
 
@@ -78,7 +78,7 @@ private:
     arma::mat positions;
     arma::mat suggestion;
 
-    int nParticles;
+    int nParticles = 2;
 
     double stepLength;
     double stepLength2;
@@ -86,8 +86,6 @@ private:
     double alpha;
     double omega;
     double beta = 1;
-
-    double a(int i,int j){return ((i<(nParticles/2))==(j<(nParticles/2))) ? 1.0/3.0 : 1.0;}
 
     double drift = 0;
     arma::mat olddrift;
@@ -97,6 +95,7 @@ private:
     //results
     double energy;
     double energySquared;
+    double error;
     double AcceptanceRatio;
 
     //(void*)(int,int) function;

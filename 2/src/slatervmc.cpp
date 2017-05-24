@@ -30,15 +30,17 @@ slatervmc::slatervmc()
 {
 
 }
-slatervmc::slatervmc(int nParticles, double step, double w, double b):
+slatervmc::slatervmc(int nParticles, double step, double w, double a, double b):
     nParticles(nParticles),
     stepLength(step),
     omega(w),
+    alpha(a),
     beta(b)
 {
     normalDistribution = normal_distribution<double>(0.0,1.0);
     uniformDistribution = uniform_real_distribution<double>(0.0,1.0);
     nOrbitals = nParticles/2;
+    alphaomega = alpha*omega;
     distributeParticles();
     setupMatrices();
     olddrift = mat(2,nParticles);
@@ -49,12 +51,14 @@ slatervmc::slatervmc(int nParticles, double step, double w, double b):
 
 void slatervmc::distributeParticles()
 {
-    positions = mat(2,nParticles);
-    for(int p = 0;p<nParticles;p++)
-    {
-        positions(0,p) = p;
-        positions(1,p) = p;
-    }
+    //chance of coincident particles should be ~ 0
+    positions = mat(2,nParticles,fill::randu);
+
+//    for(int p = 0;p<nParticles;p++)
+//    {
+//        positions(0,p) = p;
+//        positions(1,p) = p;
+//    }
 }
 
 void slatervmc::setupMatrices()
@@ -66,10 +70,11 @@ void slatervmc::setupMatrices()
     {
         for(int j = 0; j<nOrbitals; j++)
         {
-            slaterDown(i,j) = ho2d(j,omega,positions(0,i),positions(1,i));
-            slaterUp(i,j) = ho2d(j,omega,positions(0,i+nOrbitals),positions(1,i+nOrbitals));
+            slaterDown(i,j) = ho2d(j,alphaomega,positions(0,i),positions(1,i));
+            slaterUp(i,j) = ho2d(j,alphaomega,positions(0,i+nOrbitals),positions(1,i+nOrbitals));
         }
     }
+
     inverseDown = inv(slaterDown);
     inverseUp = inv(slaterUp);
 }
@@ -81,7 +86,7 @@ void slatervmc::run(int nCycles, int blocksize)
     updateOld();
 
     // burn-in
-    // for(int i = 0; i<1e5 ; i++) metropolisMove();
+    for(int i = 0; i<1e5 ; i++) metropolisMove();
 
     double Esum = 0;
     double Esum2 = 0;
@@ -174,14 +179,14 @@ double slatervmc::findRatio(int d, int p)
     {
         for(int j = 0; j < nOrbitals; j++)
         {
-            R += ho2d(j, omega, xnew, ynew)*inverseDown(j,p);
+            R += ho2d(j, alphaomega, xnew, ynew)*inverseDown(j,p);
         }
     }
     else
     {
         for(int j = 0; j <nOrbitals; j++)
         {
-            R += ho2d(j, omega, xnew, ynew)*inverseUp(j,p-nOrbitals);
+            R += ho2d(j, alphaomega, xnew, ynew)*inverseUp(j,p-nOrbitals);
         }
     }
     return R*R;
@@ -287,7 +292,7 @@ double slatervmc::potentialInteraction()
 
 double slatervmc::slaterlaplace()
 {
-    return omega*omega*accu(positions%positions) - 4*omega*ho2denergy(nOrbitals);
+    return alphaomega*alphaomega*accu(positions%positions) - 4*alphaomega*ho2denergy(nOrbitals);
 }
 
 double slatervmc::jastrowlaplace()
@@ -327,14 +332,14 @@ vec slatervmc::slatergrad(int p)
     {
         for(int i = 0; i< nOrbitals; i++)
         {
-            sum += ho2dgrad(i,omega,positions(0,p),positions(1,p))*inverseDown(i,p);
+            sum += ho2dgrad(i,alphaomega,positions(0,p),positions(1,p))*inverseDown(i,p);
         }
     }
     else
     {
         for(int i = 0; i< nOrbitals; i++)
         {
-            sum += ho2dgrad(i,omega,positions(0,p),positions(1,p))*inverseUp(i,p-nOrbitals);
+            sum += ho2dgrad(i,alphaomega,positions(0,p),positions(1,p))*inverseUp(i,p-nOrbitals);
         }
     }
     return  sum;
@@ -498,7 +503,7 @@ void slatervmc::updateSlaters(int p)
 
         for(int j = 0; j<nOrbitals; j++)
         {
-            slaterDown(p,j) = ho2d(j,omega, xnew, ynew);
+            slaterDown(p,j) = ho2d(j,alphaomega, xnew, ynew);
         }
         //Consider inserting efficient algorithm here
         inverseDown = inv(slaterDown);
@@ -507,7 +512,7 @@ void slatervmc::updateSlaters(int p)
     {
         for(int j = 0; j<nOrbitals; j++)
         {
-            slaterUp(p-nOrbitals,j) = ho2d(j,omega, xnew, ynew);
+            slaterUp(p-nOrbitals,j) = ho2d(j,alphaomega, xnew, ynew);
         }
         //Consider inserting efficient algorithm here
         inverseUp = inv(slaterUp);

@@ -8,12 +8,14 @@ SOURCES += \
     slatervmc.cpp \
     ho2d.cpp \
     main.cpp \
-    test.cpp
+    test.cpp \
+    tests.cpp
 
 HEADERS += \
     vmc.h \
     slatervmc.h \
-    ho2d.h
+    ho2d.h \
+    tests.h
 
 LIBS += -llapack -lblas -larmadillo
 

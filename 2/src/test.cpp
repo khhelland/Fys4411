@@ -15,13 +15,14 @@ int main()
     start = clock();
 
 
-    slatervmc a(2,     // N
-          0.01,     // steplength
-          1,     // omega
-          0.4 ); // beta
+    slatervmc a(12,     // N
+          0.01,         // steplength
+          1,            // omega
+          0.5,            //alpha
+          0.4 );        // beta
     a.useImportanceSampling = 1;
-    a.useInteraction = 1;
-    a.useJastrow = 1;
+    a.useInteraction = 0;
+    a.useJastrow = 0;
 
 //     cout<<"set up complete"<<endl;
 

@@ -14,16 +14,6 @@ using namespace arma;
 /*
  * do sd and blocking better!!!!!
  * make some funcs inline for opt
- * only non-interacting ground state slater
- *
- * to extend nParticles
- * need new
- * local energy
- * wavefunction and square
- * drift, maybe propratio
- * dirstribute
- * a func -
- * steepest
  *
  */
 
@@ -32,8 +22,7 @@ vmc::vmc()
 {
 
 }
-vmc::vmc(int nParticles, double step, double alph, double w, double b):
-    nParticles(nParticles),
+vmc::vmc(double step, double alph, double w, double b):
     stepLength(step),
     alpha(alph),
     omega(w),
@@ -50,12 +39,12 @@ vmc::vmc(int nParticles, double step, double alph, double w, double b):
 
 void vmc::distributeParticles()
 {
-    positions = mat(2,nParticles);
-    for(int p = 0;p<nParticles;p++)
-    {
-        positions(0,p) = p;
-        positions(1,p) = p;
-    }
+    positions = mat(2,nParticles,fill::randu);
+//    for(int p = 0;p<nParticles;p++)
+//    {
+//        positions(0,p) = p;
+//        positions(1,p) = p;
+//    }
 }
 
 void vmc::run(int nCycles, int blocksize)
@@ -64,7 +53,7 @@ void vmc::run(int nCycles, int blocksize)
     updateOld();
 
     // burn-in
-    // for(int i = 0; i<1e5 ; i++) metropolisMove();
+    for(int i = 0; i<1e5 ; i++) metropolisMove();
 
     double Esum = 0;
     double Esum2 = 0;
@@ -87,11 +76,13 @@ void vmc::run(int nCycles, int blocksize)
         }
     }
 
-    Esum /= (((double)nCycles)/blocksize);
-    Esum2 /= (((double)nCycles)/blocksize);
+    double  nBlocks = (double)nCycles/blocksize;
+    Esum /= nBlocks;
+    Esum2 /= nBlocks;
 
     energy = Esum;
     energySquared = Esum2;
+    error = (Esum2 - Esum*Esum)/nBlocks;
     AcceptanceRatio = acceptcount/(double)nCycles;
 
 
@@ -186,7 +177,7 @@ double vmc::wavefunctionSquaredJastrow(mat pos)
         for(int j = 0; j < i; j++)
         {
             r = rDifference(pos,i,j);
-            exponent += a(i,j)*r/(1+beta*r);
+            exponent += r/(1+beta*r);
         }
     }
     exponent *= 2;
@@ -222,12 +213,12 @@ double vmc::localEnergyJastrow()
     double sum = 0;
     double r;
     double b;
-    double av;
+
 
     r = rDifference(positions,0,1);
     b = 1.0/(1+beta*r);
-    av = a(0,1);
-    sum += av*b*b*(-av*b*b - 1.0/r + 2*beta*b + alpha*omega*r);
+
+    sum += b*b*(-b*b - 1.0/r + 2*beta*b + alpha*omega*r);
 
     sum += localEnergy();
     return sum;
@@ -250,13 +241,13 @@ double vmc::localEnergyJastrowInteraction()
     double sum = 0;
     double r;
     double b;
-    double av;
+
 
     r = rDifference(positions,0,1);
     b = 1.0/(1+beta*r);
-    av = a(0,1);
+
     sum += 1.0/r;
-    sum += av*b*b*(-av*b*b - 1.0/r + 2*beta*b + alpha*omega*r);
+    sum += b*b*(-b*b - 1.0/r + 2*beta*b + alpha*omega*r);
 
     sum += localEnergy();
     return sum;
@@ -319,13 +310,13 @@ double vmc::localEnergyJastrowInteractionNumdiff()
 
 double vmc::wavefunction(mat pos)
 {
-    return exp(-accu(pos%pos)/2);
+    return exp(-omega*alpha*accu(pos%pos)/2);
 }
 
 double vmc::wavefunctionJastrow(mat pos)
 {
     double r = rDifference(pos,1,0);
-    return exp( -accu(pos%pos) + a(1,0)*r/(1+beta*r) );
+    return exp( -omega*alpha*accu(pos%pos)/2 + r/(1+beta*r) );
 }
 
 /*---------------------------------------------------------------*/
@@ -347,7 +338,7 @@ double vmc::drifttermwithJastrow(mat pos,int d, int p)
         if(p != q)
         {
             r = rDifference(pos,p,q);
-            sum += a(p,q)*(pos(d,p)-pos(d,q))/((1+beta*r)*(1+beta*r)*r);
+            sum += (pos(d,p)-pos(d,q))/((1+beta*r)*(1+beta*r)*r);
         }
     }
     return sum - alpha*omega*pos(d,p);
@@ -453,7 +444,7 @@ double vmc::betaDeriv()
         {
             r = rDifference(positions,i,j);
             s = r/(1+beta*r);
-            sum -= a(i,j)*s*s;
+            sum -= s*s;
         }
     }
 
@@ -466,8 +457,8 @@ void vmc::printResults()
     cout<< "Acceptanceratio: "<<AcceptanceRatio <<endl;
 
     //save Esum, Esum2
-    cout<<"E, E^2, sigma" <<endl;
-    cout<<energy<<","<<energySquared<<","<< sqrt(abs(energySquared - energy*energy)) <<endl;
+    cout<<"E, E^2, error" <<endl;
+    cout<<energy<<","<<energySquared<<","<< error <<endl;
 }
 
 void vmc::updateOld()

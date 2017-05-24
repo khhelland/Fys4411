@@ -3,31 +3,32 @@
 \BOOKMARK [1][-]{section.3}{Trial wave functions}{}% 3
 \BOOKMARK [2][-]{subsection.3.1}{2 Particle Case}{section.3}% 4
 \BOOKMARK [2][-]{subsection.3.2}{Slater case}{section.3}% 5
-\BOOKMARK [1][-]{section.4}{Variational Monte-Carlo}{}% 6
-\BOOKMARK [1][-]{section.5}{The Metropolis Algorithm}{}% 7
-\BOOKMARK [2][-]{subsection.5.1}{Detailed Balance}{section.5}% 8
-\BOOKMARK [2][-]{subsection.5.2}{Symmetric Proposal Density}{section.5}% 9
-\BOOKMARK [2][-]{subsection.5.3}{Importance Sampling}{section.5}% 10
-\BOOKMARK [2][-]{subsection.5.4}{Local Energy}{section.5}% 11
-\BOOKMARK [2][-]{subsection.5.5}{2 Particle Case}{section.5}% 12
-\BOOKMARK [2][-]{subsection.5.6}{Slater Case}{section.5}% 13
-\BOOKMARK [1][-]{section.6}{Implementation}{}% 14
-\BOOKMARK [2][-]{subsection.6.1}{Structure}{section.6}% 15
-\BOOKMARK [2][-]{subsection.6.2}{Paralellization}{section.6}% 16
-\BOOKMARK [1][-]{section.7}{Cost}{}% 17
-\BOOKMARK [1][-]{section.8}{Accuracy}{}% 18
-\BOOKMARK [2][-]{subsection.8.1}{Blocking}{section.8}% 19
-\BOOKMARK [1][-]{section.9}{Benchmarks}{}% 20
-\BOOKMARK [2][-]{subsection.9.1}{2 Particle Case}{section.9}% 21
-\BOOKMARK [1][-]{section.10}{Results}{}% 22
-\BOOKMARK [1][-]{section.11}{Discussion}{}% 23
-\BOOKMARK [1][-]{section.12}{Conclusion}{}% 24
-\BOOKMARK [1][-]{appendix.A}{A Note About Cofactors and Determinants}{}% 25
-\BOOKMARK [1][-]{appendix.B}{Derivatives of the 2 particle trial wavefunction}{}% 26
-\BOOKMARK [2][-]{subsection.B.1}{Gradient}{appendix.B}% 27
-\BOOKMARK [2][-]{subsection.B.2}{Laplacian}{appendix.B}% 28
-\BOOKMARK [2][-]{subsection.B.3}{Derivatives w.r.t \040and }{appendix.B}% 29
-\BOOKMARK [1][-]{appendix.C}{Derivatives of the N particle trial wavefunction}{}% 30
-\BOOKMARK [2][-]{subsection.C.1}{Gradient}{appendix.C}% 31
-\BOOKMARK [2][-]{subsection.C.2}{Laplacian}{appendix.C}% 32
-\BOOKMARK [2][-]{subsection.C.3}{Derivative w.r.t }{appendix.C}% 33
+\BOOKMARK [1][-]{section.4}{Monte-Carlo Integration}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{The Metropolis Algorithm}{section.4}% 7
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Detailed Balance}{subsection.4.1}% 8
+\BOOKMARK [3][-]{subsubsection.4.1.2}{Symmetric Proposal Density}{subsection.4.1}% 9
+\BOOKMARK [3][-]{subsubsection.4.1.3}{Importance Sampling}{subsection.4.1}% 10
+\BOOKMARK [2][-]{subsection.4.2}{Local Energy}{section.4}% 11
+\BOOKMARK [3][-]{subsubsection.4.2.1}{2 Particle Case}{subsection.4.2}% 12
+\BOOKMARK [3][-]{subsubsection.4.2.2}{Slater Case}{subsection.4.2}% 13
+\BOOKMARK [2][-]{subsection.4.3}{Error Estimation and Blocking}{section.4}% 14
+\BOOKMARK [1][-]{section.5}{Implementation}{}% 15
+\BOOKMARK [2][-]{subsection.5.1}{Structure}{section.5}% 16
+\BOOKMARK [2][-]{subsection.5.2}{Paralellization}{section.5}% 17
+\BOOKMARK [1][-]{section.6}{Cost}{}% 18
+\BOOKMARK [1][-]{section.7}{Accuracy}{}% 19
+\BOOKMARK [2][-]{subsection.7.1}{Blocking}{section.7}% 20
+\BOOKMARK [1][-]{section.8}{Benchmarks}{}% 21
+\BOOKMARK [2][-]{subsection.8.1}{2 Particle Case}{section.8}% 22
+\BOOKMARK [1][-]{section.9}{Results}{}% 23
+\BOOKMARK [1][-]{section.10}{Discussion}{}% 24
+\BOOKMARK [1][-]{section.11}{Conclusion}{}% 25
+\BOOKMARK [1][-]{appendix.A}{A Note About Cofactors and Determinants}{}% 26
+\BOOKMARK [1][-]{appendix.B}{Derivatives of the 2 particle trial wavefunction}{}% 27
+\BOOKMARK [2][-]{subsection.B.1}{Gradient}{appendix.B}% 28
+\BOOKMARK [2][-]{subsection.B.2}{Laplacian}{appendix.B}% 29
+\BOOKMARK [2][-]{subsection.B.3}{Derivatives w.r.t \040and }{appendix.B}% 30
+\BOOKMARK [1][-]{appendix.C}{Derivatives of the N particle trial wavefunction}{}% 31
+\BOOKMARK [2][-]{subsection.C.1}{Gradient}{appendix.C}% 32
+\BOOKMARK [2][-]{subsection.C.2}{Laplacian}{appendix.C}% 33
+\BOOKMARK [2][-]{subsection.C.3}{Derivative w.r.t }{appendix.C}% 34

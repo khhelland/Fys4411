@@ -1,12 +1,12 @@
 #include <iostream>
 #include <slatervmc.h>
 #include <time.h>
-
-
+#include "ho2d.h"
+#include "tests.h"
 
 using namespace std;
 
-int main2()
+int main()
 {
 
 
@@ -15,11 +15,11 @@ int main2()
     start = clock();
 
 
-    slatervmc a(12,     // N
+    slatervmc a(6,     // N
           0.01,         // steplength
           1,            // omega
-          2,            //alpha
-          0.1 );        // beta
+          1,            //alpha
+           1);        // beta
     a.useImportanceSampling = 1;
     a.useInteraction = 1;
     a.useJastrow = 1;
@@ -31,8 +31,10 @@ int main2()
 //     a.run(1e6, //nCycles
 //           1);  //Blocksize
 //     a.printResults();
-     a.steepestDescent(1e5,0.4);
+     a.steepestDescent(1e5,1);
 
+//     cout<<ho2ddw(7,1,1,1)<<endl;
+//    alphaderivcomp();
     stop = clock();
 
     double time = (float)(stop-start)/CLOCKS_PER_SEC;

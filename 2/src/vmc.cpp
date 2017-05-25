@@ -449,7 +449,7 @@ void vmc::steepestDescent(int nCycles, double gamma)
 
 double vmc::alphaDeriv()
 {
-    return -0.5*accu(positions%positions);
+    return -0.5*omega*accu(positions%positions);
 }
 
 double vmc::betaDeriv()

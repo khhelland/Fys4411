@@ -40,7 +40,7 @@ arma::vec ho2dgrad(int deg, double w, double x, double y)
 double ho2ddw(int deg, double w, double x, double y)
 {
     arma::vec ns = quantumnumbers(deg);
-
+    //ns.print();
     return (
                 (
                     ns(0)*x*hermite(ns(0)-1,x)*hermite(ns(1),y)

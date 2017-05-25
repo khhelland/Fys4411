@@ -398,26 +398,29 @@ void slatervmc::writeEnergies(int nCycles, const char* filename)
     out.close();
 }
 
-
 void slatervmc::steepestDescent(int nCycles, double gamma)
 {
+    double agamma = alpha/10;
+    double bgamma = alpha/10;
+    updatePointers();
     if((!useJastrow)||(!useInteraction))
     {
         cout<<"Not implemented for this configuration"<<endl;
     }
-
     else
     {
-        double oldalpha = 0;
-        double oldbeta = 0;
-        while((abs(oldalpha - alpha) > 1e-5)&&(abs(oldbeta - beta) > 1e-5))
+        //cout<<"hi"<<endl;
+        double oldalpha = -100;
+        double oldbeta = -100;
+
+        for(int tsc = 0, iter = 0; tsc<5; iter++)
         {
             oldalpha = alpha;
             oldbeta = beta;
 
-
+            //cout<<1<<endl;
             updateOld();
-
+            //cout<<2<<endl;
 
             double Esum = 0;
             double Asum = 0;
@@ -425,20 +428,25 @@ void slatervmc::steepestDescent(int nCycles, double gamma)
             double EAsum = 0;
             double EBsum = 0;
 
+            //cout<<3<<endl;
 
             double deltaE,dEda,dEdb;
 
 
+            //cout<<4<<endl;
+            //for(int i = 0; i < nCycles; i++) metropolisMove();
 
-
-
-            for(int i = 0;i<nCycles;i++)
+            for(int i = 0; i < nCycles; i++)
             {
+                //cout<<"a";
                 metropolisMove();
+                //cout<<"b";
                 deltaE = localEnergyJastrowInteraction();
+                //cout<<"c";
                 dEda = alphaDeriv();
+                //cout<<"deda"<<dEda<<endl;
                 dEdb = betaDeriv();
-
+                //cout<<"dedb"<<dEdb<<endl;
                 Esum += deltaE;
                 Asum += dEda;
                 Bsum += dEdb;
@@ -454,16 +462,39 @@ void slatervmc::steepestDescent(int nCycles, double gamma)
             EAsum /= nCycles;
             EBsum /= nCycles;
 
+            while(alpha < agamma*2*(EAsum-Esum*Asum))
+            {
+                agamma /= 2;
+                cout<<"alpha gamma too big, trying again with new gamma "<<agamma<<endl;
+            }
 
             energy = Esum;
-            alpha -= gamma*2*(EAsum -Esum*Asum);
-            beta -= gamma*2*(EBsum -Esum*Bsum);
+            alpha -= agamma*2*(EAsum -Esum*Asum);
+            beta -= bgamma*2*(EBsum -Esum*Bsum);
+
+            alphaomega = alpha*omega;
+            setupMatrices();
             cout<<alpha<<", "<<beta<<endl;
-
-
+            if((abs(oldalpha - alpha) < 1e-4)&&(abs(oldbeta - beta) < 1e-4))
+                tsc++;
+            else
+            {    tsc = 0;
+                if(iter>30)
+                {
+                    agamma /= 2;
+                    bgamma /= 2;
+                    iter = 0;
+                    cout<<"Max iter reached new alpha gamma is "<<agamma<<
+                          "new beta gamma is "<<bgamma<<endl;
+                }
+            }
         }
     }
+    cout<<"Steepest Descent completed."<<endl;
+    cout<<"New parameters are:"<<endl;
+    cout<<"alpha = "<<alpha<<", beta = "<<beta<<endl;
 }
+
 
 double slatervmc::alphaDeriv()
 {
@@ -478,6 +509,7 @@ double slatervmc::alphaDeriv()
         }
     }
     sum *= omega;
+    //cout<<sum<<endl;
     return sum;
 }
 

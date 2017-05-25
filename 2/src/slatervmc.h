@@ -72,6 +72,7 @@ private:
     double drifttermnoJastrow(arma::mat,int,int);
 
     double betaDeriv();
+    double alphaDeriv();
 
     std::default_random_engine generator;
     std::normal_distribution<double> normalDistribution;

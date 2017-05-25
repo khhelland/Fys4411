@@ -364,23 +364,25 @@ void vmc::writeEnergies(int nCycles, const char* filename)
 
 void vmc::steepestDescent(int nCycles, double gamma)
 {
+    updatePointers();
     if((!useJastrow)||(useNumDiff)||(!useInteraction))
     {
         cout<<"Not implemented for this configuration"<<endl;
     }
-
     else
     {
-        double oldalpha = 0;
-        double oldbeta = 0;
-        while((abs(oldalpha - alpha) > 1e-5)&&(abs(oldbeta - beta) > 1e-5))
+        //cout<<"hi"<<endl;
+        double oldalpha = -100;
+        double oldbeta = -100;
+
+        for(int tsc = 0, iter = 0; tsc<5; iter++)
         {
             oldalpha = alpha;
             oldbeta = beta;
 
-
+            //cout<<1<<endl;
             updateOld();
-
+            //cout<<2<<endl;
 
             double Esum = 0;
             double Asum = 0;
@@ -388,20 +390,25 @@ void vmc::steepestDescent(int nCycles, double gamma)
             double EAsum = 0;
             double EBsum = 0;
 
+            //cout<<3<<endl;
 
             double deltaE,dEda,dEdb;
 
 
+            //cout<<4<<endl;
 
 
-
-            for(int i = 0;i<nCycles;i++)
+            for(int i = 0; i < nCycles; i++)
             {
+                //cout<<"a";
                 metropolisMove();
+                //cout<<"b";
                 deltaE = localEnergyJastrowInteraction();
+                //cout<<"c";
                 dEda = alphaDeriv();
+               // cout<<"d";
                 dEdb = betaDeriv();
-
+               // cout<<"e";
                 Esum += deltaE;
                 Asum += dEda;
                 Bsum += dEdb;
@@ -421,11 +428,23 @@ void vmc::steepestDescent(int nCycles, double gamma)
             energy = Esum;
             alpha -= gamma*2*(EAsum -Esum*Asum);
             beta -= gamma*2*(EBsum -Esum*Bsum);
-            cout<<alpha<<", "<<beta<<endl;
-
-
+            //cout<<alpha<<", "<<beta<<endl;
+            if((abs(oldalpha - alpha) < 1e-4)&&(abs(oldbeta - beta) < 1e-4))
+                tsc++;
+            else
+            {    tsc = 0;
+                if(iter>30)
+                {
+                    gamma /= 10;
+                    iter = 0;
+                    //cout<<"Max iter reached new gamma is "<<gamma<<endl;
+                }
+            }
         }
     }
+    cout<<"Steepest Descent completed."<<endl;
+    cout<<"New parameters are:"<<endl;
+    cout<<"alpha = "<<alpha<<", beta = "<<beta<<endl;
 }
 
 double vmc::alphaDeriv()

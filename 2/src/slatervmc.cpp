@@ -400,8 +400,8 @@ void slatervmc::writeEnergies(int nCycles, const char* filename)
 
 
 void slatervmc::steepestDescent(int nCycles, double gamma)
-{/*
-    if((!useJastrow)||(useNumDiff)||(!useInteraction))
+{
+    if((!useJastrow)||(!useInteraction))
     {
         cout<<"Not implemented for this configuration"<<endl;
     }
@@ -462,8 +462,25 @@ void slatervmc::steepestDescent(int nCycles, double gamma)
 
 
         }
-    }*/
+    }
 }
+
+double slatervmc::alphaDeriv()
+{
+    double sum = 0;
+    for(int i = 0; i < nOrbitals; i++)
+    {
+        for(int j = 0; j < nOrbitals; j++)
+        {
+            sum +=ho2ddw(j,alphaomega,positions(0,i),positions(1,i))*inverseDown(j,i);
+            sum +=ho2ddw(j,alphaomega,positions(0,i+nOrbitals),
+                        positions(1,i+nOrbitals))*inverseUp(j,i);
+        }
+    }
+    sum *= omega;
+    return sum;
+}
+
 
 double slatervmc::betaDeriv()
 {

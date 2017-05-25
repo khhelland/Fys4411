@@ -37,6 +37,19 @@ arma::vec ho2dgrad(int deg, double w, double x, double y)
 
 }
 
+double ho2ddw(int deg, double w, double x, double y)
+{
+    arma::vec ns = quantumnumbers(deg);
+
+    return (
+                (
+                    ns(0)*x*hermite(ns(0)-1,x)*hermite(ns(1),y)
+                    + ns(1)*y*hermite(ns(0),x)*hermite(ns(1)-1,y)
+                    )/(sqrt(w))
+                -0.5*(x*x + y*y)*hermite(ns(0),x)*hermite(ns(1),y)
+                )*exp(-w*(x*x+y*y)/2);
+}
+
 arma::vec quantumnumbers(int deg)
 {
     int nx = 0;
@@ -122,9 +135,7 @@ double hermitederiv(int d, double x,int n)
     return fac*hermite(d-n,x);
 }
 
-
-
-int ho2denergy(int nOrbitals)
+double ho2denergy(int nOrbitals)
 {
     //energy of nOrbitals lowest orbitals
     int result = 0;
@@ -143,5 +154,3 @@ int ho2denergy(int nOrbitals)
     }
     return result;
 }
-
-

@@ -375,7 +375,7 @@ Using this expression we have the local energy as
 \[E_L(\bb{r_1},\bb{r_2}) = \left[\f{1}{2}(1- \alpha)\omega(r_1^2 + r_2^2) + 2\alpha\omega\right]  - \f{a}{(1+\beta r_{12})^2}\left[\f{a}{(1+\beta r_{12})^2}+  \f{1}{r_{12}} - \f{2\beta}{(1+\beta r_{12})} -\alpha\omega r_{12}\right] + \f{1}{r_{12}},\]
 where the second term contains the  terms from the  Jastrow-factor and the cross term and the third is the interaction term.
 
-\subsection{Derivatives w.r.t \(\alpha\) and \(\beta\)}
+\subsection{Derivatives w.r.t \(\alpha\) and \(\beta\)} \label{app2pab}
 In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the derivatives of \(\psi_T\) with respect to these.
 \[  \f{1}{\psi_T}\pddt{\psi_T}{\alpha} = -\f{1}{2}\omega(r_1^2 + r_2^2).\]
 \[  \f{1}{\psi_T}\pddt{\psi_T}{\beta} = -\f{ar_{12}^2}{(1+\beta r_{12})^2}.\]
@@ -427,11 +427,13 @@ which means that
 \begin{align*}
   \f{\nabla^2\psi_s}{\psi_s} &= \sum_{ij}(\nabla^2s^\dar_{ij})s^{\dar,-1}_{ji} + (\nabla^2s^\uar_{ij})s^{\uar,-1}_{ji}\\
   &= \sum_{ij}^{N/2}(\nabla^2\psi_{\dar,j}(\bb{r}_i))s^{\dar,-1}_{ji} + (\nabla^2\psi_{\uar,j}(\bb{r}_i))s^{\uar,-1}_{ji} \\
-  &= \sum_{ij}^{N/2}(\omega^2r^2_i-2\epsilon_{j})\psi_j(\bb{r_i})s^{\dar,-1}_{ji} + (\omega^2r^2_{i + N/2}-2\epsilon_{j})\psi_j(\bb{r_{i+N/2}})s^{\uar,-1}_{ji}\\
-  &= \sum_{ij}^{N/2}(\omega^2r^2_i-2\epsilon_j)s^{\dar}_{ij}s^{\dar,-1}_{ji} + (\omega^2r^2_{i +N/2}-2\epsilon_j)s^{\uar}_{ij}s^{\uar,-1}_{ji}\\
-  &= \sum_{ij}^{N/2}(\omega^2r^2_i-2\epsilon_j)\delta_{ij} + (\omega^2r^2_{i + N/2}-2\epsilon_j)\delta_{ij}\\
-  &= \sum_{i}^{N}\omega^2r^2_i -4\sum_j^{N/2}\epsilon_j. 
+  &= \sum_{ij}^{N/2}(\alpha^2\omega^2r^2_i-2\alpha\omega(n_{x,j} + n_{y,j} + 1))\psi_j(\bb{r_i})s^{\dar,-1}_{ji} +
+  (\alpha^2\omega^2r^2_{i + N/2}-2\alpha\omega(n_{x,j} + n_{y,j} + 1))\psi_j(\bb{r_{i+N/2}})s^{\uar,-1}_{ji}\\
+  &= \sum_{ij}^{N/2}(\alpha^2\omega^2r^2_i-2\alpha\omega(n_{x,j} + n_{y,j} + 1))s^{\dar}_{ij}s^{\dar,-1}_{ji} +
+  (\alpha^2\omega^2r^2_{i + N/2}-2\alpha\omega(n_{x,j} + n_{y,j} + 1))s^{\uar}_{ij}s^{\uar,-1}_{ji}\\
+  &=\sum_{i=1}^{N}\alpha^2\omega^2r^2_{i} -4\alpha\omega\sum_{j}^{N/2}(n_{x,j} + n_{y,j} + 1),
 \end{align*}
+where I have used that $\sum_j s_{ij}s^{-1}_{ji} = \sum_i s_{ji}^{-1}s_{ij} = 1$.
 For the jastrow part
 \[
 \f{1}{J}\pndt{J}{z_i}{2} = \sum_{j\neq i}\pndt{f_{ij}}{z_i}{2} + \left(\sum_{j\neq i}\pddt{f_{ij}}{z_i}\right)^2,
@@ -455,10 +457,30 @@ The cross terms become
  2\left(\f{\nabla |S|_{\dar}}{|S|_{\dar}} + \f{\nabla |S|_{\uar}}{|S|_{\uar}}\right)\cdot\f{\nabla J}{J} = 2\sum_i\left(\f{1}{|s|}\pddt{|s|}{x_i}\f{1}{J}\pddt{J}{x_i} + \f{1}{|s|}\pddt{|s|}{y_i}\f{1}{J}\pddt{J}{y_i}\right). 
 \]
 
-\subsection{Derivative w.r.t \(\beta\)}
-In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the derivatives of \(\psi_T\) with respect to these.
+\subsection{Derivative w.r.t \(\alpha\) and \(\beta\)}
+The many particle generalizations of the formulas from section \ref{app2pab}.
+For $\alpha$ we again need the derivative of a determinant, but the arguments for the adjugate $C^T$ being independent of the diffentiation variable used above is no longer valid.
+Luckily Jacobis formula says that we may still use a similar expression:
+\[
+\f{1}{|A|}\ddt{|A|}{\alpha} = \sum_{i,j}\ddt{A_{ij}}{\alpha}A^{-1}_{ji}.
+\]
+In our case we then have
+\[
+\f{1}{\psi_T}\pddt{\psi_T}{\alpha} = \sum_{i,j}\pddt{\psi_i(\bb{r}_j)}{\alpha}s^{\dar,-1}_{ji} + \pddt{\psi_i(\bb{r}_{j+N/2})}{\alpha}s^{\uar,-1}_{ji}. 
+\]
+\begin{align*}
+  \pddt{\psi_i(\bb{r})}{\alpha} &= \omega \pddt{\psi_i(\bb{r})}{\alpha\omega}\\
+  &= \omega \left(\pddt{\sqrt{\alpha\omega}x}{\alpha}H'_{n_x}(\sqrt{\alpha\omega}x)H_{n_y}(\sqrt{\alpha\omega}y)
+  + \pddt{\sqrt{\alpha\omega}y}{\alpha}H_{n_x}(\sqrt{\alpha\omega}x)H'_{n_y}(\sqrt{\alpha\omega}y)\right.\\
+  &\qquad\qquad\left.-\f{1}{2}(x^2 + y^2) H_{n_x}(\sqrt{\alpha\omega}x)H_{n_y}(\sqrt{\alpha\omega}y)\right)e^{-\alpha\omega(x^2 + y^2)/2}\\
+  &= \omega \left(\f{xn_x}{\sqrt{\alpha\omega}}H_{n_x-1}(\sqrt{\alpha\omega}x)H_{n_y}(\sqrt{\alpha\omega}y)
+  + \f{yn_y}{\sqrt{\alpha\omega}}H_{n_x}(\sqrt{\alpha\omega}x)H_{n_y-1}(\sqrt{\alpha\omega}y)\right.\\
+  &\qquad\qquad\left.-\f{1}{2}(x^2 + y^2) H_{n_x}(\sqrt{\alpha\omega}x)H_{n_y}(\sqrt{\alpha\omega}y)\right)e^{-\alpha\omega(x^2 + y^2)/2}.
+\end{align*}
 
-\[  \f{1}{\psi_T}\pddt{\psi_T}{\beta} = -\f{ar_{12}^2}{(1+\beta r_{12})^2}.\]
+The $\beta$ derivative is a lot simpler: 
+
+\[\f{1}{\psi_T}\pddt{\psi_T}{\beta} = \sum_{i<j}\pddt{f_{ij}}{\beta} = \sum_{i<j} -\f{a_{ij}r_{ij}^2}{(1+\beta r_{ij})^2}.\]
 
 
 
@@ -480,9 +502,9 @@ In order to find the optimal parameters \(\alpha\) and \(\beta\) we needed the d
   M. Hjort-Jensen,\emph{Computational Physics: Hartree-Fock methods and introduction to Many-body Theory}
   found at \url{http://compphysics.github.io/ComputationalPhysics2/doc/pub/basicMB/pdf/basicMB-print.pdf}
   on the 16/03/17
-\bibitem{simen}
-  Simen Kvaal, \emph{Lecture notes for Fys-Kjm4480: Quantum Mechanics for many-particle systems},
-  october 2016, not published.
+%% \bibitem{simen}
+%%   Simen Kvaal, \emph{Lecture notes for Fys-Kjm4480: Quantum Mechanics for many-particle systems},
+%%   october 2016, not published.
 \end{thebibliography}
 
 

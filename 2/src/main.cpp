@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main2()
+int main()
 {
 
 
@@ -15,22 +15,22 @@ int main2()
     start = clock();
 
 
-    vmc a(1.5,     // steplength
-          0.5,   // alpha
+    vmc a(0.01,     // steplength
+          1,   // alpha
           1,     // omega
-          0.4 ); // beta
-    a.useImportanceSampling = 0;
-    a.useInteraction = 0;
-    a.useJastrow = 0;
+          1 ); // beta
+    a.useImportanceSampling = 1;
+    a.useInteraction = 1;
+    a.useJastrow = 1;
     a.useNumDiff = 0;
 
-
+    cout<<"set up complete"<<endl;
 
 //     a.writeEnergies(1e5,"blocking.dat");
-     a.run(1e6, //nCycles
-           1);  //Blocksize
-     a.printResults();
-//     a.steepestDescent(1e5,0.4);
+//     a.run(1e6, //nCycles
+//           1);  //Blocksize
+//     a.printResults();
+     a.steepestDescent(1e5,1);
 
     stop = clock();
 

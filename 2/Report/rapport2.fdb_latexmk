@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1495709524 "rapport2.tex" "rapport2.pdf" "rapport2" 1495709524
+["pdflatex"] 1495815628 "rapport2.tex" "rapport2.pdf" "rapport2" 1495815628
   "/etc/texmf/web2c/texmf.cnf" 1485512185 1101 af7716885e081ab43982cab7b4672c1a ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
@@ -55,9 +55,6 @@
   "/usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/zppler7v.vf" 1136768653 1524 5215b4f119d9ae3a502a2b55ffa15f36 ""
   "/usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/zppler7y.vf" 1136768653 1364 da0f434f50700bc89babf48bbda5dd49 ""
   "/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii" 1337017135 71627 94eb9990bed73c364d7f53f960cc8c5b ""
-  "/usr/share/texlive/texmf-dist/tex/generic/babel-norsk/norsk.ldf" 1367878962 7454 81c33988aa9f2f7c4a604d2527fdb33c ""
-  "/usr/share/texlive/texmf-dist/tex/generic/babel/babel.def" 1456440043 50112 f44490c2cb959606ae206a8f9f3f70e2 ""
-  "/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty" 1456440043 13499 cfeb1da37929c37eb2a356b8abd63f74 ""
   "/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty" 1284331290 1458 43ab4710dc82f3edeabecd0d099626b2 ""
   "/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty" 1303254447 8237 52810bdb4db2270e717422560a104aea ""
   "/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty" 1338332114 189108 8b3553a56c83ff61acecb36b75d817e2 ""
@@ -119,11 +116,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1458942643 31351 b32c45dce4a01cb7b53ed90c546614ca ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1485512253 1863403 f3ff9a4253bcb5fb9a9baaf0c572cb01 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1485512290 3857242 26837952fc6e4b23999149e457d9a507 ""
-  "rapport2.aux" 1495709524 5665 364356162837c2d617ef76b0344eb516 ""
-  "rapport2.out" 1495709524 2135 a8804c6077fad6a31b2fcabecf8accf8 ""
-  "rapport2.tex" 1495709523 24441 5a3780feb3d0c9ddd0bf3fc71a0dcc40 ""
+  "rapport2.aux" 1495815628 5650 7828f54d9d9da00250097d9f0c2e4d90 ""
+  "rapport2.out" 1495815628 2135 a8804c6077fad6a31b2fcabecf8accf8 ""
+  "rapport2.tex" 1495815626 26031 c32b016080942a35fea05d48017c9e19 ""
   (generated)
-  "rapport2.pdf"
-  "rapport2.log"
   "rapport2.out"
+  "rapport2.log"
+  "rapport2.pdf"
   "rapport2.aux"

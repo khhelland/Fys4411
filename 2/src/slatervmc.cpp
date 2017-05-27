@@ -30,7 +30,7 @@ slatervmc::slatervmc()
 {
 
 }
-slatervmc::slatervmc(int nParticles, double step, double w, double a, double b):
+slatervmc::slatervmc(int nParticles, double step, double w, double a, double b, int s):
     nParticles(nParticles),
     stepLength(step),
     omega(w),
@@ -45,7 +45,7 @@ slatervmc::slatervmc(int nParticles, double step, double w, double a, double b):
     setupMatrices();
     olddrift = mat(2,nParticles);
     stepLength2 = stepLength*stepLength;
-    generator.seed(1);
+    generator.seed(s);
 
 }
 
@@ -108,12 +108,13 @@ void slatervmc::run(int nCycles, int blocksize)
             Eblock = 0;
         }
     }
+    double dBlocks = (double)nCycles/blocksize;
 
-    Esum /= (((double)nCycles)/blocksize);
-    Esum2 /= (((double)nCycles)/blocksize);
+    Esum /= dBlocks;
+    Esum2 /= dBlocks;
 
     energy = Esum;
-    energySquared = Esum2;
+    energyError = sqrt((Esum2 -Esum*Esum)/(dBlocks - 1));
     AcceptanceRatio = acceptcount/(double)nCycles;
 
 
@@ -229,6 +230,11 @@ double slatervmc::proposalratio(int d, int p)
     return exp(0.5*(drift*drift - olddrift(d,p)*olddrift(d,p))*stepLength2
                + positions(d,p)*(drift + olddrift(d,p))
                - suggestion(d,p)*(drift + olddrift(d,p)));
+//    return exp(
+//                (pow(suggestion(d,p) - positions(d,p) - stepLength2*olddrift(d,p),2)
+//                - pow(positions(d,p) - suggestion(d,p) - stepLength2*drift,2)
+//                 )/(2*stepLength2)
+//                );
 }
 
 /*-----------------------------------------------------------------------------------*/
@@ -398,101 +404,172 @@ void slatervmc::writeEnergies(int nCycles, const char* filename)
     out.close();
 }
 
-void slatervmc::steepestDescent(int nCycles, double gamma)
+void slatervmc::steepestDescentAuto(int nCycles, double gamma)
 {
-    double agamma = alpha/10;
-    double bgamma = alpha/10;
     updatePointers();
-    if((!useJastrow)||(!useInteraction))
+    vec params;
+    if(useJastrow)
     {
-        cout<<"Not implemented for this configuration"<<endl;
+        params = {alpha,beta};
     }
     else
     {
-        //cout<<"hi"<<endl;
-        double oldalpha = -100;
-        double oldbeta = -100;
+        params = {alpha};
+    }
+    vec grad;
 
-        for(int tsc = 0, iter = 0; tsc<5; iter++)
+
+    for(int tsc = 0, iter = 0; tsc<5; iter++)
+    {
+
+        grad = paramgrad(nCycles);
+
+        while(alpha < gamma*grad(0))
         {
-            oldalpha = alpha;
-            oldbeta = beta;
+            gamma /= 10;
+            cout<<"gamma too big, trying again with new gamma "<<gamma<<endl;
+        }
 
-            //cout<<1<<endl;
-            updateOld();
-            //cout<<2<<endl;
-
-            double Esum = 0;
-            double Asum = 0;
-            double Bsum = 0;
-            double EAsum = 0;
-            double EBsum = 0;
-
-            //cout<<3<<endl;
-
-            double deltaE,dEda,dEdb;
+        params -= gamma*grad;
 
 
-            //cout<<4<<endl;
-            //for(int i = 0; i < nCycles; i++) metropolisMove();
+        if(gamma*norm(grad) < 1e-5)
+        {
+            tsc++;
+        }
+        else
+        {
+            tsc = 0;
 
-            for(int i = 0; i < nCycles; i++)
+            if(iter>30)
             {
-                //cout<<"a";
-                metropolisMove();
-                //cout<<"b";
-                deltaE = localEnergyJastrowInteraction();
-                //cout<<"c";
-                dEda = alphaDeriv();
-                //cout<<"deda"<<dEda<<endl;
-                dEdb = betaDeriv();
-                //cout<<"dedb"<<dEdb<<endl;
-                Esum += deltaE;
-                Asum += dEda;
-                Bsum += dEdb;
-                EAsum += deltaE*dEda;
-                EBsum += deltaE*dEdb;
-
-            }
-
-
-            Esum /= nCycles;
-            Asum /= nCycles;
-            Bsum /= nCycles;
-            EAsum /= nCycles;
-            EBsum /= nCycles;
-
-            while(alpha < agamma*2*(EAsum-Esum*Asum))
-            {
-                agamma /= 2;
-                cout<<"alpha gamma too big, trying again with new gamma "<<agamma<<endl;
-            }
-
-            energy = Esum;
-            alpha -= agamma*2*(EAsum -Esum*Asum);
-            beta -= bgamma*2*(EBsum -Esum*Bsum);
-
-            alphaomega = alpha*omega;
-            setupMatrices();
-            cout<<alpha<<", "<<beta<<endl;
-            if((abs(oldalpha - alpha) < 1e-4)&&(abs(oldbeta - beta) < 1e-4))
-                tsc++;
-            else
-            {    tsc = 0;
-                if(iter>30)
-                {
-                    agamma /= 2;
-                    bgamma /= 2;
-                    iter = 0;
-                    cout<<"Max iter reached new alpha gamma is "<<agamma<<
-                          "new beta gamma is "<<bgamma<<endl;
-                }
+                gamma /= 10;
+                iter = 0;
+                cout<<"Max iter reached new  gamma is "<<gamma<<endl;
             }
         }
+
+        updateParams(params);
+
+        trans(params).print();
+
     }
+
     cout<<"Steepest Descent completed."<<endl;
     cout<<"New parameters are:"<<endl;
     cout<<"alpha = "<<alpha<<", beta = "<<beta<<endl;
+}
+
+void slatervmc::steepestDescentMan(int nCycles, double gamma)
+{
+    updatePointers();
+    vec params;
+    if(useJastrow)
+    {
+        params = {alpha,beta};
+    }
+    else
+    {
+        params = {alpha};
+    }
+    vec grad;
+
+    cout<<"This function will run 1000 times if not stopped."<<endl;
+    for(int i= 0;i<1000;i++)
+    {
+
+        grad = paramgrad(nCycles);
+        params -= gamma*grad;
+        updateParams(params);
+
+        trans(params).print();
+
+    }
+}
+
+
+
+void slatervmc::updateParams(vec params)
+{
+    if(useJastrow)
+    {
+        beta = params(1);
+    }
+    alpha = params(0);
+    alphaomega = alpha*omega;
+    setupMatrices();
+}
+
+vec slatervmc::paramgrad(int nCycles)
+{
+
+    updateOld();
+
+    double Esum = 0;
+    double Asum = 0;
+    double EAsum = 0;
+
+    double deltaE,dEda,Bsum,EBsum,dEdb;
+
+    if(useJastrow)
+    {
+        Bsum = 0;
+        EBsum = 0;
+    }
+
+
+
+    for(int i = 0; i < nCycles; i++) metropolisMove();
+
+    if(useJastrow)
+    {
+        for(int i = 0; i < nCycles; i++)
+        {
+            metropolisMove();
+            deltaE = (this->*localEnergyPointer)();
+
+            dEda = alphaDeriv();
+            dEdb = betaDeriv();
+
+            Esum += deltaE;
+            Asum += dEda;
+            Bsum += dEdb;
+            EAsum += deltaE*dEda;
+            EBsum += deltaE*dEdb;
+
+        }
+    }
+    else
+    {
+        for(int i = 0; i < nCycles; i++)
+            metropolisMove();
+        deltaE = (this->*localEnergyPointer)();
+
+        dEda = alphaDeriv();
+
+        Esum += deltaE;
+        Asum += dEda;
+        EAsum += deltaE*dEda;
+    }
+
+    Esum /= nCycles;
+    Asum /= nCycles;
+    EAsum /= nCycles;
+
+    vec grad;
+    if(useJastrow)
+    {
+        Bsum /= nCycles;
+        EBsum /= nCycles;
+
+        grad = {2*(EAsum -Esum*Asum),2*(EBsum -Esum*Bsum)};
+    }
+    else
+    {
+        grad = {2*(EAsum - Esum*Asum)};
+    }
+    return grad;
+
 }
 
 
@@ -537,10 +614,18 @@ void slatervmc::printResults()
 {
     cout<< "Acceptanceratio: "<<AcceptanceRatio <<endl;
 
-    //save Esum, Esum2
-    cout<<"E, E^2, sigma" <<endl;
-    cout<<energy<<","<<energySquared<<","<< sqrt(abs(energySquared - energy*energy)) <<endl;
+
+    cout<<"E, error" <<endl;
+    cout<<energy<<","<<energyError <<endl;
 }
+
+//double * slatervmc::getResults()
+//{
+//    double result[2];
+//    result[0] = energy;
+//    result[1] = energyError;
+//    return result;
+//}
 
 void slatervmc::updateSlaters(int p)
 {

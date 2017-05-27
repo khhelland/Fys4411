@@ -22,10 +22,10 @@ vmc::vmc()
 {
 
 }
-vmc::vmc(double step, double alph, double w, double b):
+vmc::vmc(double step, double w, double a, double b, int seed):
     stepLength(step),
-    alpha(alph),
     omega(w),
+    alpha(a),
     beta(b)
 {
     normalDistribution = normal_distribution<double>(0.0,1.0);
@@ -33,7 +33,7 @@ vmc::vmc(double step, double alph, double w, double b):
     distributeParticles();
     olddrift = mat(2,nParticles);
     stepLength2 = stepLength*stepLength;
-    generator.seed(1);
+    generator.seed(seed);
 
 }
 
@@ -58,7 +58,7 @@ void vmc::run(int nCycles, int blocksize)
     double Esum = 0;
     double Esum2 = 0;
     double Eblock = 0;
-
+    double distance_sum = 0;
 
     int acceptcount = 0;
     for(int i = 1;i<=nCycles;i++)
@@ -66,6 +66,8 @@ void vmc::run(int nCycles, int blocksize)
         acceptcount += metropolisMove();
 
         Eblock += (this->*localEnergyPointer)();
+
+        distance_sum += rDifference(positions,1,2);
 
         if(i % blocksize == 0)
         {
@@ -80,9 +82,15 @@ void vmc::run(int nCycles, int blocksize)
     Esum /= nBlocks;
     Esum2 /= nBlocks;
 
+    distance_sum /= nCycles;
+
     energy = Esum;
     energySquared = Esum2;
-    error = (Esum2 - Esum*Esum)/nBlocks;
+    error = sqrt((Esum2 - Esum*Esum)/(nBlocks-1));
+
+    mean_distance = distance_sum;
+
+
     AcceptanceRatio = acceptcount/(double)nCycles;
 
 
@@ -475,9 +483,9 @@ void vmc::printResults()
 {
     cout<< "Acceptanceratio: "<<AcceptanceRatio <<endl;
 
-    //save Esum, Esum2
-    cout<<"E, E^2, error" <<endl;
-    cout<<energy<<","<<energySquared<<","<< error <<endl;
+
+    cout<<"E, error" <<endl;
+    cout<<energy<<","<<","<< error <<endl;
 }
 
 void vmc::updateOld()

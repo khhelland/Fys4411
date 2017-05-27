@@ -16,9 +16,10 @@ int main2()
 
 
     vmc a(0.01,     // steplength
-          1,   // alpha
-          1,     // omega
-          1 ); // beta
+          1,   // omega
+          1,     // alpha
+          0.4,  //beta
+          3);
     a.useImportanceSampling = 1;
     a.useInteraction = 1;
     a.useJastrow = 1;
@@ -26,11 +27,11 @@ int main2()
 
     cout<<"set up complete"<<endl;
 
-//     a.writeEnergies(1e5,"blocking.dat");
-//     a.run(1e6, //nCycles
-//           1);  //Blocksize
-//     a.printResults();
-     a.steepestDescent(1e5,1);
+ //    a.writeEnergies(1e5,"blocking.dat");
+     a.run(1e6, //nCycles
+           2e5);  //Blocksize
+     a.printResults();
+//     a.steepestDescent(1e5,1);
 
     stop = clock();
 

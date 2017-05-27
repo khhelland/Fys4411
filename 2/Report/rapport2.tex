@@ -1,7 +1,7 @@
-\documentclass[a4paper,norsk,10pt]{article}
+\documentclass[a4paper,English,10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[norsk]{babel}
+%% \usepackage[English]{babel}     
 \usepackage{graphicx,mathpple, textcomp, varioref}
 \usepackage{fullpage}
 \usepackage{fancyhdr}
@@ -79,18 +79,19 @@ where $r_{ij} = |\bb{r}_i-\bb{r}_j|$.
 \subsection{2 Particle Case}
 For the two particle case I will aproximate the ground state with the parametrized trial wavefunction
 \be
-\psi_T = A\exp\left(-\alpha\omega(r_1^2 + r_2^2) -\f{r_{12}}{1+\beta r_{12}}\right),\label{2pw}
+\psi_T = \exp\left(-\alpha\omega(r_1^2 + r_2^2) -\f{r_{12}}{1+\beta r_{12}}\right),\label{2pw}
 \ee
 with $\alpha$ and $\beta$ as free parameters.
 
 \subsection{Slater case}
 
-For the many particle case we will use the non-interacting ground state Slater determinant multiplied with a Jastrow factor with one free parameter.
+For the many particle case we will use the non-interacting ground state Slater determinant for a modified potential of strength $\alpha\omega$
+multiplied with a Jastrow factor with one free parameter.
 We could used Slater determinants from linear combinations of different non-interacting single particle states as found in \cite{proj1} by Hartree-Fock methods,
-however this turned out to be to complicated. Instead we will compare the Hartree-Fock approach to adding a Jastrow factor to the ground state.
+however this turned out to be too complicated too do in our timeframe. Instead we will compare the Hartree-Fock approach to adding a Jastrow factor to this modified ground state.
 
 \be
-\psi_T = A \mathrm{Det}\left(\psi_1\ldots\psi_N;\bb{r}_1\ldots\bb{r}_N\right)\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right),
+\psi_T =  \mathcal{A}\left(\psi_1(\alpha)\ldots\psi_N(\alpha);\bb{r}_1\ldots\bb{r}_N\right)\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right),
 \ee
 where  $\psi_i$ is the non-interacting single particle state with the $i$th lowest energy,
 and $a_{ij}$ is $1$ when the particles have anti-paralell spins and $1/3$ when paralell.
@@ -98,9 +99,9 @@ Since we are talking about spin $1/2$ electrons there are two spin configuration
 However the hamiltonean \ref{ham} is independent of spin. Wen can exploit this to simplify the wavefunction we use. If we let
 the $N/2$ first particles be in one spin state and the next $N/2$ in the other we may use a product of Slater determinants with only the particles in the same spin state in each:
 \be
-\psi_T = A\mathrm{Det}\left(\psi_{1\dar}\ldots\psi_{N/2\dar};\bb{r}_1\ldots\bb{r}_{N/2}\right)\mathrm{Det}\left(\psi_{1\uar}\ldots\psi_{N/2\uar};\bb{r}_{N/2+1}\ldots\bb{r}_N\right)\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right).\label{npw}
+\psi_T = \mathcal{A}\left(\psi_{1,\dar}(\alpha)\ldots\psi_{N/2,\dar}(\alpha);\bb{r}_1\ldots\bb{r}_{N/2}\right)\mathcal{A}\left(\psi_{1\uar}(\alpha)\ldots\psi_{N/2\uar}(\alpha);\bb{r}_{N/2+1}\ldots\bb{r}_N\right)\prod_{i<j}^N\exp\left(-\f{a_{ij}r_{ij}}{1+\beta r_{ij}}\right).\label{npw}
 \ee
-In the 2 particle case this reduces to equation \ref{2pw} with $\alpha = 1$.
+In the 2 particle case this reduces to equation \ref{2pw}.
 
 
 \section{Monte-Carlo Integration}
@@ -135,15 +136,22 @@ a way to compute $F_i$ and a way to estimate the error in the integration.
 
 \subsection{The Metropolis Algorithm}
 
-The Metropolis algorithm is an algorithm for computing expectation values for functions of many variables efficiently.
-It is based on semi-randomly walking through the integration space and finding the value of the function at each point.
-Let \(F(x_1,\ldots,x_N)\) be the function we wish to find the expectation value of. Then
+%% The Metropolis algorithm is an algorithm for computing expectation values for functions of many variables efficiently.
+%% It is based on semi-randomly walking through the integration space and finding the value of the function at each point.
+%% Let \(F(x_1,\ldots,x_N)\) be the function we wish to find the expectation value of. Then
+%% \be
+%% \braket{F} = \f{\int F(x_1,\ldots,x_N)p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k}{\int p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k}, \label{exp}
+%% \ee
+%% where \(p(x_1,\ldots,x_N)\) is the (generally) non-normalized probability density function. In our case \(p\) is \(|\psi|^2\).
+%% One advantage with this method is that it does not require explicit normalization of the probalility density.
+The Metropolis algorithm is a way to draw points according to a probability ensity function $p$. It is based on semi randomly-walking through
+the space. One advantage of the method is that the pdf does not need to be normalised, which is convenient.
+We can thus rewrite equation \ref{MCI} to
 \be
-\braket{F} = \f{\int F(x_1,\ldots,x_N)p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k}{\int p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k}, \label{exp}
+\braket{F} = \f{\int F(x_1,\ldots,x_N)p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k}{\int p(x_1,\ldots,x_N)\prod_{k=1}^N\dd x_k}. \label{exp}
 \ee
-where \(p(x_1,\ldots,x_N)\) is the (generally) non-normalized probability density function. In our case \(p\) is \(|\psi|^2\).
-One advantage with this method is that it does not require explicit normalization of the probalility density.
-
+One disadvantage is that
+as the each point is only a relatively small step from the last the correlations between points are high enough that we have to take them into account.
 
 
 \subsubsection{Detailed Balance}
@@ -194,10 +202,25 @@ and thus to higher corelations between the points.
 \subsubsection{Importance Sampling}
 
 If we instead choose a non-symmetric proposal distribution we may choose one to maximise the acceptancerate.
-If we choose a proposaldistribution so that the probability of proposing a move into an area with a higher probability is higher than
-the probability of proposing a move into an area with a lower probability. In other words
-if $P(a)>P(b)$ then $G(a|b)>G(b|a)$.
-
+If we choose a proposal distribution so that the probability of proposing a move into an area with a higher probability is higher than
+the probability of proposing a move into an area with a lower probability, in other words
+if $P(a)>P(b)$ then $G(a|b)>G(b|a)$, we will increase the acceptance rate. We need to make sure that the proposal distribution preserves ergodicity,
+which means that the whole space may be reached from any point with enought steps. So the probability of proposing a move into an area with lower probability must be non-zero.
+The obvious way to ensure proposals into higher probability is to use the gradient of $p$:
+\be
+\f{1}{p}\nabla p = \f{1}{|\psi_T|^2}\nabla|\psi|^2 = \f{2}{\psi_T}\nabla\psi \equiv 2F, \label{eq:qforce} 
+\ee
+where I have used that the wavefunction is real. If we only move one particle at a time in one direction at a time we only the derivative with respect to
+that particle in that dimension. 
+One choice that uses this and preserves ergodicity is
+\be
+\bb{x}_{i,n+1} = \bb{x}_{i,n} + \sigma \chi + \sigma^2F(x_{i,n}),\label{eq:prop}
+\ee
+where $\chi$ is a random variable from a gaussian distribution about $0$ with standard deviation $1$.
+From \cite{mortenbok} the proposal distribution from this rule is
+\be
+G(x_{i,n+1}|x_{i,n}) = \exp\left(-\f{(x_{i,n+1} - x_{i,n} - \sigma^2F(x_{i,n}))^2}{2\sigma^2}\right).
+\ee
 \subsection{Local Energy}
 In quantum mechanics the probability distribution is given by $|\psi|^2$ and the expectation value for an operator $O$ is given by
 \be
@@ -255,18 +278,14 @@ $t \equiv |i-j|$. So we can define $C(t) = \mathrm{cov}(F_i,F_j)$. Now we can sp
 \ee
 
 
-Now the problem is that we don't know the true covariance, but we can estimate it with the sample covariance so that for example
-\be
-C(0) = \sigma_F^2 \approx \bar{F^2}-\bar{F}^2.
-\ee
-For uncorrelated data $C(t>0) = 0$ so the error is $\sigma_F/\sqrt{N}$, which is easy to estimate.
+For uncorrelated data $C(t>0) = 0$ so the standard deviation of the error is $\sigma_F/\sqrt{N}$, which is easy to estimate.
 With corelations things are more complicated, however the blocking method allows us to incorperate correlations into a similar calculation.
 If we transform the data set $\Set{F_i}$ into another set $\Set{\tilde{F}_i}$, where
 \be
 \tilde{F}_i = \f{1}{B}\sum_{j=1}^{B}F_{(i-1)B+j},\label{block}
 \ee
 where $B$ is a whole number called the block size. Call $\tilde{F}_i$ a block.
-Now it is easy to estimate the block variance $\tilde{C}(0) = \sigma^2_{\tilde{F}}$ by $\bar{\tilde{F}^2}-\bar{\tilde{F}}^2$, but expanding it we see that
+Expanding $\tilde{C}(0)$ we see that
 \begin{align*}
   \tilde{C}(0) &= \braket{\tilde{F}_i^2}-\braket{\tilde{F}_i}^2\\
   &= \f{1}{B^2}\sum_{a,b}^B\braket{\tilde{F}_{i+a}\tilde{F}_{i+b}}-\braket{\tilde{F}_{i+a}}\braket{\tilde{F}_{i+b}}\\
@@ -280,7 +299,7 @@ and so
 comparing with equation \ref{errvar} we see that blocking has incorporated part of the error from correlations into $\tilde{C}(0)$, which is just as easy to estimate
 as $C(0)$. So, for an appropriate block size an improved estimate of the error is approximated by
 \be
-\sigma_{\bar{F}}^2 \approx \f{B}{N}\left(\bar{\tilde{F}^2}-\bar{\tilde{F}}^2\right).\label{errest}
+\sigma_{\bar{F}}^2 \approx \f{\left(\bar{\tilde{F}^2}-\bar{\tilde{F}}^2\right)}{N/B -1}.\label{errest}
 \ee
 To find the approriate block size we may plot this estimate as a function of block size, and choose a value where this seems to flatten. 
 

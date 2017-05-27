@@ -8,7 +8,7 @@ class vmc
 {
 public:
     vmc();
-    vmc( double, double alph, double w, double b);
+    vmc( double, double , double , double ,int );
 
     void run(int,int);
 
@@ -23,6 +23,14 @@ public:
     bool useInteraction = true;
     bool useNumDiff = false;
     bool useImportanceSampling = true;
+
+    //results
+    double energy;
+    double energySquared;
+    double error;
+    double AcceptanceRatio;
+
+    double mean_distance;
 
 
 private:
@@ -83,8 +91,8 @@ private:
     double stepLength;
     double stepLength2;
 
-    double alpha;
     double omega;
+    double alpha;
     double beta = 1;
 
     double drift = 0;
@@ -92,11 +100,7 @@ private:
     double oldwavesquared;
     double newwavesquared;
 
-    //results
-    double energy;
-    double energySquared;
-    double error;
-    double AcceptanceRatio;
+
 
     //(void*)(int,int) function;
     double (vmc::*localEnergyPointer)() = nullptr;

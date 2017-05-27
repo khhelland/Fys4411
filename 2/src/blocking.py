@@ -15,7 +15,7 @@ N = len(samples)
 nSteps = int(np.log10(N))
 
 
-sizes = sorted([(2**i)*(5**j) for j in range(nSteps+1) for i in range(nSteps+1)])[:-4]
+sizes = sorted([(2**i)*(5**j) for j in range(nSteps+1) for i in range(nSteps+1)])[:-2]
 
 varlist = []
 
@@ -24,7 +24,7 @@ for size in sizes:
     blocks = np.zeros((nBlocks))
     for i in range(nBlocks):
         blocks[i] = (samples[i*size:(i+1)*size]).mean()
-    varlist.append(blocks.var()/nBlocks)
+    varlist.append(np.sqrt(blocks.var()/(nBlocks-1)))
 
 varlist = np.array(varlist)
 sizes = np.array(sizes)
@@ -40,7 +40,7 @@ ax.plot(sizes,varlist,'-x')
 # ax.set_xticks(sizes)
 # ax.xlabel('xlabel')
 plt.xlabel('Blocksize',fontsize = 15)
-plt.ylabel('$\sigma^2$', fontsize = 20)
+plt.ylabel('Error', fontsize = 15)
 plt.title('Blocking with '+args[2] +' particles and %g points' %(N))
 
 plt.show()

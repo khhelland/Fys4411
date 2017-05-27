@@ -7,20 +7,27 @@ class slatervmc
 {
 public:
     slatervmc();
-    slatervmc(int nParticles, double, double w, double alpha, double b);
+    slatervmc(int nParticles, double, double w, double alpha, double b,int s);
 
-    void run(int,int);
+    void run(int,int);  
 
     void writeEnergies(int,const char*);
 
-    void steepestDescent(int,double);
+    void steepestDescentAuto(int, double);
+    void steepestDescentMan(int, double);
 
     void printResults();
+    //double * getResults();
 
 
     bool useJastrow = true;
     bool useInteraction = true;
     bool useImportanceSampling = true;
+
+    //results
+    double energy;
+    double energyError;
+    double AcceptanceRatio;
 
 
 private:
@@ -71,6 +78,9 @@ private:
     double drifttermwithJastrow(arma::mat,int,int);
     double drifttermnoJastrow(arma::mat,int,int);
 
+    void updateParams(arma::vec);
+
+    arma::vec paramgrad(int nCycles);
     double betaDeriv();
     double alphaDeriv();
 
@@ -78,7 +88,9 @@ private:
     std::normal_distribution<double> normalDistribution;
     std::uniform_real_distribution<double> uniformDistribution;
 
-
+/*--------------------------------------------------------------
+  Member variables
+----------------------------------------------------------------*/
     arma::mat positions;
     arma::mat suggestion;
 
@@ -108,10 +120,7 @@ private:
     double oldwavesquared;
     double newwavesquared;
 
-    //results
-    double energy;
-    double energySquared;
-    double AcceptanceRatio;
+
 
     //function pointers;
     double (slatervmc::*localEnergyPointer)() = nullptr;

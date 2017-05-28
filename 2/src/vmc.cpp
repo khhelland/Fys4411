@@ -86,7 +86,7 @@ void vmc::run(int nCycles, int blocksize)
 
     energy = Esum;
     energySquared = Esum2;
-    error = sqrt((Esum2 - Esum*Esum)/(nBlocks-1));
+    meanVar = (Esum2 - Esum*Esum)/(nBlocks-1);
 
     mean_distance = distance_sum;
 
@@ -484,8 +484,8 @@ void vmc::printResults()
     cout<< "Acceptanceratio: "<<AcceptanceRatio <<endl;
 
 
-    cout<<"E, error" <<endl;
-    cout<<energy<<","<<","<< error <<endl;
+    cout<<"E, meanvar" <<endl;
+    cout<<energy<<","<<","<< meanvar <<endl;
 }
 
 void vmc::updateOld()

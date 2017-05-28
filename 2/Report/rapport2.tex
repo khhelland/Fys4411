@@ -10,6 +10,7 @@
 \usepackage{amsmath}
 \usepackage{braket}
 \usepackage{enumitem}
+\usepackage{booktabs}
 
 \title{Fys4110: Project 2}
 \author{Knut Halvor Helland}
@@ -68,11 +69,31 @@ In addition I will study the 2 particle case with a singly parametrized symmetri
 
 
 \section{Physical Problem}
+We will study several Coulomb-interacting electrons in an isotropic two dimensional harmonic oscillator.
 The full Hamiltonean of the problem with $N$ particles and using atomic units is
 \be
 H = \sum_i^N -\f{1}{2}\nabla^2_i + \f{1}{2}\omega^2r^2_i + \sum_{i<j}^N\f{1}{r_{ij}}, \label{ham}
 \ee
 where $r_{ij} = |\bb{r}_i-\bb{r}_j|$.
+The non-interacting hamiltonean
+\be
+H_0 = \sum_i^N -\f{1}{2}\nabla^2_i + \f{1}{2}\omega^2r^2_i,\label{ham0}
+\ee
+has as an analytical ground state solution (up to normalisation) the slater determinant
+\be
+\mathcal{A}\left(\psi_1\ldots\psi_N;\bb{r}_1\ldots\bb{r}_N\right) =
+\left|\begin{matrix}
+  \psi_1(\bb{r}_1)&\cdots&\psi_N(\bb{r}_1)\\
+  \vdots&\ddots&\vdots\\
+  \psi_1(\bb{r}_N)&\cdots&\psi_N(\bb{r}_N)\\
+  \end{matrix}\right|,
+\ee
+where
+\be
+\psi_i(\bb{r}) = \chi_i\psi_{n_x,n_y}(\bb{r}) = \chi_iH_{n_x}(\sqrt{\omega}x)H_{n_y}(\sqrt{\omega}y)\exp(-\f{r^2}{2}),\label{spwf}
+\ee
+are the $N$ lowest energy single particle wave eigenstates.
+The general ground state for the interacting case is not known.
 
 
 \section{Trial wave functions}
@@ -256,30 +277,102 @@ as shown in appendix \ref{applap}.
 \subsubsection{Slater Case}
 In the $N$ particle case with hamiltonean given by equation \ref{ham} and trial wavefunction by equation \ref{npw} the local energy is given by
 
+\be
+E_L = -\f{1}{2}\left(\f{\nabla^2|S_\dar|}{|S_\dar|} + \f{\nabla^2|S_\uar|}{|S_\uar|} + \f{\nabla^2J}{J} +  \left(\f{\nabla|S_\dar|}{|S_\dar|} + \f{\nabla|S_\uar|}{|S_\uar|}\right)\cdot
+\f{\nabla J}{J}\right) + \f{1}{2}\omega^2\sum_ir_i^2 + \sum_{i<j}\f{1}{r_{ij}},
+\ee
+where the expressions for the laplacians are derived in appendix \ref{applapn} and are too big to include here.
 
 \subsection{Error Estimation and Blocking}
-In this section I follow \cite{block} and \cite{mortenbok} in explaining the blocking method.
+
 Let $\Set{F_i}$ be a finite set of consecutive measurements of the quantity $F$ on a system in equilibrium, in other words the probability distribution for the measurements is
-independent of time. Then as above the average of $\Set{F_i}$ $\bar{F}$ is an estimate of the true average of $F$ $\braket{F}$. An estimate of the error in this aproximation
-is given by the standard deviation of $\bar{F}$ $\sigma_{\bar{F}}$. The variance in $\bar{F}$ is given by
+independent of time. For a true average of $\braket{F}$ the error of each measurement is given by
 \be
-\sigma_{\bar{F}}^2 = \Braket{\bar{F}^2} - \braket{\bar{F}}^2,
+e_i = F_i - \braket{F},
 \ee
-expanding this we find
-\begin{align*}
-  \sigma_{\bar{F}}^2 &= \braket{\left(\f{1}{N}\sum_{i=1}^NF_i\right)^2} - \braket{\f{1}{N}\sum_{i=1}^NF_i}^2\\
-  &=\f{1}{N^2}\sum_{i=1}^N\sum_{j=1}^N\left(\braket{F_iF_j} - \braket{F_i}\braket{F_j}\right)\\
-  &= \f{1}{N^2}\sum_{i=1}^N\sum_{j=1}^N\mathrm{cov}(F_i,F_j).
-\end{align*}
-The time independence of the pdf means that the covariance should only depend on the relative distance between $i$ and $j$
-$t \equiv |i-j|$. So we can define $C(t) = \mathrm{cov}(F_i,F_j)$. Now we can split $\sigma_{\bar{F}}^2$ into
+while the error in the mean of the measurements $\bar{F}$ is given by
 \be
-\sigma_{\bar{F}}^2 = \f{1}{N^2}\sum_{i=1}^N\sum_{j=1}^NC(t(i,j)) = \f{1}{N}\left[C(0) + 2\sum_{t = 0}^{N-1}\left(1-\f{t}{N}\right)C(t)\right] \label{errvar}
+E = \bar{F} - \braket{F}.
+\ee
+The variance of $F$ is given by
+\be
+\sigma^2_F = \braket{(F-\braket{F})^2} = \braket{e^2},
+\ee
+while the variance of $\bar{F}$ is given by
+\be
+\sigma^2_{\bar{F}} = \braket{(\bar{F}-\braket{F})^2} = \braket{E^2},
+\ee
+noting that $E = (\sum_ie_i)/n$ we see that
+\be
+\sigma^2_{\bar{F}} = \braket{\left(\f{1}{n}\sum_ie_i\right)^2} = \f{1}{n^2}\sum_{i,j}\braket{e_ie_j}.\label{sigmam}
 \ee
 
+\subsubsection[Uncorrelated Data]{Uncorrelated Data \footnote{This section is based on the treatment in \cite{errors}}}
+For uncorrelated data
+\be
+ \braket{e_i e_j} = 0,
+\ee
+when $i\neq j$
+and so equation \ref{sigmam} says
+\be
+\sigma^2_{\bar{F}} = \f{1}{n}\braket{e^2} = \f{1}{n}\sigma_F^2.
+\ee
+These quantities depend on the true average $\braket{F}$ and are thus unknown, so we instead look at the following known quantity
+\be
+d_i = F_i - \bar{F} = e_i - E, \label{residualdef}
+\ee
+with mean square
+\be
+\bar{d^2} = \f{1}{n}\sum_n(e_i - E)^2 = \f{1}{n}\sum_i e_i^2 - E^2.
+\ee
+We note that the true average of this is
+\be
+\braket{\bar{d^2}} = \sigma_F^2 - \sigma_{\bar{F}}^2 = (n-1)\sigma_{\bar{F}}^2,
+\ee
+or
+\be
+\sigma_{\bar{F}}^2 = \f{\braket{\bar{d^2}}}{n-1}.
+\ee
+We still don't know $\braket{\bar{d^2}}$, but we can estimate it with $\bar{d^2}$. And so our estimate of $\braket{E}$ is
+\be
+\braket{E} = \sigma_{\bar{F}} \approx \sqrt{\f{\bar{d^2}}{n-1}}.\label{errorest}
+\ee
 
-For uncorrelated data $C(t>0) = 0$ so the standard deviation of the error is $\sigma_F/\sqrt{N}$, which is easy to estimate.
-With corelations things are more complicated, however the blocking method allows us to incorperate correlations into a similar calculation.
+If the measurements come with errors the errors propagate as
+\be
+\sigma^2_{\bar{F}} = \f{1}{n^2}\sum_i\sigma_{F_i}^2.\label{errprop}
+\ee
+
+\subsubsection[Correlations and Blocking]{Correlations and Blocking \footnote {This section is based on \cite{block} } }
+
+%%  Then as above the average of $\Set{F_i}$ $\bar{F}$ is an estimate of the true average of $F$ $\braket{F}$. An estimate of the error in this aproximation
+%% is given by the standard deviation of $\bar{F}$ $\sigma_{\bar{F}}$. The variance in $\bar{F}$ is given by
+%% \be
+%% \sigma_{\bar{F}}^2 = \Braket{\bar{F}^2} - \braket{\bar{F}}^2,
+%% \ee
+%% expanding this we find
+%% \begin{align*}
+%%   \sigma_{\bar{F}}^2 &= \braket{\left(\f{1}{N}\sum_{i=1}^NF_i\right)^2} - \braket{\f{1}{N}\sum_{i=1}^NF_i}^2\\
+%%   &=\f{1}{N^2}\sum_{i=1}^N\sum_{j=1}^N\left(\braket{F_iF_j} - \braket{F_i}\braket{F_j}\right)\\
+%%   &= \f{1}{N^2}\sum_{i=1}^N\sum_{j=1}^N\mathrm{cov}(F_i,F_j).
+%% \end{align*}
+When the data is correlated $\braket{e_ie_j}$ is not generally $0$ and so equation \ref{sigmam} reads
+\be
+\sigma_{\bar{F}}^2 = \f{1}{n}\braket{e^2} + \f{2}{n^2}\sum_{i,j\neq i}\braket{e_ie_j}
+\ee
+The time independence of the pdf means that $\braket{e_ie_j}$ should only depend on the relative distance between $i$ and $j$
+$t \equiv |i-j|$ \cite{block}. So we can define $C(t) = \braket{e_ie_j}$ and write
+\be
+\sigma_{\bar{F}}^2 = \f{1}{n}\left[C(0) + 2\sum_{t = 0}^{n-1}\left(1-\f{t}{n}\right)C(t)\right]. 
+\ee
+For finite correlation time there exists some $t = t_{max}$ for which $C(t>t_{max}) = 0$. If
+\be
+\sigma_{\bar{F}}^2 = \f{1}{n}\left[C(0) + 2\sum_{t = 0}^{t_{max}}\left(1-\f{t}{n}\right)C(t)\right]. \label{errvar}
+\ee
+We know how to estimate $C(0)$ from above, but $C(t>0)$ is more complicated.
+The blocking method allows us to build $C(t>0)$ into a new $C(0)$ which we can estimate in the regular way.
+
+
 If we transform the data set $\Set{F_i}$ into another set $\Set{\tilde{F}_i}$, where
 \be
 \tilde{F}_i = \f{1}{B}\sum_{j=1}^{B}F_{(i-1)B+j},\label{block}
@@ -290,29 +383,38 @@ Expanding $\tilde{C}(0)$ we see that
   \tilde{C}(0) &= \braket{\tilde{F}_i^2}-\braket{\tilde{F}_i}^2\\
   &= \f{1}{B^2}\sum_{a,b}^B\braket{\tilde{F}_{i+a}\tilde{F}_{i+b}}-\braket{\tilde{F}_{i+a}}\braket{\tilde{F}_{i+b}}\\
   &= \f{1}{B^2}\sum_{a,b}^BC(|a-b|)\\
-  &= \f{1}{B}\sum_{t=0}^{B-1}C(t),
+  &= \f{1}{B}C(0) + \f{2}{B}\sum_{t=1}^{B-1}\left(1-\f{t}{B}\right)C(t),
 \end{align*}
 and so
 \be
-\f{\tilde{C}(0)}{N/B} = \f{1}{N}\left[C(0) +\sum_{t = 1}^{B-1}C(t)\right],\label{blockvar}
+\f{\tilde{C}(0)}{N/B} = \f{1}{N}\left[C(0) +\sum_{t = 1}^{B-1}\left(1-\f{t}{B}\right)C(t)\right],\label{blockvar}
 \ee
-comparing with equation \ref{errvar} we see that blocking has incorporated part of the error from correlations into $\tilde{C}(0)$, which is just as easy to estimate
-as $C(0)$. So, for an appropriate block size an improved estimate of the error is approximated by
+comparing with equation \ref{errvar} we see that blocking has incorporated part of the error from correlations into $\tilde{C}(0)$! So, for an appropriate block size an improved estimate of the error is
 \be
-\sigma_{\bar{F}}^2 \approx \f{\left(\bar{\tilde{F}^2}-\bar{\tilde{F}}^2\right)}{N/B -1}.\label{errest}
+\sigma_{\bar{F}}^2 \approx \f{\sigma_{\bar{\tilde{F}}}^2}{N/B -1}.\label{errest}
 \ee
 To find the approriate block size we may plot this estimate as a function of block size, and choose a value where this seems to flatten. 
 
 \section{Implementation}
+The code is found at \url{https://github.com/khhelland/Fys4411/tree/master/2/src}.
 
 \subsection{Structure}
+The code is set up as two classes one for the two particle case and a generalisation for 2,6 or 12 particles.
+The 2 particle class i called vmc and the many particles class is called slatervmc. Both classes are initialized with a steplenght, frequency,
+variational parameters and a seed for the random number generator. To run the integration both classes have a member function called run, which takes
+the number of MC cycles and a blocksize. The classes have public booleans that can be set to determine whether or not to switch on the interaction,
+jastrow factor, importance sampling and, in the 2 particle case, numerical differentiation. Both classes have member functions that write the energies to file,
+and functions that perform a steepest descent parameter optimization. Due to problems with the automatic steepest descent getting stuck in local minima or becomming unstable
+there is a manual steepest descent which uses a static steplength and simply prints updated parameters untill stopped. The idea is to use it by starting it with a relatively large
+stepsize, see how it behaves, and then try again with a better initial guess and smaller stepsize.
+
+Due to time constraints the code is somewhat messy, but hopefully it is readable anyway.
+Due to the time constraints not alot of time has been put into optimization, and there are several obvious inefficiencies.
+
 \subsection{Paralellization}
 
-\section{Cost}
 
-\section{Accuracy}
 
-\subsection{Blocking}
 
 \section{Benchmarks}
 
@@ -320,6 +422,78 @@ To find the approriate block size we may plot this estimate as a function of blo
 A first test of the code is to check that when the interaction and jastrow factor are turned off and $\alpha = 1$ the energy is 2 with variance 0.
 
 \section{Results}
+
+\begin{table}
+  \begin{center}
+    \caption{Table of optimal parameters found by steepest descent.}
+    \label{paramtab}
+    
+    \begin{tabular}{*{5}c}
+      \toprule
+      $N$ & $\omega$ & $\alpha$ (no Jastrow) & $\alpha$ & $\beta$ \\
+      \midrule
+      2 & 1 & 1 & 1 & 0.4\\
+      & 0.5 & 1 & 1 & 0.4\\
+      & 0.1 & 1 & 1 & 0.4\\
+      & 0.05 & 1 & 1 & 0.4\\
+      & 0.01 & 1 & 1 & 0.4\\
+        \midrule
+      6 & 1 & 1 & 1 & 0.4\\
+      & 0.5 & 1 & 1 & 0.4\\
+      & 0.1 & 1 & 1 & 0.4\\
+      & 0.05 & 1 & 1 & 0.4\\
+      & 0.01 & 1 & 1 & 0.4\\
+      \midrule
+      12 & 1 & 1 & 1 & 0.4\\
+      & 0.5 & 1 & 1 & 0.4\\
+      & 0.1 & 1 & 1 & 0.4\\
+      & 0.05 & 1 & 1 & 0.4\\
+      & 0.01 & 1 & 1 & 0.4\\
+      \bottomrule
+    \end{tabular}
+    \end{center}
+\end{table}
+
+
+
+\begin{table}
+  \begin{center}
+    \caption{}
+    \label{Etab}
+    
+    \begin{tabular}{*{11}c}
+      \toprule
+      $N$ & $\omega$ & $\bar{E}$  & $\sigma_{\bar{E}}$ &  $\bar{K}$ & $\bar{V}$& & & & \\
+      \midrule
+      2 & 1 &  & & & & & & &\\
+      & 0.5 &  & & & & & & &\\
+      & 0.1 &  & & & & & & &\\
+      & 0.05&  & & & & & & &\\
+      & 0.01&  & & & & & & &\\
+      \midrule
+      6 & 1 &  & & & & & & &\\
+      & 0.5 &  & & & & & & &\\
+      & 0.1 &  & & & & & & &\\
+      & 0.05&  & & & & & & &\\
+      & 0.01&  & & & & & & &\\
+      \midrule
+      12 & 1 &  & & & & & & &\\
+      & 0.5 &  & & & & & & &\\
+      & 0.1 &  & & & & & & &\\
+      & 0.05&  & & & & & & &\\
+      & 0.01&  & & & & & & &\\
+     
+      
+      \bottomrule
+    \end{tabular}
+    \end{center}
+\end{table}
+
+
+\subsection{Cost}
+
+\subsection{Accuracy}
+
 
 \section{Discussion}
 
@@ -509,10 +683,13 @@ The $\beta$ derivative is a lot simpler:
 
 \bibitem{proj1}
   K. Helland ``Fys4411: Project 1'' available at \url{https://github.com/khhelland/Fys4411/blob/master/1/rapport.pdf}
+  
+\bibitem{errors}
+  G.L. Squires \emph{Practical Physics}, 4th edition. Cambridge University Press,2001.
+  
 \bibitem{block}
   H. Flyvbjerg and H.G. Petersen ``Error estimates on averages of correlated data''. The Journal of Chemical Physics 91, 461, 1989
-\bibitem{analytho}
-  E. Anisimovas and A. Matulis, ``Energy spectra of few-electron quantum dots.'', J. Phys.,10:601 615, 1998.
+
 \bibitem{mortenbok}
   M. Hjort-Jensen, \emph{Computational Physics: Lecture Notes Fall 2015}, found at
   \url{https://github.com/CompPhysics/ComputationalPhysics2/blob/gh-pages/doc/Literature/lectures2015.pdf}

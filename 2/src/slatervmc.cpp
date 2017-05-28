@@ -114,7 +114,7 @@ void slatervmc::run(int nCycles, int blocksize)
     Esum2 /= dBlocks;
 
     energy = Esum;
-    energyError = sqrt((Esum2 -Esum*Esum)/(dBlocks - 1));
+    energyMeanVar = (Esum2 -Esum*Esum)/(dBlocks - 1);
     AcceptanceRatio = acceptcount/(double)nCycles;
 
 
@@ -615,8 +615,8 @@ void slatervmc::printResults()
     cout<< "Acceptanceratio: "<<AcceptanceRatio <<endl;
 
 
-    cout<<"E, error" <<endl;
-    cout<<energy<<","<<energyError <<endl;
+    cout<<"E, meanvar" <<endl;
+    cout<<energy<<","<<energyMeanVar <<endl;
 }
 
 //double * slatervmc::getResults()

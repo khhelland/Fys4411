@@ -26,7 +26,7 @@ public:
 
     //results
     double energy;
-    double energyError;
+    double energyMeanVar;
     double AcceptanceRatio;
 
 

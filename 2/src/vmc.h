@@ -27,7 +27,7 @@ public:
     //results
     double energy;
     double energySquared;
-    double error;
+    double meanVar;
     double AcceptanceRatio;
 
     double mean_distance;

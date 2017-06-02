@@ -11,6 +11,7 @@
 \usepackage{braket}
 \usepackage{enumitem}
 \usepackage{booktabs}
+\usepackage{subcaption}
 
 \title{Fys4110: Project 2}
 \author{Knut Halvor Helland}
@@ -56,6 +57,8 @@
 $\ldots$
 \end{abstract}
 
+\tableofcontents
+\listoftables
 
 \section{Introduction}
 In this project I continue the study of many interacting particles in an isotropic two dimensional harmonic oscillator.
@@ -124,6 +127,22 @@ the $N/2$ first particles be in one spin state and the next $N/2$ in the other w
 \ee
 In the 2 particle case this reduces to equation \ref{2pw}.
 
+
+\subsection{Steepest Descent}
+To find the optimal values for $\alpha$ and $\beta$ start with an initial guess and traverse the parameter space by going down the steepest descent.
+\be
+\left(\begin{matrix}\alpha\\\beta\end{matrix}\right)_{n+1} =  \left(\begin{matrix}\alpha\\\beta\end{matrix}\right)_{n} - \gamma\nabla_{\alpha,\beta}\braket{E},
+\ee
+where $\gamma$ is a parameter of the search and $\nabla_{\alpha,\beta}$ is the gradient operator in parameter space.
+From \cite{mortenbok} the derivatives are
+\be
+\pddt{\braket{E}}{\alpha} = 2\left(\braket{\f{1}{\psi_T}\pddt{\psi_T}{\alpha}E} - \braket{\f{1}{\psi_T}\pddt{\psi_T}{\alpha}}\braket{E}\right)
+\ee
+and 
+\be
+\pddt{\braket{E}}{\beta} = 2\left(\braket{\f{1}{\psi_T}\pddt{\psi_T}{\beta}E} - \braket{\f{1}{\psi_T}\pddt{\psi_T}{\beta} }\braket{E}\right)
+\ee
+The expressions in are case are found in appedices \ref{app2pab} and \ref{appnpab}.
 
 \section{Monte-Carlo Integration}
 
@@ -267,8 +286,8 @@ E_L = \f{1}{\psi}H\psi, \label{localEdef}.
 
 
 \subsubsection{2 Particle Case}
-
-In the two particle case with hamiltonean given by equation \ref{ham} and trial wavefunction by equation \ref{2pw} the local energy is given by
+We might compute the local energy by numerical differentiation, however we will see that that is inefficient compared to calculating the derivative analytically.
+In the two particle case with hamiltonean given by equation \ref{ham} and trial wavefunction by equation \ref{2pw} the anaytical expression for the local energy is
 \be
 E_L(\bb{r_1},\bb{r_2}) = \left[\f{1}{2}(1- \alpha)\omega(r_1^2 + r_2^2) + 2\alpha\omega\right]  - \f{a}{(1+\beta r_{12})^2}\left[\f{a}{(1+\beta r_{12})^2}+  \f{1}{r_{12}} - \f{2\beta}{(1+\beta r_{12})} -\alpha\omega r_{12}\right] + \f{1}{r_{12}},
 \ee
@@ -413,83 +432,298 @@ Due to the time constraints not alot of time has been put into optimization, and
 
 \subsection{Paralellization}
 
+To run several integrations in paralell I used OpenMPI. The file paramain.cpp includes the MPI commands necesary to set up paralell processes and collect the results.
 
-
-
-\section{Benchmarks}
-
-\subsection{2 Particle Case}
-A first test of the code is to check that when the interaction and jastrow factor are turned off and $\alpha = 1$ the energy is 2 with variance 0.
 
 \section{Results}
+\subsection{Cost of numerical differentiation}
+I timed the program with $10^7$ MC cycles without the jastrow factor or interaction with both analytical and numerical differentiation in local energy.
+The analytical aproach took on average 3.32 s while the numerical approach took on average 11.78 s. I conclude that the analytical approach is more efficient and move forward
+using only the analytical expressions.
+
+\subsection{Blocking}
+Plots of the estimated error as a function of blocksize are found in figures \ref{figblock2pJ} through \ref{figblock12pIsJ}.
+\begin{figure}
+  \begin{center}
+    \fbox{\includegraphics[width = 12cm]{block2pJ}}
+  \end{center}
+  \caption{Error as a function of block size for 2 particles with $1\times10^7$ MC cycles without importance sampling.
+  The error seems to flatten after a blocksize of 250 000.}\label{figblock2pJ}
+\end{figure}
+\begin{figure}
+  \begin{center}
+    \fbox{\includegraphics[width = 12cm]{block2pIsJ}}
+  \end{center}
+  \caption{Error as a function of block size for 2 particles with $1\times10^7$ MC cycles with importance sampling.
+   The error seems to flatten after a blocksize of 200 000.}\label{figblock2pIsJ}
+\end{figure}
+\begin{figure}
+  \begin{center}
+    \fbox{\includegraphics[width = 12cm]{block6pJ}}
+  \end{center}
+  \caption{Error as a function of block size for 6 particles with $1\times10^7$ MC cycles without importance sampling.
+ The error seems to flatten after a blocksize of 400 000. }\label{figblock6pJ}
+\end{figure}
+\begin{figure}
+  \begin{center}
+    \fbox{\includegraphics[width = 12cm]{block6pIsJ}}
+  \end{center}
+  \caption{Error as a function of block size for 6 particles with $1\times10^7$ MC cycles with importance sampling.
+  The error seems to flatten after a blocksize of 156 250.}\label{figblock6pIsJ}
+\end{figure}
+\begin{figure}
+  \begin{center}
+    \fbox{\includegraphics[width = 12cm]{block12pJ}}
+  \end{center}
+  \caption{Error as a function of block size for 12 particles with $1\times10^7$ MC cycles without importance sampling.
+  The error seems to flatten after a blocksize of 500 000.}\label{figblock12pJ}
+\end{figure}
+\begin{figure}
+  \begin{center}
+    \fbox{\includegraphics[width = 12cm]{block12pIsJ}}
+  \end{center}
+  \caption{Error as a function of block size for 12 particles with $1\times10^7$ MC cycles with importance sampling.
+  The error seems to flatten after a blocksize of 100 000.}\label{figblock12pIsJ}
+\end{figure}
+In table \ref{blocktable} I have collected the blocksizes where the plots seem to flatten, and the blocksize I chose to work with.
+I chose slightly bigger blocksizes than seem necessary from the plots.
 
 \begin{table}
   \begin{center}
-    \caption{Table of optimal parameters found by steepest descent.}
+    \caption{Table of blocksizes. }
+    \label{blocktable}
+    \begin{tabular}{llcc}
+      \toprule
+      $N$ & importance samling? & blocksize from plot & chosen blocksize \\
+      \midrule
+      2 & no & 250 000 & 250 000\\
+      & yes & 200 000 & 250 000\\
+      \midrule
+      6 & no & 400 000 & 500 000\\
+      & yes & 156 250 & 250 000\\
+      \midrule
+      12 & no & 500 000 & 500 000\\
+      & yes & 100 000 & 250 000\\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+
+\subsection{Steepest Descent Optimization}
+For the two particle case the automatic steepet descent algorithm seemed to work fine. It consistently found the same point
+for a lot of different starting points, which seems to me to indicate that it really found a global minimum. However for the 6 and 12 particle
+cases the automatic algorithm produced very eratic results, and I decided to do the search manually. This seemed to work for the case with no jastrow factor,
+but failed with the jastrow factor. I discovered that the energy was very unstable as a function of the number of MC cycles, and that I probably needed
+to use $10^7$ cycles to get reasonable results. One integral with $10^7$ cycles took about 1 minute for 6 particles and about 3 or 4 minutes for 12 particles.
+Using this many points in a manual steepest descent search would be a grueling task, while an automatic search would have taken too much time. Therefore I decided
+to just calculate the energy of a few parameter combinations chosen based on the optimal parameters for the two particle case and intuition and chose the set
+that gave the lowest energy. Thus it may be a bit of a stretch to call these the optimal parameters. The parameters I ended up with are found in table \ref{paramtab}.
+
+
+
+\begin{table}
+  \begin{center}
+    \caption{Table of ``optimal'' parameters found by steepest descent.}
     \label{paramtab}
     
     \begin{tabular}{*{5}c}
       \toprule
       $N$ & $\omega$ & $\alpha$ (no Jastrow) & $\alpha$ & $\beta$ \\
       \midrule
-      2 & 1 & 1 & 1 & 0.4\\
-      & 0.5 & 1 & 1 & 0.4\\
-      & 0.1 & 1 & 1 & 0.4\\
-      & 0.05 & 1 & 1 & 0.4\\
-      & 0.01 & 1 & 1 & 0.4\\
-        \midrule
-      6 & 1 & 1 & 1 & 0.4\\
-      & 0.5 & 1 & 1 & 0.4\\
-      & 0.1 & 1 & 1 & 0.4\\
-      & 0.05 & 1 & 1 & 0.4\\
-      & 0.01 & 1 & 1 & 0.4\\
+      2 & 1 & 0.767 & 0.985 & 0.402\\
+      & 0.5 & 0.691 &  0.976 &  0.328\\
+      & 0.1 & 0.511 & 0.948 & 0.170\\
+      & 0.05 & 0.438 & 0.916 & 0.155\\
+      & 0.01 & 0.278 & 0.940 & 0.097\\
       \midrule
-      12 & 1 & 1 & 1 & 0.4\\
-      & 0.5 & 1 & 1 & 0.4\\
-      & 0.1 & 1 & 1 & 0.4\\
-      & 0.05 & 1 & 1 & 0.4\\
-      & 0.01 & 1 & 1 & 0.4\\
+      6 & 1 & 0.599 &  0.998 &  0.491\\
+      & 0.5 & 0.532 & 0.956 & 0.475\\
+      & 0.1 & 0.378 & 0.80 & 0.21\\
+      & 0.05 & 0.314 & 0.5 & 0.15\\
+      & 0.01 & 0.314 & 0.5 & 0.1\\
+      \midrule
+      12 & 1 & 0.556 & 1 & 0.4\\
+      & 0.5 & 0.478 & 1 & 0.3\\
+      & 0.1 & 0.313 & 0.8 & 0.2\\
+      & 0.05 & 0.260 & 0.6 & 0.1\\
+      & 0.01 & 0.150 & 0.1 & 0.1\\
       \bottomrule
     \end{tabular}
     \end{center}
 \end{table}
 
+\subsection{Benchmarks}
+When the interaction is turned off, setting $\alpha = 1$ and turning off the jastrow factor make the trial wavefunctions \ref{2pw} and \ref{npw} the known ground states
+with energies $2\omega, 10\omega$ and $28\omega$ for the 2,6 ans 12 particle case, respsectively. Since the ground state is an eigenstate the local energy for these states
+should be equal to the total energy at every point. Thus the MC integration should find the exact energies with zero variance, yielding an error estimate of zero.
+For these ground states it is also known that the expectation value for the kinetic and potential energies should be exactly half the total energy. However,
+the states are not eigenstates for kinetic and potential energy, so we can not expect to find this exactly. We may use this to see how well the error estimation based
+on blocking works, simply by comparing the deviation of the calculated values for $\bar{K}$ and $\bar{V}$ with the true means $\braket{K} = \braket{V} = \braket{E}/2$ and
+the expected error. I have calculations with blocking and $10^7$ MC cycles for wavefunctions without jastrow factors, $\alpha = 1$ and no interaction in \ref{tabGround}. 
+We see that in all cases $\bar{E} = \braket{E}$ exactly, with expected error equal to zero up to numerical precision. $\bar{K}$ and $\bar{V}$ are not exact, which is as expected,
+but they deviate from their exact values by much more than the expected error, especially for low $\omega$.
+\begin{table}
+  \centering
+  \caption[Results without jastrow factor or interaction]{Results from  calculations with blocking and $10^7$ MC cycles for wavefunctions without jastrow factors, $\alpha = 1$ and no interaction.}
+  \label{tabGround}
+  \begin{tabular}{*{9}c}
+    \toprule
+    N & $\omega$ & $\bar{K}$ & $\sigma_{\bar{K}}$& $\bar{V}$& $\sigma_{\bar{V}}$& $\bar{E}$  & $\sigma_{\bar{E}}$ &$\braket{E}$\\
+    \midrule
+    2 &1&1.05317	&0.00131343	&0.946828	&0.00131343	&2	&-1.13869e-16 &2\\
+    &0.5&0.535774	&0.000661513	&0.464226	&0.000661513	&1&	0 & 1\\
+    &0.1&0.106852	&9.89911e-05	&0.093148	&9.89911e-05	&0.2	&8.89602e-19 & 0.2\\
+    &0.05&0.054874	&2.20498e-05	&0.045126	&2.20498e-05	&0.1	&8.89602e-20 & 0.1\\
+    &0.01&0.0151137	&3.01902e-07	&0.00488625	&3.01902e-07	&0.02	&2.78001e-21  &0.02\\
+    \midrule
+    6&1&5.06396	&0.0234623	&4.93604	&0.0234623	&10	&3.64381e-16 &10\\
+    &0.5&2.52148	&0.0100633	&2.47852	&0.0100633	&5	&-2.73286e-16 &5\\
+    &0.1&0.570124	&0.000367148	&0.429876	&0.000367148	&1	&5.69345e-18  &1\\
+    &0.05&0.333559	&6.76897e-05	&0.166441	&6.76897e-05	&0.5	&0      &0.5\\
+    &0.01&0.0870228	&6.50881e-07	&0.0129772	&6.50881e-07	&0.1	&1.3344e-19 & 0.1\\
+    \midrule
+    12&1&13.8033	&0.121219	&14.1967	&0.121219	&28	&0 &28\\
+    &0.5&7.01541	&0.0417814	&6.98459	&0.0417814	&14	&0 &14\\
+    &0.1&1.51871	&0.00237558	&1.28129	&0.00237558	&2.8	&6.83214e-17 &2.8\\
+    &0.05&0.835721	&0.000725358	&0.564279	&0.000725358	&1.4	&-3.98542e-17 &1.4\\
+    &0.01&0.230431	&1.24871e-05	&0.0495693	&1.24871e-05	&0.28	&-3.55841e-19  &0.28\\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
+When we turn on the interaction Taut has shown in \cite{taut} that the ground state energy for 2 particles and $\omega = 1$ is exactly 3 a.u..
+Also \cite{mortenref} includes ground state energies for certain frequencies found by diffusion monte carlo methods. In \cite{proj1} I used Hartree-Fock methods to build a slater
+determinant out of linear combinations of single particle wavefunctions and minimized the energy, which is another way to aproximate the ground state.
+I have collected these results in \ref{tabMref}.
 
 \begin{table}
-  \begin{center}
-    \caption{}
-    \label{Etab}
-    
-    \begin{tabular}{*{11}c}
-      \toprule
-      $N$ & $\omega$ & $\bar{E}$  & $\sigma_{\bar{E}}$ &  $\bar{K}$ & $\bar{V}$& & & & \\
-      \midrule
-      2 & 1 &  & & & & & & &\\
-      & 0.5 &  & & & & & & &\\
-      & 0.1 &  & & & & & & &\\
-      & 0.05&  & & & & & & &\\
-      & 0.01&  & & & & & & &\\
-      \midrule
-      6 & 1 &  & & & & & & &\\
-      & 0.5 &  & & & & & & &\\
-      & 0.1 &  & & & & & & &\\
-      & 0.05&  & & & & & & &\\
-      & 0.01&  & & & & & & &\\
-      \midrule
-      12 & 1 &  & & & & & & &\\
-      & 0.5 &  & & & & & & &\\
-      & 0.1 &  & & & & & & &\\
-      & 0.05&  & & & & & & &\\
-      & 0.01&  & & & & & & &\\
-     
-      
-      \bottomrule
-    \end{tabular}
-    \end{center}
+  \centering
+  \caption[Reference energies]{Reference values for ground state energies found by, diffusion monte carlo  collected from \cite{mortenref} (a), Hartree-Fock
+    methods from \cite{proj1} (b) and the exact value for 2 particles and $\omega = 1$ from \cite{taut} (c).}
+  \label{tabMref}
+  \begin{tabular}{lllll}
+    \toprule
+    N&$\omega$&$\bar{E}_{a}$&$\bar{E}_b$&$E_c$\\
+    \midrule
+    2&1&3.00000 &3.16191 & 3\\
+    &0.5&1.65975& 2.8386&\\
+    6&1&20.1597&20.7192&\\
+    &0.5&11.7888&17.8352&\\
+    12&1&65.700&66.912&\\
+    &0.5&39.159&56.6229&\\
+    \bottomrule
+  \end{tabular}
 \end{table}
 
+\subsection{MC Integration}
+I ran the integration with $10^7$ MC cycles in 4 paralell processes. I assumed that the 4 results were uncorrelated when calculating the expected error, meaning I used equation
+\label{errorprop}. I collected the results in tables \ref{Etab2},\ref{Etab6} and \ref{Etab12}.
 
+\begin{table}
+  \centering
+  \caption[Results 2 particles]{Results of 4 paralell integrations with $10^7$ MC cycles each for 2 particles.
+    The variation parameters chosen are those from table \ref{paramtab} and the expected errors have been calculated with the blocking method with blocksizes
+    according to table \ref{blocktable}.The ``J?'' collumn indicates whether the jastrow factor was included or not.}
+  \label{Etab2}
+  \begin{tabular}{*{10}c}
+    \toprule
+    $\omega$ &J?& $\bar{K}$ & $\sigma_{\bar{K}}$& $\bar{V}$& $\sigma_{\bar{V}}$& $\bar{E}$  & $\sigma_{\bar{E}}$ & $\bar{r_{12}}$ &time\\
+    \midrule
+    1 &yes &0.896043	&0.0185009	&2.10496	&0.0183245	&3.001	&0.000765124	&1.64293&5.58495\\
+    &no & 0.762656	& 0.0164748	& 2.37302	& 0.0257503	& 3.13568	& 0.0210561	& 1.44959 & 3.64587\\
+    0.5 &yes& 0.442345	&0.0140292	&1.21753	&0.0136653	&1.65988	&0.00105956	&2.49304 &5.59341 \\
+    &no & 0.339068	& 0.0106497	& 1.44792	& 0.0220222    &	1.78699 &	0.0200221 &	2.17777 & 3.76321\\
+    0.1&yes &0.0854813	&0.00428608	&0.356026	&0.00398314	&0.441507	&0.000934913	&6.88561&5.64161 \\
+    & no & 0.0449886& 0.00241899 &	0.465024 &	0.011365 &	0.510013 &	0.0110211 &	5.90909&3.67108\\
+    0.05&yes &0.0373425	&0.00353373	&0.216955	&0.00317596	&0.254297	&0.000806016	&10.1328  &5.61539 \\
+    &no&0.0192918	&0.00111495&	0.313173&	0.0112679&	0.332465	&0.0114061&	8.95725&3.63865\\
+    0.01&yes &0.00715056	&0.000859333	&0.0695279	&0.000865545	&0.0766784	&0.000473462	&23.3606&5.547\\
+    &no&0.00399493	&0.000103827	&0.125667	&0.00787434	&0.129662	&0.00790149	&15.8172&3.63274\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \centering
+  \caption[Results 6 particles]{Results of 4 paralell integrations with $10^7$ MC cycles each for 6 particles.
+    The variation parameters chosen are those from table \ref{paramtab} and the expected errors have been calculated with the blocking method with blocksizes
+    according to table \ref{blocktable}.The ``J?'' collumn indicates whether the jastrow factor was included or not.} 
+  \label{Etab6}
+  \begin{tabular}{*{9}c}
+    \toprule
+    $\omega$ &J?& $\bar{K}$ & $\sigma_{\bar{K}}$& $\bar{V}$& $\sigma_{\bar{V}}$& $\bar{E}$  & $\sigma_{\bar{E}}$  &time\\
+    \midrule
+    1 &yes&3.68271	&0.06032	&16.5068	&0.0529771	&20.1895	&0.0145315&57.8832\\
+    &no &2.99233	&0.0545036	&17.7254	&0.0956411	&20.7177	&0.0708336 &16.7907\\
+    0.5 &yes&1.85946	&0.0391915	&9.998	&0.0339211	&11.8575	&0.0168981 & 60.13\\
+    &no &1.32267	&0.0255294	&10.9755	&0.0623592	&12.2981	&0.0541781 &16.6152\\
+    0.1&yes &0.296443	&0.0125718	&3.2867	&0.011232	&3.58314	&0.00453845 &57.2104\\
+    & no & 0.206651	&0.00398447	&3.62807	&0.0352785	&3.83472	&0.0372295 &16.665\\
+    0.05&yes &0.0682081	&0.0117284	&2.15215	&0.00884077	&2.22035	&0.0134219&62.8669\\
+    &no&0.101616	&0.00179862	&2.48552	&0.0430841	&2.58714	&0.0442215 &17.0087\\
+    0.01&yes &-0.138742	&0.0221044	&0.825324	&0.0161958	&0.686582	&0.00717069 &65.096\\
+    &no&0.027521	&0.000172539	&1.68502	&0.0554644	&1.71254	&0.0555953  &16.6392\\
+    
+    \bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}
+  \centering
+    \caption[Results 12 particles]{Results of 4 paralell integrations with $10^7$ MC cycles each for 12 particles.
+    The variation parameters chosen are those from table \ref{paramtab} and the expected errors have been calculated with the blocking method with blocksizes
+    according to table \ref{blocktable}.The ``J?'' collumn indicates whether the jastrow factor was included or not.}
+  \label{Etab12}
+  \begin{tabular}{*{9}c}
+    \toprule
+     $\omega$ &J?& $\bar{K}$ & $\sigma_{\bar{K}}$& $\bar{V}$& $\sigma_{\bar{V}}$& $\bar{E}$  & $\sigma_{\bar{E}}$  &time\\
+    \midrule
+    1 &yes&8.54277&	0.13305	&57.6363	&0.124573&	66.179&	0.0544664 & 362.953\\
+    &no &7.75721	&0.138949	&59.6794	&0.201069	&67.4366	&0.152718 &98.2915\\
+    0.5 &yes&4.2585	&0.0757153	&35.2696	&0.0653093	&39.5281	&0.0356756 &357.436\\
+    &no &3.21622	&0.0626376	&37.1745	&0.149676	&40.3907	&0.124732 &86.3928\\
+    0.1&yes &0.600904	&0.0505859	&11.6492	&0.031241	&12.2501	&0.0245983 &360.226\\
+    & no &0.541136	&0.010503	&13.0991	&0.14344	&13.6402	&0.1504 &86.9919 \\
+    0.05&yes &-0.627686	&0.167751	&7.73977	&0.0363206	&7.11209	&0.159102  &407.275\\
+    &no&0.276648	&0.00368362	&9.61352	&0.214207	&9.89016	&0.217163 &80.9301\\
+    0.01&yes &-1.89996	&0.20771	&3.49049	&0.0992233	&1.59053	&0.111508 &389.397\\
+    &no&0.0403921	&8.45161e-05	&7.47626	&0.28336	&7.51665	&0.283431 &84.4429\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Onebody Densities}
+
+The onebody density for a multiparticle wavefunction $\psi(\bb{r}_1,\ldots\bb{r}_N)$ is
+\be
+\int |\psi|^2\prod_{i = 2}^Nd\bb{r}_i\label{onebodyeq}.
+\ee
+Figure \ref{fig:onebody} shows the onebody density of the 2 particle trial wavefunction for $\omega = 1$ and optimal parameters both with and without the jastrow factor.
+%% \begin{figure}
+%%   \begin{center}
+%%     \fbox{\includegraphics[width = 12cm]{}}
+%%   \end{center}
+%%   \caption{}\label{}
+%% \end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{2pdensity}
+    \caption{With Jastrow}
+    \label{fig:inclu}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{2pdensityNoJ}
+    \caption{Without Jastrow}
+    \label{fig:deform}
+  \end{subfigure}
+  \caption{Onebody density for 2 particles, $\omega = 1$ with optimal parameters.}
+  \label{fig:onebody}
+\end{figure}
 \subsection{Cost}
 
 \subsection{Accuracy}
@@ -650,7 +884,7 @@ The cross terms become
  2\left(\f{\nabla |S|_{\dar}}{|S|_{\dar}} + \f{\nabla |S|_{\uar}}{|S|_{\uar}}\right)\cdot\f{\nabla J}{J} = 2\sum_i\left(\f{1}{|s|}\pddt{|s|}{x_i}\f{1}{J}\pddt{J}{x_i} + \f{1}{|s|}\pddt{|s|}{y_i}\f{1}{J}\pddt{J}{y_i}\right). 
 \]
 
-\subsection{Derivative w.r.t \(\alpha\) and \(\beta\)}
+\subsection{Derivative w.r.t \(\alpha\) and \(\beta\)}\label{appnpab}
 The many particle generalizations of the formulas from section \ref{app2pab}.
 For $\alpha$ we again need the derivative of a determinant, but the arguments for the adjugate $C^T$ being independent of the diffentiation variable used above is no longer valid.
 Luckily Jacobis formula says that we may still use a similar expression:
@@ -689,15 +923,16 @@ The $\beta$ derivative is a lot simpler:
   
 \bibitem{block}
   H. Flyvbjerg and H.G. Petersen ``Error estimates on averages of correlated data''. The Journal of Chemical Physics 91, 461, 1989
+\bibitem{taut}
+  M. Taut ``Two electrons in an external oscillator potential: Particular analytic solutions
+of a Coulomb correlation problem'' .  Phys. Rev. A 48, 3561 - 3566 (1993).
+\bibitem{mortenref}
+  M. L. Pedersen, G. Hagen, M. Hjorth-Jensen, S. Kvaal, and F. Pederiva,Phys. Rev. B 84, 115302 (2011)
 
 \bibitem{mortenbok}
   M. Hjort-Jensen, \emph{Computational Physics: Lecture Notes Fall 2015}, found at
   \url{https://github.com/CompPhysics/ComputationalPhysics2/blob/gh-pages/doc/Literature/lectures2015.pdf}
   on the 31/01/17
-\bibitem{mortenslides}
-  M. Hjort-Jensen,\emph{Computational Physics: Hartree-Fock methods and introduction to Many-body Theory}
-  found at \url{http://compphysics.github.io/ComputationalPhysics2/doc/pub/basicMB/pdf/basicMB-print.pdf}
-  on the 16/03/17
 %% \bibitem{simen}
 %%   Simen Kvaal, \emph{Lecture notes for Fys-Kjm4480: Quantum Mechanics for many-particle systems},
 %%   october 2016, not published.

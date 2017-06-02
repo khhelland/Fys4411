@@ -78,7 +78,6 @@ void slatervmc::setupMatrices()
     inverseDown = inv(slaterDown);
     inverseUp = inv(slaterUp);
 }
-
 void slatervmc::run(int nCycles, int blocksize)
 {
     updatePointers();
@@ -86,11 +85,18 @@ void slatervmc::run(int nCycles, int blocksize)
     updateOld();
 
     // burn-in
-    for(int i = 0; i<1e5 ; i++) metropolisMove();
+    for(int i = 0; i<2*blocksize ; i++) metropolisMove();
 
     double Esum = 0;
     double Esum2 = 0;
     double Eblock = 0;
+
+    double Ksum = 0;
+    double Ksum2 = 0;
+    double Kblock = 0;
+    double Vsum = 0;
+    double Vsum2 = 0;
+    double Vblock = 0;
 
 
     int acceptcount = 0;
@@ -98,27 +104,51 @@ void slatervmc::run(int nCycles, int blocksize)
     {
         acceptcount += metropolisMove();
 
-        Eblock += (this->*localEnergyPointer)();
+        Kblock += (this->*kineticPtr)();
+        Vblock += (this->*potentialPtr)();
+
 
         if(i % blocksize == 0)
         {
-            Eblock /= (double) blocksize;
+            Kblock /= blocksize;
+            Vblock /= blocksize;
+            Eblock = Kblock + Vblock;
+
+            Ksum += Kblock;
+            Ksum2 += Kblock*Kblock;
+            Vsum += Vblock;
+            Vsum2 += Vblock*Vblock;
             Esum += Eblock;
             Esum2 += Eblock*Eblock;
-            Eblock = 0;
+
+            //Eblock = 0;
+            Kblock = 0;
+            Vblock = 0;
         }
     }
     double dBlocks = (double)nCycles/blocksize;
 
     Esum /= dBlocks;
     Esum2 /= dBlocks;
+    Ksum /= dBlocks;
+    Ksum2 /= dBlocks;
+    Vsum /= dBlocks;
+    Vsum2 /= dBlocks;
 
+    kinetic_energy = Ksum;
+    kineticMeanVar = (Ksum2 - Ksum*Ksum)/(dBlocks-1);
+    potential_energy = Vsum;
+    potentialMeanVar = (Vsum2 - Vsum*Vsum)/(dBlocks -1);
     energy = Esum;
     energyMeanVar = (Esum2 -Esum*Esum)/(dBlocks - 1);
+
+
     AcceptanceRatio = acceptcount/(double)nCycles;
 
 
 }
+
+
 
 int slatervmc::metropolisMove()
 {
@@ -248,25 +278,25 @@ double slatervmc::rDifference(mat pos, int p, int q)
 
 
 /*------------------------------------------------------------------------------------*/
-double slatervmc::localEnergy()
-{
-    return kinetic() + potential();
-}
+//double slatervmc::localEnergy()
+//{
+//    return kinetic() + potential();
+//}
 
-double slatervmc::localEnergyJastrow()
-{
-    return kineticJastrow() + potential();
-}
+//double slatervmc::localEnergyJastrow()
+//{
+//    return kineticJastrow() + potential();
+//}
 
-double slatervmc::localEnergyInteraction()
-{
-    return kinetic() + potentialInteraction();
-}
+//double slatervmc::localEnergyInteraction()
+//{
+//    return kinetic() + potentialInteraction();
+//}
 
-double slatervmc::localEnergyJastrowInteraction()
-{
-    return kineticJastrow() + potentialInteraction();
-}
+//double slatervmc::localEnergyJastrowInteraction()
+//{
+//    return kineticJastrow() + potentialInteraction();
+//}
 
 
 
@@ -398,7 +428,7 @@ void slatervmc::writeEnergies(int nCycles, const char* filename)
     for(int i = 0;i<nCycles;i++)
     {
         metropolisMove();
-        e = (this->*localEnergyPointer)();
+        e = (this->*kineticPtr)() + (this->*potentialPtr)();
         out<<e<<endl;
     }
     out.close();
@@ -477,12 +507,14 @@ void slatervmc::steepestDescentMan(int nCycles, double gamma)
     cout<<"This function will run 1000 times if not stopped."<<endl;
     for(int i= 0;i<1000;i++)
     {
+        trans(params).print();
 
         grad = paramgrad(nCycles);
+        //trans(gamma*grad).print();
         params -= gamma*grad;
         updateParams(params);
 
-        trans(params).print();
+
 
     }
 }
@@ -526,7 +558,7 @@ vec slatervmc::paramgrad(int nCycles)
         for(int i = 0; i < nCycles; i++)
         {
             metropolisMove();
-            deltaE = (this->*localEnergyPointer)();
+            deltaE = (this->*kineticPtr)() + (this->*potentialPtr)();
 
             dEda = alphaDeriv();
             dEdb = betaDeriv();
@@ -542,16 +574,17 @@ vec slatervmc::paramgrad(int nCycles)
     else
     {
         for(int i = 0; i < nCycles; i++)
+        {
             metropolisMove();
-        deltaE = (this->*localEnergyPointer)();
+            deltaE = (this->*kineticPtr)() + (this->*potentialPtr)();
 
-        dEda = alphaDeriv();
+            dEda = alphaDeriv();
 
-        Esum += deltaE;
-        Asum += dEda;
-        EAsum += deltaE*dEda;
+            Esum += deltaE;
+            Asum += dEda;
+            EAsum += deltaE*dEda;
+        }
     }
-
     Esum /= nCycles;
     Asum /= nCycles;
     EAsum /= nCycles;
@@ -610,13 +643,16 @@ double slatervmc::betaDeriv()
 
 }
 
+
 void slatervmc::printResults()
 {
     cout<< "Acceptanceratio: "<<AcceptanceRatio <<endl;
 
 
-    cout<<"E, meanvar" <<endl;
-    cout<<energy<<","<<energyMeanVar <<endl;
+    cout<<"K\tsK\tV\tsV\tE\t sE" <<endl;
+    cout<<kinetic_energy<<"\t"<<kineticMeanVar<<"\t"
+        <<potential_energy<<"\t"<<potentialMeanVar<<"\t"
+        <<energy<<"\t"<<energyMeanVar <<endl;
 }
 
 //double * slatervmc::getResults()
@@ -684,28 +720,32 @@ void slatervmc::updatePointers()
     {
         findSuggestionPointer = &slatervmc::findSuggestionImportanceSamplingwithJastrow;
         findRatioPointer = &slatervmc::findRatioImportanceJastrow;
-        localEnergyPointer = &slatervmc::localEnergyJastrowInteraction;
+        kineticPtr = &slatervmc::kineticJastrow;
+        potentialPtr = &slatervmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(useInteraction)&&(!useJastrow) )
     {
         findSuggestionPointer = &slatervmc::findSuggestionImportanceSamplingnoJastrow;
         findRatioPointer = &slatervmc::findRatioImportance;
-        localEnergyPointer = &slatervmc::localEnergyInteraction;
+        kineticPtr = &slatervmc::kinetic;
+        potentialPtr = &slatervmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(!useInteraction)&&(useJastrow) )
     {
         findSuggestionPointer = &slatervmc::findSuggestionImportanceSamplingwithJastrow;
         findRatioPointer = &slatervmc::findRatioImportanceJastrow;
-        localEnergyPointer = &slatervmc::localEnergyJastrow;
+        kineticPtr = &slatervmc::kineticJastrow;
+        potentialPtr = &slatervmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(useInteraction)&&(useJastrow) )
     {
         findSuggestionPointer = &slatervmc::findSuggestionUniform;
         findRatioPointer = &slatervmc::findRatioJastrow;
-        localEnergyPointer = &slatervmc::localEnergyJastrowInteraction;
+        kineticPtr = &slatervmc::kineticJastrow;
+        potentialPtr = &slatervmc::potentialInteraction;
     }
 
 
@@ -713,28 +753,32 @@ void slatervmc::updatePointers()
     {
         findSuggestionPointer = &slatervmc::findSuggestionUniform;
         findRatioPointer = &slatervmc::findRatioJastrow;
-        localEnergyPointer = &slatervmc::localEnergyJastrow;
+        kineticPtr = &slatervmc::kineticJastrow;
+        potentialPtr = &slatervmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(useInteraction)&&(!useJastrow) )
     {
         findSuggestionPointer = &slatervmc::findSuggestionUniform;
         findRatioPointer = &slatervmc::findRatio;
-        localEnergyPointer = &slatervmc::localEnergyInteraction;
+        kineticPtr = &slatervmc::kinetic;
+        potentialPtr = &slatervmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(!useInteraction)&&(!useJastrow) )
     {
         findSuggestionPointer = &slatervmc::findSuggestionImportanceSamplingnoJastrow;
         findRatioPointer = &slatervmc::findRatioImportance;
-        localEnergyPointer = &slatervmc::localEnergy;
+        kineticPtr = &slatervmc::kinetic;
+        potentialPtr = &slatervmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(!useInteraction)&&(!useJastrow) )
     {
         findSuggestionPointer = &slatervmc::findSuggestionUniform;
         findRatioPointer = &slatervmc::findRatio;
-        localEnergyPointer = &slatervmc::localEnergy;
+        kineticPtr = &slatervmc::kinetic;
+        potentialPtr = &slatervmc::potential;
     }
 
     /*-------------------------------------------------------------------------------*/

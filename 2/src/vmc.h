@@ -25,9 +25,12 @@ public:
     bool useImportanceSampling = true;
 
     //results
+    double kinetic_energy;
+    double kineticMeanVar;
+    double potential_energy;
+    double potentialMeanVar;
     double energy;
-    double energySquared;
-    double meanVar;
+    double energyMeanVar;
     double AcceptanceRatio;
 
     double mean_distance;
@@ -57,14 +60,13 @@ private:
     double proposalratio(int,int);
 
 
-    double localEnergy();
-    double localEnergyJastrow();
-    double localEnergyInteraction();
-    double localEnergyNumdiff();
-    double localEnergyJastrowInteraction();
-    double localEnergyJastrowNumdiff();
-    double localEnergyInteractionNumdiff();
-    double localEnergyJastrowInteractionNumdiff();
+    double kinetic();
+    double kineticJastrow();
+    double kineticNumdiff();
+    double kineticJastrowNumdiff();
+
+    double potential();
+    double potentialInteraction();
 
     double wavefunction(arma::mat);
     double wavefunctionJastrow(arma::mat);
@@ -103,7 +105,9 @@ private:
 
 
     //(void*)(int,int) function;
-    double (vmc::*localEnergyPointer)() = nullptr;
+    // double (vmc::*localEnergyPointer)() = nullptr;
+    double (vmc::*kineticPtr)() = nullptr;
+    double (vmc::*potentialPtr)() = nullptr;
     void (vmc::*findSuggestionPointer)(int,int) = nullptr;
     double (vmc::*findRatioPointer)(int,int) = nullptr;
 

@@ -50,46 +50,71 @@ void vmc::distributeParticles()
 void vmc::run(int nCycles, int blocksize)
 {
     updatePointers();
+
     updateOld();
 
     // burn-in
-    for(int i = 0; i<1e5 ; i++) metropolisMove();
+    for(int i = 0; i<2*blocksize ; i++) metropolisMove();
 
     double Esum = 0;
     double Esum2 = 0;
     double Eblock = 0;
+
+    double Ksum = 0;
+    double Ksum2 = 0;
+    double Kblock = 0;
+    double Vsum = 0;
+    double Vsum2 = 0;
+    double Vblock = 0;
+
     double distance_sum = 0;
+
 
     int acceptcount = 0;
     for(int i = 1;i<=nCycles;i++)
     {
         acceptcount += metropolisMove();
 
-        Eblock += (this->*localEnergyPointer)();
-
-        distance_sum += rDifference(positions,1,2);
+        Kblock += (this->*kineticPtr)();
+        Vblock += (this->*potentialPtr)();
+        distance_sum += rDifference(positions,0,1);
 
         if(i % blocksize == 0)
         {
-            Eblock /= (double) blocksize;
+            Kblock /= blocksize;
+            Vblock /= blocksize;
+            Eblock = Kblock + Vblock;
+
+            Ksum += Kblock;
+            Ksum2 += Kblock*Kblock;
+            Vsum += Vblock;
+            Vsum2 += Vblock*Vblock;
             Esum += Eblock;
             Esum2 += Eblock*Eblock;
-            Eblock = 0;
+
+            //Eblock = 0;
+            Kblock = 0;
+            Vblock = 0;
         }
     }
+    double dBlocks = (double)nCycles/blocksize;
 
-    double  nBlocks = (double)nCycles/blocksize;
-    Esum /= nBlocks;
-    Esum2 /= nBlocks;
+    Esum /= dBlocks;
+    Esum2 /= dBlocks;
+    Ksum /= dBlocks;
+    Ksum2 /= dBlocks;
+    Vsum /= dBlocks;
+    Vsum2 /= dBlocks;
 
-    distance_sum /= nCycles;
+    distance_sum/=nCycles;
 
+    kinetic_energy = Ksum;
+    kineticMeanVar = (Ksum2 - Ksum*Ksum)/(dBlocks-1);
+    potential_energy = Vsum;
+    potentialMeanVar = (Vsum2 - Vsum*Vsum)/(dBlocks -1);
     energy = Esum;
-    energySquared = Esum2;
-    meanVar = (Esum2 - Esum*Esum)/(nBlocks-1);
-
+    energyMeanVar = (Esum2 -Esum*Esum)/(dBlocks - 1);
     mean_distance = distance_sum;
-
 
     AcceptanceRatio = acceptcount/(double)nCycles;
 
@@ -211,57 +236,28 @@ double vmc::rDifference(mat pos, int p, int q)
 
 
 /*------------------------------------------------------------------------------------*/
-double vmc::localEnergy()
+double vmc::kinetic()
 {
-    return 0.5*(1-alpha*alpha)*omega*omega*accu(positions%positions) + 2.0*alpha*omega;
+    return 2*alpha*omega - 0.5*alpha*alpha*omega*omega*accu(positions%positions);
+}
+double vmc::kineticJastrow()
+{
+    double r = rDifference(positions,0,1);
+    double b = 1/(1+beta*r);
+    double res = b*b*(-b*b - 1/r + 2*beta*b + alpha*omega*r);
+    return res + kinetic();
 }
 
-double vmc::localEnergyJastrow()
+double vmc::potential()
 {
-    double sum = 0;
-    double r;
-    double b;
-
-
-    r = rDifference(positions,0,1);
-    b = 1.0/(1+beta*r);
-
-    sum += b*b*(-b*b - 1.0/r + 2*beta*b + alpha*omega*r);
-
-    sum += localEnergy();
-    return sum;
+    return 0.5*omega*omega*accu(positions%positions);
+}
+double vmc::potentialInteraction()
+{
+    return 1/rDifference(positions,0,1) + potential();
 }
 
-double vmc::localEnergyInteraction()
-{
-    double sum = 0;
-
-    sum += 1.0/rDifference(positions,0,1);
-
-
-
-    sum += localEnergy();
-    return sum;
-}
-
-double vmc::localEnergyJastrowInteraction()
-{
-    double sum = 0;
-    double r;
-    double b;
-
-
-    r = rDifference(positions,0,1);
-    b = 1.0/(1+beta*r);
-
-    sum += 1.0/r;
-    sum += b*b*(-b*b - 1.0/r + 2*beta*b + alpha*omega*r);
-
-    sum += localEnergy();
-    return sum;
-}
-
-double vmc::localEnergyNumdiff()
+double vmc::kineticNumdiff()
 {
     double sum = 0;
     double h = 1e-3;
@@ -278,10 +274,10 @@ double vmc::localEnergyNumdiff()
     }
     sum /= wavefunction(positions);
     sum -= 4*nParticles;
-    return 0.5*(omega*omega*accu(positions%positions)-h2*sum);
+    return -0.5*h2*sum;
 }
 
-double vmc::localEnergyJastrowNumdiff()
+double vmc::kineticJastrowNumdiff()
 {
     double sum = 0;
     double h = 1e-3;
@@ -298,22 +294,10 @@ double vmc::localEnergyJastrowNumdiff()
     }
     sum /= wavefunctionJastrow(positions);
     sum -= 4*nParticles;
-    return 0.5*(omega*omega*accu(positions%positions)-h2*sum);
+    return -0.5*h2*sum;
 
 }
 
-double vmc::localEnergyInteractionNumdiff()
-{
-    double k = localEnergyNumdiff();
-    return k + 1/rDifference(positions,0,1);
-
-}
-
-double vmc::localEnergyJastrowInteractionNumdiff()
-{
-    double k = localEnergyJastrowNumdiff();
-    return k + 1/rDifference(positions,1,0);
-}
 
 
 double vmc::wavefunction(mat pos)
@@ -363,7 +347,7 @@ void vmc::writeEnergies(int nCycles, const char* filename)
     for(int i = 0;i<nCycles;i++)
     {
         metropolisMove();
-        e = (this->*localEnergyPointer)();
+        e = (this->*kineticPtr)() + (this->*potentialPtr)();
         out<<e<<endl;
     }
     out.close();
@@ -411,7 +395,7 @@ void vmc::steepestDescent(int nCycles, double gamma)
                 //cout<<"a";
                 metropolisMove();
                 //cout<<"b";
-                deltaE = localEnergyJastrowInteraction();
+                deltaE = (this->*kineticPtr)() + (this->*potentialPtr)();
                 //cout<<"c";
                 dEda = alphaDeriv();
                // cout<<"d";
@@ -484,8 +468,10 @@ void vmc::printResults()
     cout<< "Acceptanceratio: "<<AcceptanceRatio <<endl;
 
 
-    cout<<"E, meanvar" <<endl;
-    cout<<energy<<","<<","<< meanvar <<endl;
+    cout<<"K\tsK\tV\tsV\tE\t sE\t r" <<endl;
+    cout<<kinetic_energy<<"\t"<<kineticMeanVar<<"\t"
+        <<potential_energy<<"\t"<<potentialMeanVar<<"\t"
+        <<energy<<"\t"<<energyMeanVar <<"\t"<<mean_distance<<endl;
 }
 
 void vmc::updateOld()
@@ -518,63 +504,72 @@ void vmc::updatePointers()
     {
         findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
         findRatioPointer = &vmc::findRatioImportanceJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowInteractionNumdiff;
+        kineticPtr = &vmc::kineticJastrowNumdiff;
+        potentialPtr = &vmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(!useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
         findRatioPointer = &vmc::findRatioImportanceJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowInteraction;
+        kineticPtr = &vmc::kineticJastrow;
+        potentialPtr = &vmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
         findRatioPointer = &vmc::findRatioImportance;
-        localEnergyPointer = &vmc::localEnergyInteractionNumdiff;
+        kineticPtr = &vmc::kineticNumdiff;
+        potentialPtr = &vmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
         findRatioPointer = &vmc::findRatioImportanceJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowNumdiff;
+        kineticPtr = &vmc::kineticJastrowNumdiff;
+        potentialPtr = &vmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionUniform;
         findRatioPointer = &vmc::findRatioJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowInteractionNumdiff;
+        kineticPtr = &vmc::kineticJastrowNumdiff;
+        potentialPtr = &vmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(!useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
         findRatioPointer = &vmc::findRatioImportance;
-        localEnergyPointer = &vmc::localEnergyInteraction;
+        kineticPtr = &vmc::kinetic;
+        potentialPtr = &vmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(!useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionImportanceSamplingwithJastrow;
         findRatioPointer = &vmc::findRatioImportanceJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrow;
+        kineticPtr = &vmc::kineticJastrow;
+        potentialPtr = &vmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(useInteraction)&&(useJastrow)&&(!useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionUniform;
         findRatioPointer = &vmc::findRatioJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowInteraction;
+        kineticPtr = &vmc::kineticJastrow;
+        potentialPtr = &vmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
         findRatioPointer = &vmc::findRatioImportance;
-        localEnergyPointer = &vmc::localEnergyNumdiff;
+        kineticPtr = &vmc::kineticNumdiff;
+        potentialPtr = &vmc::potential;
     }
 
 
@@ -582,49 +577,56 @@ void vmc::updatePointers()
     {
         findSuggestionPointer = &vmc::findSuggestionUniform;
         findRatioPointer = &vmc::findRatio;
-        localEnergyPointer = &vmc::localEnergyInteractionNumdiff;
+        kineticPtr = &vmc::kineticNumdiff;
+        potentialPtr = &vmc::potentialInteraction;
     }
 
     else if ((!useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionUniform;
         findRatioPointer = &vmc::findRatioJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrowNumdiff;
+        kineticPtr = &vmc::kineticJastrowNumdiff;
+        potentialPtr = &vmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionUniform;
         findRatioPointer = &vmc::findRatio;
-        localEnergyPointer = &vmc::localEnergyNumdiff;
+        kineticPtr = &vmc::kineticNumdiff;
+        potentialPtr = &vmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(!useInteraction)&&(useJastrow)&&(!useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionUniform;
         findRatioPointer = &vmc::findRatioJastrow;
-        localEnergyPointer = &vmc::localEnergyJastrow;
+        kineticPtr = &vmc::kineticJastrow;
+        potentialPtr = &vmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(useInteraction)&&(!useJastrow)&&(!useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionUniform;
         findRatioPointer = &vmc::findRatio;
-        localEnergyPointer = &vmc::localEnergyInteraction;
+        kineticPtr = &vmc::kinetic;
+        potentialPtr = &vmc::potentialInteraction;
     }
 
     else if ((useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(!useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionImportanceSamplingnoJastrow;
         findRatioPointer = &vmc::findRatioImportance;
-        localEnergyPointer = &vmc::localEnergy;
+        kineticPtr = &vmc::kinetic;
+        potentialPtr = &vmc::potential;
     }
 
     else if ((!useImportanceSampling)&&(!useInteraction)&&(!useJastrow)&&(!useNumDiff))
     {
         findSuggestionPointer = &vmc::findSuggestionUniform;
         findRatioPointer = &vmc::findRatio;
-        localEnergyPointer = &vmc::localEnergy;
+        kineticPtr = &vmc::kinetic;
+        potentialPtr = &vmc::potential;
     }
 
     /*-------------------------------------------------------------------------------*/

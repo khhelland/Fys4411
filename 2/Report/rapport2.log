@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.1.27)  28 MAY 2017 17:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.1.27)  2 JUN 2017 12:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -761,6 +761,29 @@ Package: booktabs 2005/04/14 v1.61803 publication quality tables
 \@lastruleclass=\count115
 \@thisrulewidth=\dimen131
 )
+(/usr/share/texlive/texmf-dist/tex/latex/caption/subcaption.sty
+Package: subcaption 2016/02/20 v1.1-142 Sub-captions (AR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2016/02/21 v3.3-144 Customizing captions (AR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2016/02/04 v1.7-139 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 67.
+\captionmargin=\dimen132
+\captionmargin@=\dimen133
+\captionwidth=\dimen134
+\caption@tempdima=\dimen135
+\caption@indent=\dimen136
+\caption@parindent=\dimen137
+\caption@hangindent=\dimen138
+)
+\c@ContinuedFloat=\count116
+Package caption Info: hyperref package is loaded.
+)
+\c@subfigure=\count117
+\c@subtable=\count118
+)
 
 LaTeX Warning: Unused global option(s):
     [English].
@@ -768,43 +791,43 @@ LaTeX Warning: Unused global option(s):
 (./rapport2.aux)
 \openout1 = `rapport2.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 53.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 53.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 54.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 54.
  (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Try loading font information for T1+ppl on input line 53.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Try loading font information for T1+ppl on input line 54.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ppl.fd
 File: t1ppl.fd 2001/06/04 font definitions for T1/ppl.
 )
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count116
-\scratchdimen=\dimen132
+\scratchcounter=\count119
+\scratchdimen=\dimen139
 \scratchbox=\box29
-\nofMPsegments=\count117
-\nofMParguments=\count118
+\nofMPsegments=\count120
+\nofMParguments=\count121
 \everyMPshowfont=\toks23
-\MPscratchCnt=\count119
-\MPscratchDim=\dimen133
-\MPnumerator=\count120
-\makeMPintoPDFobject=\count121
+\MPscratchCnt=\count122
+\MPscratchDim=\dimen140
+\MPnumerator=\count123
+\makeMPintoPDFobject=\count124
 \everyMPtoPDFconversion=\toks24
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
@@ -823,9 +846,9 @@ e
 ))
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 53.
+(lastpage)             ! on input line 54.
 \AtBeginShipoutBox=\box30
-Package hyperref Info: Link coloring OFF on input line 53.
+Package hyperref Info: Link coloring OFF on input line 54.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -833,79 +856,148 @@ Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count122
+\c@section@level=\count125
 LaTeX Info: Redefining \Ref on input line 513.
 )
-LaTeX Info: Redefining \ref on input line 53.
-LaTeX Info: Redefining \pageref on input line 53.
-LaTeX Info: Redefining \nameref on input line 53.
+LaTeX Info: Redefining \ref on input line 54.
+LaTeX Info: Redefining \pageref on input line 54.
+LaTeX Info: Redefining \nameref on input line 54.
 
 (./rapport2.out) (./rapport2.out)
 \@outlinefile=\write3
 \openout3 = `rapport2.out'.
 
-LaTeX Info: Redefining \Ref on input line 53.
-LaTeX Font Info:    Try loading font information for OT1+zpple on input line 54
+LaTeX Info: Redefining \Ref on input line 54.
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Try loading font information for OT1+zpple on input line 55
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1zpple.fd
 File: ot1zpple.fd 1999/12/20 Fontinst v1.801 font definitions for OT1/zpple.
 )
-LaTeX Font Info:    Try loading font information for OML+zpple on input line 54
+LaTeX Font Info:    Try loading font information for OML+zpple on input line 55
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlzpple.fd
 File: omlzpple.fd 1999/12/20 Fontinst v1.801 font definitions for OML/zpple.
 )
-LaTeX Font Info:    Try loading font information for OMS+zpple on input line 54
+LaTeX Font Info:    Try loading font information for OMS+zpple on input line 55
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omszpple.fd
 File: omszpple.fd 1999/12/20 Fontinst v1.801 font definitions for OMS/zpple.
 )
-LaTeX Font Info:    Try loading font information for OMX+zpple on input line 54
+LaTeX Font Info:    Try loading font information for OMX+zpple on input line 55
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxzpple.fd
 File: omxzpple.fd 1999/12/20 Fontinst v1.801 font definitions for OMX/zpple.
 )
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <9> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 55.
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 56.
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/ppl/b/n' tried instead on input line 60.
-LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 100.
- [1
+ (./rapport2.toc
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <10> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 1.
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (7.09944pt too wide) detected at line 124
+[1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}])
+\tf@toc=\write4
+\openout4 = `rapport2.toc'.
+
+ (./rapport2.lot)
+\tf@lot=\write5
+\openout5 = `rapport2.lot'.
+
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <12> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 103.
+
+[2]
+Overfull \hbox (7.09944pt too wide) detected at line 127
 \OML/zpple/m/it/10  [] \OT1/zpple/m/n/10 = \OMS/zpple/m/n/10 A [] A [] [] [] []
  \OML/zpple/m/it/10 :
  []
 
-[2]
-LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <10> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 178.
- [3]
-Overfull \hbox (14.21971pt too wide) detected at line 274
+[3] [4] [5]
+Overfull \hbox (14.21971pt too wide) detected at line 293
 \OML/zpple/m/it/10 E[]\OT1/zpple/m/n/10 ([]\OML/zpple/m/it/10 ; []\OT1/zpple/m/
 n/10 ) = [] \OMS/zpple/m/n/10 ^^@ [] [] \OT1/zpple/m/n/10 + []\OML/zpple/m/it/1
 0 ;
  []
 
-[4] [5] [6]
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 399.
+[6] [7]
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 418.
 
  (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
-) [7]
-[8]
-Overfull \hbox (62.67766pt too wide) in paragraph at lines 559--559
+) [8]
+<block2pJ.png, id=365, 578.16pt x 433.62pt>
+File: block2pJ.png Graphic file (type png)
+ <use block2pJ.png>
+Package pdftex.def Info: block2pJ.png used on input line 448.
+(pdftex.def)             Requested size: 341.43306pt x 256.07178pt.
+
+<block2pIsJ.png, id=367, 578.16pt x 433.62pt>
+File: block2pIsJ.png Graphic file (type png)
+ <use block2pIsJ.png>
+Package pdftex.def Info: block2pIsJ.png used on input line 455.
+(pdftex.def)             Requested size: 341.43306pt x 256.07178pt.
+
+<block6pJ.png, id=368, 578.16pt x 433.62pt>
+File: block6pJ.png Graphic file (type png)
+ <use block6pJ.png>
+Package pdftex.def Info: block6pJ.png used on input line 462.
+(pdftex.def)             Requested size: 341.43306pt x 256.07178pt.
+
+<block6pIsJ.png, id=369, 578.16pt x 433.62pt>
+File: block6pIsJ.png Graphic file (type png)
+ <use block6pIsJ.png>
+Package pdftex.def Info: block6pIsJ.png used on input line 469.
+(pdftex.def)             Requested size: 341.43306pt x 256.07178pt.
+
+<block12pJ.png, id=370, 578.16pt x 433.62pt>
+File: block12pJ.png Graphic file (type png)
+ <use block12pJ.png>
+Package pdftex.def Info: block12pJ.png used on input line 476.
+(pdftex.def)             Requested size: 341.43306pt x 256.07178pt.
+
+<block12pIsJ.png, id=371, 578.16pt x 433.62pt>
+File: block12pIsJ.png Graphic file (type png)
+ <use block12pIsJ.png>
+Package pdftex.def Info: block12pIsJ.png used on input line 483.
+(pdftex.def)             Requested size: 341.43306pt x 256.07178pt.
+ [9 <./block2pJ.png>] [10 <./block2pIsJ.png> <./block6pJ.png>] [11 <./block6pIs
+J.png> <./block12pJ.png>] [12 <./block12pIsJ.png>]
+Overfull \hbox (54.12193pt too wide) in paragraph at lines 630--646
+ [][] 
+ []
+
+<2pdensity.pdf, id=436, 542.025pt x 449.68pt>
+File: 2pdensity.pdf Graphic file (type pdf)
+ <use 2pdensity.pdf>
+Package pdftex.def Info: 2pdensity.pdf used on input line 714.
+(pdftex.def)             Requested size: 226.48395pt x 187.89682pt.
+
+<2pdensityNoJ.pdf, id=437, 542.025pt x 449.68pt>
+File: 2pdensityNoJ.pdf Graphic file (type pdf)
+ <use 2pdensityNoJ.pdf>
+Package pdftex.def Info: 2pdensityNoJ.pdf used on input line 720.
+(pdftex.def)             Requested size: 226.48395pt x 187.89682pt.
+
+[13] [14] [15 <./2pdensity.pdf> <./2pdensityNoJ.pdf
+
+pdfTeX warning: pdflatex (file ./2pdensityNoJ.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+>] [16]
+Overfull \hbox (62.67766pt too wide) in paragraph at lines 793--793
 [] 
  []
 
-[9]
-Overfull \hbox (39.02135pt too wide) detected at line 563
+
+Overfull \hbox (39.02135pt too wide) detected at line 797
 [] [] \OMS/zpple/m/n/10 r[]\OML/zpple/m/it/10  [] \OT1/zpple/m/n/10 = \OML/zppl
 e/m/it/10 !\OT1/zpple/m/n/10 (\OML/zpple/m/it/10 r[] \OT1/zpple/m/n/10 + \OML/
 zpple/m/it/10 r[]\OT1/zpple/m/n/10 ) \OMS/zpple/m/n/10 ^^@ \OT1/zpple/m/n/10 4\
@@ -914,7 +1006,7 @@ OML/zpple/m/it/10 ! \OT1/zpple/m/n/10 + [] + [] \OMS/zpple/m/n/10 ^^@ [] ^^@ [
  []
 
 
-Overfull \hbox (14.21971pt too wide) detected at line 568
+Overfull \hbox (14.21971pt too wide) detected at line 802
 \OML/zpple/m/it/10 E[]\OT1/zpple/m/n/10 ([]\OML/zpple/m/it/10 ; []\OT1/zpple/m/
 n/10 ) = [] \OMS/zpple/m/n/10 ^^@ [] [] \OT1/zpple/m/n/10 + []\OML/zpple/m/it/1
 0 ;
@@ -922,68 +1014,68 @@ n/10 ) = [] \OMS/zpple/m/n/10 ^^@ [] [] \OT1/zpple/m/n/10 + []\OML/zpple/m/it/1
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 571.
+(hyperref)                removing `math shift' on input line 805.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `\alpha' on input line 571.
+(hyperref)                removing `\alpha' on input line 805.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 571.
+(hyperref)                removing `math shift' on input line 805.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `\beta' on input line 571.
+(hyperref)                removing `\beta' on input line 805.
 
-[10]
-Overfull \hbox (36.95825pt too wide) in paragraph at lines 628--628
+[17]
+Overfull \hbox (36.95825pt too wide) in paragraph at lines 862--862
 [] 
  []
 
-[11]
+[18]
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 653.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `\alpha' on input line 653.
+(hyperref)                removing `math shift' on input line 887.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 653.
+(hyperref)                removing `\alpha' on input line 887.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `\beta' on input line 653.
+(hyperref)                removing `math shift' on input line 887.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 694--697
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\beta' on input line 887.
+
+[19]
+Underfull \hbox (badness 10000) in paragraph at lines 933--939
 \T1/cmtt/m/n/10 CompPhysics / ComputationalPhysics2 / blob / gh-[]pages / doc /
  Literature / lectures2015 . pdf$[] \T1/ppl/m/n/10 on
  []
 
-[12] 
+
 AED: lastpage setting LastPage
-[13]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 730.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 730.
+[20]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 965.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 965.
  (./rapport2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 730.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 730.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 965.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 965.
 Package rerunfilecheck Info: File `rapport2.out' has not changed.
-(rerunfilecheck)             Checksum: 5CF07C22FEBF2D69C483883226389EAB;2265.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 730.
+(rerunfilecheck)             Checksum: 3E26E4D9FF5BEB6ABFEB25BB2F59952E;2631.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 965.
  ) 
 Here is how much of TeX's memory you used:
- 7674 strings out of 493029
- 107783 string characters out of 6136234
- 204120 words of memory out of 5000000
- 10931 multiletter control sequences out of 15000+600000
+ 8860 strings out of 493029
+ 128943 string characters out of 6136234
+ 243479 words of memory out of 5000000
+ 12062 multiletter control sequences out of 15000+600000
  55132 words of font info for 126 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 29i,13n,43p,320b,444s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,13n,43p,320b,455s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texliv
 e/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/texmf-dist/fonts/t
 ype1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
@@ -998,10 +1090,10 @@ exmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/urw/palatino/uplbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/u
 rw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/
 uplri8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/symbol/usyr.pfb>
-Output written on rapport2.pdf (13 pages, 203040 bytes).
+Output written on rapport2.pdf (20 pages, 941230 bytes).
 PDF statistics:
- 400 PDF objects out of 1000 (max. 8388607)
- 367 compressed objects within 4 object streams
- 112 named destinations out of 1000 (max. 500000)
- 281 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 585 PDF objects out of 1000 (max. 8388607)
+ 518 compressed objects within 6 object streams
+ 143 named destinations out of 1000 (max. 500000)
+ 361 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -25,6 +25,10 @@ public:
     bool useImportanceSampling = true;
 
     //results
+    double kinetic_energy;
+    double kineticMeanVar;
+    double potential_energy;
+    double potentialMeanVar;
     double energy;
     double energyMeanVar;
     double AcceptanceRatio;
@@ -55,10 +59,10 @@ private:
     double proposalratio(int,int);
 
 
-    double localEnergy();
-    double localEnergyJastrow();
-    double localEnergyInteraction();
-    double localEnergyJastrowInteraction();
+//    double localEnergy();
+//    double localEnergyJastrow();
+//    double localEnergyInteraction();
+//    double localEnergyJastrowInteraction();
 
     double kinetic();
     double kineticJastrow();
@@ -123,7 +127,9 @@ private:
 
 
     //function pointers;
-    double (slatervmc::*localEnergyPointer)() = nullptr;
+    //double (slatervmc::*localEnergyPointer)() = nullptr;
+    double (slatervmc::*kineticPtr)() = nullptr;
+    double (slatervmc::*potentialPtr)() = nullptr;
     void (slatervmc::*findSuggestionPointer)(int,int) = nullptr;
     double (slatervmc::*findRatioPointer)(int,int) = nullptr;
 };

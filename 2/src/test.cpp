@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main()
+int main2()
 {
 
 
@@ -16,14 +16,14 @@ int main()
 
 
     slatervmc a(2,     // N
-          0.01,         // steplength
-          1,            // omega
-          1,            //alpha
-          0.4,        // beta
-          3);         //seed
+                0.01,         // steplength
+                1,            // omega
+                1,            //alpha
+                0.4,        // beta
+                1);         //seed
     a.useImportanceSampling = 1;
-    a.useInteraction = 1;
-    a.useJastrow = 1;
+    a.useInteraction = 0;
+    a.useJastrow = 0;
 
 //     cout<<"set up complete"<<endl;
 

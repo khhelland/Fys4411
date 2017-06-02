@@ -730,6 +730,35 @@ Figure \ref{fig:onebody} shows the onebody density of the 2 particle trial wavef
 
 
 \section{Discussion}
+\subsection{Errors}
+As mentioned the kinetic and potential energy expectation values of harmonic oscillator eigenstates are exactly equal to half the energy.
+Thus we know the absolute error of the estimates for kinetic and potential energy in table \ref{tabGround}. Comparing with the error estimates from the blocking analysis,
+we see that the error estimates badly underestimate the true error. In fact they seem to miss by about an order of magnitude. The blocksize was chosen based on analysing calculations
+of the total energy and so perhaps this only shows that I should have used a different blocksize based on what quantity I am looking at. But most of the correlations
+should come from the points chosen from the probability distribution, the function we apply this too should not matter. Thus I think this may be an indication that I have
+underestimated the errors even after blocking.
+
+In tables \ref{Etab6} and \ref{Etab12} we see that for small $\omega$ and the Jastrow factor switched on $\bar{K}$ can be negative and the estimated error is too small to make up.
+This is obviously wrong, and could indicate that there is a bug in the code and throw into question the rest of the results. However, I have already noted that the estimated error
+for $K$ and $V$ is too small by at least an order of magnitude. Taking this into account makes $\bar{K} > 0$ be within the error. However it also means that the relative errors
+for these calculations are so large that the values are effectively useless.
+
+\subsection{Average distance between particles}
+In the 2 particle case I included a calculation of the average relative distance of the particles, found in table \ref{Etab2}.
+We see that the distance increases dramatically when $\omega$ decreases, and that the distance is greater in cases where the jastrow factor is included.
+In figure \ref{fig:onebody} we saw that the onebody density was more condensed about the origin with the jastrow factor than without. These results seem
+contradictory at first glance, but I suppose there are details in the wavefunction that are missed by simply looking at a plot of the onebody density.
+
+\subsection{Comparison of results with and without Jastrow factor}
+Looking at tables \ref{Etab2}, \ref{Etab6} and \ref{Etab12} we see that the energy estimates $\bar{E}$ are consistently lower when the jastrow factor is used.
+The jastrow factor seems to be more important for higher numebers of particles and lower $\omega$. This makes sense as the factor is supposed to account for the interactions
+of the particles, which naturally are more important the more particles there are and the stronger the interaction is compared to the confining potential.
+
+\subsection{Comparison of results with benchmark values}
+Comparing the results to table \ref{tabMref} we see that in the 2 particle case the energies with the jastrow factor are equal to the diffusion MC results within the errors.
+For 6 and 12 particles the diffusion MC energies are mostly outside of the error ranges of my results. This is probably due to the parameter optimization not working as well
+as I had hoped, but could also be a reflection of an overoptimistic estimation of the error. If we compare instead with the Hartree-Fock results we find that my results
+give lower energies both with and without the jastrow factor, especially for $\omega = 0.5$.
 
 \section{Conclusion}
 

@@ -207,7 +207,6 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/zppleb7m.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/zppleb7y.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/zppleb7y.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/zppleb7y.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/pplb8t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/zppler7m.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/eurmo10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
@@ -236,6 +235,7 @@ INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/zppleb7m.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/eurbo10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmib10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/pplbi8r.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/pplb8t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/zppler7m.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/eurmo10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
@@ -303,10 +303,10 @@ INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/zppleb7m.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/eurbo10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmib10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/pplbi8r.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/pplri8t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/zppler7t.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/euler/eurm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/pplri8t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/pplri8t.vf
 INPUT rapport2.aux
 INPUT ./rapport2.out

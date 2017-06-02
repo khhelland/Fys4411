@@ -28,13 +28,17 @@
 \BOOKMARK [2][-]{subsection.6.7}{Cost}{section.6}% 28
 \BOOKMARK [2][-]{subsection.6.8}{Accuracy}{section.6}% 29
 \BOOKMARK [1][-]{section.7}{Discussion}{}% 30
-\BOOKMARK [1][-]{section.8}{Conclusion}{}% 31
-\BOOKMARK [1][-]{appendix.A}{A Note About Cofactors and Determinants}{}% 32
-\BOOKMARK [1][-]{appendix.B}{Derivatives of the 2 particle trial wavefunction}{}% 33
-\BOOKMARK [2][-]{subsection.B.1}{Gradient}{appendix.B}% 34
-\BOOKMARK [2][-]{subsection.B.2}{Laplacian}{appendix.B}% 35
-\BOOKMARK [2][-]{subsection.B.3}{Derivatives w.r.t \040and }{appendix.B}% 36
-\BOOKMARK [1][-]{appendix.C}{Derivatives of the N particle trial wavefunction}{}% 37
-\BOOKMARK [2][-]{subsection.C.1}{Gradient}{appendix.C}% 38
-\BOOKMARK [2][-]{subsection.C.2}{Laplacian}{appendix.C}% 39
-\BOOKMARK [2][-]{subsection.C.3}{Derivative w.r.t \040and }{appendix.C}% 40
+\BOOKMARK [2][-]{subsection.7.1}{Errors}{section.7}% 31
+\BOOKMARK [2][-]{subsection.7.2}{Average distance between particles}{section.7}% 32
+\BOOKMARK [2][-]{subsection.7.3}{Comparison of results with and without Jastrow factor}{section.7}% 33
+\BOOKMARK [2][-]{subsection.7.4}{Comparison of results with benchmark values}{section.7}% 34
+\BOOKMARK [1][-]{section.8}{Conclusion}{}% 35
+\BOOKMARK [1][-]{appendix.A}{A Note About Cofactors and Determinants}{}% 36
+\BOOKMARK [1][-]{appendix.B}{Derivatives of the 2 particle trial wavefunction}{}% 37
+\BOOKMARK [2][-]{subsection.B.1}{Gradient}{appendix.B}% 38
+\BOOKMARK [2][-]{subsection.B.2}{Laplacian}{appendix.B}% 39
+\BOOKMARK [2][-]{subsection.B.3}{Derivatives w.r.t \040and }{appendix.B}% 40
+\BOOKMARK [1][-]{appendix.C}{Derivatives of the N particle trial wavefunction}{}% 41
+\BOOKMARK [2][-]{subsection.C.1}{Gradient}{appendix.C}% 42
+\BOOKMARK [2][-]{subsection.C.2}{Laplacian}{appendix.C}% 43
+\BOOKMARK [2][-]{subsection.C.3}{Derivative w.r.t \040and }{appendix.C}% 44

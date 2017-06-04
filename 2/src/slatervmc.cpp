@@ -13,16 +13,10 @@ using namespace std;
 using namespace arma;
 
 /*
- * do sd and blocking better!!!!!
- * make some funcs inline for opt
- * only non-interacting ground state slater
+ *Class for many particle MC integration.
+ * Use: initialize, change booleans from default if needed
+ * and run.
  *
- * to extend nParticles
- * need new
- * dirstribute
- * a func -
- * steepest
- *think about storing rdifference in sp_mat
  */
 
 
@@ -275,29 +269,6 @@ double slatervmc::rDifference(mat pos, int p, int q)
     double ydiff = pos(1,p) - pos(1,q);
     return sqrt(xdiff*xdiff + ydiff*ydiff);
 }
-
-
-/*------------------------------------------------------------------------------------*/
-//double slatervmc::localEnergy()
-//{
-//    return kinetic() + potential();
-//}
-
-//double slatervmc::localEnergyJastrow()
-//{
-//    return kineticJastrow() + potential();
-//}
-
-//double slatervmc::localEnergyInteraction()
-//{
-//    return kinetic() + potentialInteraction();
-//}
-
-//double slatervmc::localEnergyJastrowInteraction()
-//{
-//    return kineticJastrow() + potentialInteraction();
-//}
-
 
 
 

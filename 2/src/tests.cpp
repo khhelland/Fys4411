@@ -5,6 +5,11 @@
 #include <armadillo>
 
 
+/*
+ * Functions for calculating benchmark results and such.
+ *
+ */
+
 using namespace std;
 
 

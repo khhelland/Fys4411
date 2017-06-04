@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main2()
+int main()
 {
 
 
@@ -22,14 +22,14 @@ int main2()
                 0.4,        // beta
                 1);         //seed
     a.useImportanceSampling = 1;
-    a.useInteraction = 0;
-    a.useJastrow = 0;
+    a.useInteraction = 1;
+    a.useJastrow = 1;
 
 //     cout<<"set up complete"<<endl;
 
 
 //     a.writeEnergies(1e7,"e2pIsJ.dat");
-     a.run(1e7, //nCycles
+     a.run(1e8, //nCycles
            2e5);  //Blocksize
      a.printResults();
 //     a.steepestDescentAuto(1e5,1);

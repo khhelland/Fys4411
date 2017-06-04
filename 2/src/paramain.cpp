@@ -22,16 +22,16 @@ int main(int nargs, char* args[])
 
     //do the thing
 
-    slatervmc sim(12, //particles
+    slatervmc sim(2, //particles
                   0.01, //stepsize
-                  0.01, //omega
-                  0.150,//alpha
-                  0.1, //beta
+                  1, //omega
+                  1,//alpha
+                  0.4, //beta
                   rank+1 //seed
                   );
-    sim.useJastrow = 0;
+    sim.useJastrow = 1;
 
-    sim.run(1e7, //cycles
+    sim.run(1e8, //cycles
             500000 //blocksize
             );
 
